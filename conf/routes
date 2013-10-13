@@ -2,8 +2,14 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-GET     /                           controllers.Application.index
+# Fillable API
+GET     /                           controllers.ApplicationApi.status
+GET     /complete/:toBeCompleted	controllers.ApplicationApi.getCompletions(toBeCompleted: String)
+GET		/status						controllers.ApplicationApi.status
+POST	/addSuggestion/:suggestion  controllers.ApplicationApi.addSuggestion(suggestion: String)
+
+# Admin Backend
+GET		/admin						controllers.Backend.index
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
