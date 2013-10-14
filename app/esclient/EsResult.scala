@@ -1,0 +1,5 @@
+package esclient
+
+class EsResult {
+
+}
