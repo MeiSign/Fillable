@@ -26,11 +26,12 @@ class FindCompletionsQuery(indexName: String, fieldName: String, toBeCompleted: 
   def getResult(response: JsValue): JsObject = {
     require(response != null, "response JsValue must not be null")
     
-    val options: Seq[JsValue] = (response \\ "options")
-    if (options != Nil) SuccessResponse ++ Json.obj("completions" -> options(0)) 
-    else {
-      Logger.error("Unexpectecd response from Elasticsearch please check the Fillable requirements(Elasticsearch version might be too low")
-      ErrorResponse 
+    val error: Option[String] = (response \ "error").asOpt[String]
+    
+    if (!error.isDefined) {
+      respondSucces(Json.obj("completions" -> (response \\ "options")(0)))
+    } else {
+      respondError(error.get)
     }
   }
 }

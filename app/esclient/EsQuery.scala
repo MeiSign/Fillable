@@ -7,8 +7,8 @@ abstract class EsQuery {
 	def toJson: JsObject
 	def getUrlAddon: String
 	def getResult(response: JsValue): JsObject 
-	val ErrorResponse: JsObject = Json.obj("status" -> "error");
-	val SuccessResponse: JsObject = Json.obj("status" -> "ok");
+  def respondError(msg: String): JsObject = Json.obj("status" -> "error", "msg" -> msg)
+  def respondSucces(obj: JsObject): JsObject = Json.obj("status" -> "ok") ++ obj
 }
 
 object HttpType extends Enumeration {
@@ -17,3 +17,4 @@ object HttpType extends Enumeration {
      val Put = Value("put")
      val Delete = Value("delete")
 }
+

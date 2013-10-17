@@ -10,9 +10,20 @@ import org.specs2.matcher.BeEqualTo
 import play.api.libs.json._
 import esclient.HttpType
 import org.specs2.mock._
+import esclient.queries.FindCompletionsQuery
 
 @RunWith(classOf[JUnitRunner])
 class EsQueriesSpec extends Specification {
+  
+  "EsQuery" should {
+    "respondError should report a valid error object" in new WithApplication {
+      new FindCompletionsQuery("","","").respondError("errormsg") must beEqualTo(Json.obj("status" -> "error", "msg" -> "errormsg"))
+    }
+    "respondSuccess should report a valid object" in new WithApplication {
+      val testObj: JsObject = Json.obj("bla" -> "blub");
+      new FindCompletionsQuery("","","").respondSucces(testObj) must beEqualTo(Json.obj("status" -> "ok") ++ testObj)
+    }
+  }
 
   "FindCompletionsQuery Constructor" should {
 
@@ -59,8 +70,8 @@ class EsQueriesSpec extends Specification {
     }
     
     "should return an error object for invalid json responses" in new WithApplication {
-      val response: JsValue = Json.parse("""{"text":"Hotel Mercure","score":5.0}""")
-      new FindCompletionsQuery("Test", "test", "test").getResult(response) must beEqualTo(Json.parse("""{"status":"error"}""").as[JsObject])
+      val response: JsValue = Json.parse("""{"error" : "bla"}""")
+      new FindCompletionsQuery("Test", "test", "test").getResult(response) must beEqualTo(Json.parse("""{"status":"error", "msg" : "bla"}""").as[JsObject])
     }
     
     "should return an empty result for a valid empty json response" in new WithApplication {
