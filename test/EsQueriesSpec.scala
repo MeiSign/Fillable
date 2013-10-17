@@ -9,11 +9,12 @@ import esclient.queries.FindCompletionsQuery
 import org.specs2.matcher.BeEqualTo
 import play.api.libs.json._
 import esclient.HttpType
+import org.specs2.mock._
 
 @RunWith(classOf[JUnitRunner])
 class EsQueriesSpec extends Specification {
 
-  "FindCompletionsQuery" should {
+  "FindCompletionsQuery Constructor" should {
 
     "throw an Illegal Argument Exception for a null toBeCompleted text" in new WithApplication {
       new FindCompletionsQuery("test", "test", null) must throwA[IllegalArgumentException]
@@ -46,4 +47,26 @@ class EsQueriesSpec extends Specification {
       new FindCompletionsQuery("test", "test", "index").httpType must beEqualTo(HttpType.Post)
     }
   }
+  
+  "FindCompletionsQuery getResult" should {
+    "throw an Illegal Argument Exception for a null response getResult call" in new WithApplication {
+      new FindCompletionsQuery("Test", "test", "test").getResult(null) must throwA[IllegalArgumentException]
+    }
+    
+    "should return the correct completions for a valid json response" in new WithApplication {
+      val response: JsValue = Json.parse("""{"_shards":{"total":5,"successful":5,"failed":0},"hotels":[{"text":"m","offset":0,"length":1,"options":[{"text":"Hotel Marriot","score":15.0},{"text":"Hotel Monaco","score":10.0},{"text":"Hotel Mercure","score":5.0}]}]}""")
+      new FindCompletionsQuery("Test", "test", "test").getResult(response) must beEqualTo(Json.parse("""{"status":"ok","completions":[{"text":"Hotel Marriot","score":15.0},{"text":"Hotel Monaco","score":10.0},{"text":"Hotel Mercure","score":5.0}]}""").as[JsObject])
+    }
+    
+    "should return an error object for invalid json responses" in new WithApplication {
+      val response: JsValue = Json.parse("""{"text":"Hotel Mercure","score":5.0}""")
+      new FindCompletionsQuery("Test", "test", "test").getResult(response) must beEqualTo(Json.parse("""{"status":"error"}""").as[JsObject])
+    }
+    
+    "should return an empty result for a valid empty json response" in new WithApplication {
+      val response: JsValue = Json.parse("""{"_shards":{"total":5,"successful":5,"failed":0},"hotels":[{"text":"m","offset":0,"length":1,"options":[]}]}""")
+      new FindCompletionsQuery("Test", "test", "test").getResult(response) must beEqualTo(Json.parse("""{"status":"ok","completions":[]}""").as[JsObject])
+    }
+  }
+  
 }
