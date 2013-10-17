@@ -1,0 +1,37 @@
+package esclient.queries
+
+import play.api.libs.json.JsObject
+import esclient.EsQuery
+import play.api.libs.json.JsValue
+import esclient.HttpType
+import play.api.libs.json.Json
+
+
+class CreateCompletionsFieldQuery(indexName: String, fieldName: String) extends EsQuery {
+  require(indexName != null, "indexName parameter must not be null")
+  require(fieldName != null, "fieldName parameter must not be null")
+  
+  val httpType: HttpType.Value = HttpType.Put
+  
+  def getUrlAddon(): String = "/" + indexName
+
+  def getResult(response: JsValue): JsObject = {
+    require(response != null, "response JsValue must not be null")
+    
+    val error: Option[String] = (response \ "error").asOpt[String]
+    
+    if (!error.isDefined) {
+      respondSucces(Json.obj())
+    } else {
+      respondError(error.get)
+    }
+  }   
+   
+  def toJson: JsObject = 
+    Json.obj(
+        "mappings" -> Json.obj(
+            indexName -> Json.obj(
+                "properties" -> Json.obj(
+                    fieldName -> Json.obj(
+                        "type" -> "completion")))))
+}

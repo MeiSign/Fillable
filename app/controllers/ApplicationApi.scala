@@ -5,6 +5,8 @@ import play.api.mvc._
 import esclient.EsClient
 import esclient.queries.FindCompletionsQuery
 import play.api.libs.json._
+import esclient.queries.CreateCompletionsFieldQuery
+import esclient.queries.CreateCompletionsFieldQuery
 
 object ApplicationApi extends Controller {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
@@ -19,8 +21,14 @@ object ApplicationApi extends Controller {
     }
   }
 
-  def addSuggestion(suggestion: String) = Action {
-    request => Ok("Got Request [" + request + "] with string [" + suggestion +"]")
+  def addCompletion(indexName: String, fieldName: String, completion: String) = Action.async {
+    val query: CreateCompletionsFieldQuery = new CreateCompletionsFieldQuery(indexName, fieldName)
+    EsClient.execute(query).map(response => Ok(query.getResult(response))).recover {
+      case e: Exception => { EsClient.logException(e); Ok(ErrorJson)}
+    }
+    
+    
+    //request => Ok("Got Request [" + request + "] with string [" + suggestion +"]")
   }
   
 }

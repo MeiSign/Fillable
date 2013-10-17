@@ -13,7 +13,7 @@ object EsClient {
   
   val url: String = { 
     Play.current.configuration.getString("esclient.url") getOrElse {
-      Logger.info("Couldn't find any elasticsearch host. Trying to use Localhost")   
+      Logger.warn("Couldn't find any elasticsearch host. Trying to use Localhost")   
     "127.0.0.1:9200"}
 	}
 

@@ -6,7 +6,7 @@
 GET   /                           controllers.ApplicationApi.status
 GET   /complete/:indexName/:fieldName/:toBeCompleted	controllers.ApplicationApi.getCompletions(indexName: String, fieldName: String, toBeCompleted: String)
 GET		/status						controllers.ApplicationApi.status
-POST	/addSuggestion/:suggestion  controllers.ApplicationApi.addSuggestion(suggestion: String)
+POST	/addCompletion/:indexName/:fieldName/:completion  controllers.ApplicationApi.addCompletion(indexName: String, fieldName: String, completion: String)
 
 # Admin Backend
 GET		/admin						controllers.Backend.index

@@ -14,14 +14,13 @@ class FindCompletionsQuery(indexName: String, fieldName: String, toBeCompleted: 
   
   def getUrlAddon: String = "/" + indexName + "/_suggest"
   
-  def toJson: JsObject = {
+  def toJson: JsObject = 
      Json.obj(
     		 indexName -> Json.obj(
     		     "text" -> toBeCompleted,
     		     "completion" -> Json.obj("field" -> fieldName)
     		 )
      )
-   }
   
   def getResult(response: JsValue): JsObject = {
     require(response != null, "response JsValue must not be null")
