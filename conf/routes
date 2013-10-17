@@ -3,8 +3,8 @@
 # ~~~~
 
 # Fillable API
-GET     /                           controllers.ApplicationApi.status
-GET     /complete/:toBeCompleted	controllers.ApplicationApi.getCompletions(toBeCompleted: String)
+GET   /                           controllers.ApplicationApi.status
+GET   /complete/:indexName/:fieldName/:toBeCompleted	controllers.ApplicationApi.getCompletions(indexName: String, fieldName: String, toBeCompleted: String)
 GET		/status						controllers.ApplicationApi.status
 POST	/addSuggestion/:suggestion  controllers.ApplicationApi.addSuggestion(suggestion: String)
 

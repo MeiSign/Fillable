@@ -12,7 +12,9 @@ class EsClientSpec extends Specification {
   "EsClient" should {
 
     "return correct elasticsearch url from config" in new WithApplication {
-      EsClient.url must beEqualTo(Play.current.configuration.getString("esclient.url"))
+      EsClient.url must beEqualTo(Play.current.configuration.getString("esclient.url").getOrElse(""))
     }
+    
+    
   }
 }
