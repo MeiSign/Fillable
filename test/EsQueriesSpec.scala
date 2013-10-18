@@ -21,7 +21,7 @@ class EsQueriesSpec extends Specification {
     }
     "respondSuccess should report a valid object" in new WithApplication {
       val testObj: JsObject = Json.obj("bla" -> "blub");
-      new FindCompletionsQuery("","","").respondSucces(testObj) must beEqualTo(Json.obj("status" -> "ok") ++ testObj)
+      new FindCompletionsQuery("","","").respondSuccess(testObj) must beEqualTo(Json.obj("status" -> "ok") ++ testObj)
     }
   }  
 }

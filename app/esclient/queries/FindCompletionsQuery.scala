@@ -25,10 +25,14 @@ class FindCompletionsQuery(indexName: String, fieldName: String, toBeCompleted: 
   def getResult(response: JsValue): JsObject = {
     require(response != null, "response JsValue must not be null")
     
+    println(response)
+    
     val error: Option[String] = (response \ "error").asOpt[String]
     
     if (!error.isDefined) {
-      respondSucces(Json.obj("completions" -> (response \\ "options")(0)))
+      val options: Seq[JsValue] = (response \\ "options")
+      if (options.size > 0) respondSuccess(Json.obj("completions" -> options(0))) 
+      else respondSuccess(Json.obj("completions" -> List[String]()))
     } else {
       respondError(error.get)
     }

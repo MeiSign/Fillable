@@ -21,7 +21,7 @@ class CreateCompletionsFieldQuery(indexName: String, fieldName: String) extends 
     val error: Option[String] = (response \ "error").asOpt[String]
     
     if (!error.isDefined) {
-      respondSucces(Json.obj())
+      respondSuccess(Json.obj())
     } else {
       respondError(error.get)
     }
