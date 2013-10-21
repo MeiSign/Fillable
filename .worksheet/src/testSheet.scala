@@ -8,6 +8,9 @@ string.to[List];System.out.println("""res0: List[play.api.libs.json.JsValue] = "
 
 val response1: JsValue = Json.parse("""{"_shards":{"total":5,"successful":5,"failed":0},"hotels":[{"text":"m","offset":0,"length":1,"options":[{"text":"Hotel Marriot","score":15.0},{"text":"Hotel Monaco","score":10.0},{"text":"Hotel Mercure","score":5.0}]}]}""");System.out.println("""response1  : play.api.libs.json.JsValue = """ + $show(response1 ));$skip(53); 
 val string1: Seq[JsValue] = (response1 \\ "options");System.out.println("""string1  : Seq[play.api.libs.json.JsValue] = """ + $show(string1 ));$skip(17); val res$1 = 
-string1.to[List];System.out.println("""res1: List[play.api.libs.json.JsValue] = """ + $show(res$1))}
+string1.to[List];System.out.println("""res1: List[play.api.libs.json.JsValue] = """ + $show(res$1));$skip(73); 
+
+val format = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");System.out.println("""format  : java.text.SimpleDateFormat = """ + $show(format ));$skip(37); val res$2 = 
+format.parse("2013-09-17T12:50:20Z");System.out.println("""res2: java.util.Date = """ + $show(res$2))}
 
 }

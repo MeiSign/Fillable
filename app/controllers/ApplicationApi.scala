@@ -7,6 +7,7 @@ import esclient.queries.FindCompletionsQuery
 import play.api.libs.json._
 import esclient.queries.CreateCompletionsFieldQuery
 import esclient.queries.CreateCompletionsFieldQuery
+import esclient.queries.GetEsVersionQuery
 
 object ApplicationApi extends Controller {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
@@ -26,9 +27,13 @@ object ApplicationApi extends Controller {
     EsClient.execute(query).map(response => Ok(query.getResult(response))).recover {
       case e: Exception => { EsClient.logException(e); Ok(ErrorJson)}
     }
-    
-    
-    //request => Ok("Got Request [" + request + "] with string [" + suggestion +"]")
+  }
+  
+  def checkRequirements() = Action.async {
+    val query: GetEsVersionQuery = new GetEsVersionQuery()
+    EsClient.execute(query).map(response => Ok(query.getResult(response))).recover {
+      case e: Exception => { EsClient.logException(e); Ok(ErrorJson)}
+    }
   }
   
 }

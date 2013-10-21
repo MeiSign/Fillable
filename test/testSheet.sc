@@ -21,4 +21,8 @@ string1.to[List]                                  //> res1: List[play.api.libs.j
                                                   //| e":15.0},{"text":"Hotel Monaco","score":10.0},{"text":"Hotel Mercure","score
                                                   //| ":5.0}])
 
+val format = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                                                  //> format  : java.text.SimpleDateFormat = java.text.SimpleDateFormat@fe8ba6fa
+format.parse("2013-09-17T12:50:20Z")              //> res2: java.util.Date = Tue Sep 17 12:50:20 CEST 2013
+
 }

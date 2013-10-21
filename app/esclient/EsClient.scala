@@ -18,15 +18,17 @@ object EsClient {
 	}
 
 	def execute(query: EsQuery): Future[JsValue] = {
-	  WS.url(url + query.getUrlAddon).post(query.toJson).map {
-      response => response.json
-    }
+	  query.httpType match {
+	    case HttpType.Get => WS.url(url + query.getUrlAddon).get().map { response => response.json }
+	    case HttpType.Post => WS.url(url + query.getUrlAddon).post(query.toJson).map { response => response.json }  
+	  }
+	  
 	}
 	
 	def logException(e: Exception) = {
 	  e.getMessage() match {
 	    case msg: String if msg.startsWith("Connection refused:") => Logger.error("Connection refused from " + url + ". Elasticsearch up and running? Original Exception: " + msg )
-	    case msg: String => Logger.error("Unknown Error: " + msg)
+	    case msg: String => Logger.error("Unknown Error: " + msg + e)
 	  } 
 	}
 }

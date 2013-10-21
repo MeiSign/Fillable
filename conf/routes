@@ -6,6 +6,7 @@
 GET   /                           controllers.ApplicationApi.status
 GET   /complete/:indexName/:fieldName/:toBeCompleted	controllers.ApplicationApi.getCompletions(indexName: String, fieldName: String, toBeCompleted: String)
 GET		/status						controllers.ApplicationApi.status
+GET   /status/requirements  controllers.ApplicationApi.checkRequirements
 POST	/addCompletion/:indexName/:fieldName/:completion  controllers.ApplicationApi.addCompletion(indexName: String, fieldName: String, completion: String)
 
 # Admin Backend

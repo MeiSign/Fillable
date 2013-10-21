@@ -25,8 +25,6 @@ class FindCompletionsQuery(indexName: String, fieldName: String, toBeCompleted: 
   def getResult(response: JsValue): JsObject = {
     require(response != null, "response JsValue must not be null")
     
-    println(response)
-    
     val error: Option[String] = (response \ "error").asOpt[String]
     
     if (!error.isDefined) {
