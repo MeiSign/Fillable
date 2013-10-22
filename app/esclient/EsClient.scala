@@ -22,7 +22,9 @@ object EsClient {
 	def execute(query: EsQuery): Future[JsValue] = {
 	  query.httpType match {
 	    case HttpType.Get => WS.url(url + query.getUrlAddon).get().map { response => response.json }
-	    case HttpType.Post => WS.url(url + query.getUrlAddon).post(query.toJson).map { response => response.json }  
+	    case HttpType.Post => WS.url(url + query.getUrlAddon).post(query.toJson).map { response => response.json }
+	    case HttpType.Put => WS.url(url + query.getUrlAddon).put(query.toJson).map { response => response.json }
+	    case _ => WS.url(url + query.getUrlAddon).get().map { response => response.json }
 	  }
 	  
 	}
