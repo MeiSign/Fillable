@@ -7,6 +7,7 @@ import play.api.libs.json.Json
 import play.api.libs.json.JsValue
 import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.DateTimeFormat
+import play.api.i18n.Messages
 
 class GetEsVersionQuery extends EsQuery {
  val httpType = HttpType.Get
@@ -22,9 +23,15 @@ class GetEsVersionQuery extends EsQuery {
     val buildTimestamp: Option[String] = (response \ "version" \ "build_timestamp").asOpt[String]
     
     if (version.isDefined && buildTimestamp.isDefined) {
-      respondSuccess(Json.obj("version" -> version.get, "fullfillsRequirements" -> isAfterOrEqualToRequiredBuildtime(buildTimestamp.get))) 
+      try {
+        respondSuccess(Json.obj("version" -> version.get, "fullfillsRequirements" -> isAfterOrEqualToRequiredBuildtime(buildTimestamp.get)))
+      } catch {
+        case e: Exception => e.getMessage match {
+          case msg: String if msg.startsWith("Invalid format") => respondError(Messages("error.wrongDateTimeFormat", "yyyy-MM-dd'T'HH:mm:ss'Z'", buildTimestamp.get))
+        }
+      }
     } else {
-      respondError("Couldnt determine elasticsearch version. Es Cluster up and running?")
+      respondError("Could not determine elasticsearch version. Es Cluster up and running?")
     }
   }
  

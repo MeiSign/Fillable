@@ -1,5 +1,0 @@
-package esclient
-
-class EsResult {
-
-}

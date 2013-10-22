@@ -31,5 +31,9 @@ class GetEsVersionQuerySpec extends Specification {
       val newEsStatus = Json.parse("""{"ok" : true, "status" : 200, "name" : "Payge, Reeva", "version" : { "number" : "0.20.15", "build_hash" : "c8714e8e0620b62638f660f6144831792b9dedee", "build_timestamp" : "2013-09-17T12:50:20Z", "build_snapshot" : false, "lucene_version" : "4.4" }, "tagline" : "You Know, for Search" }""")
       new GetEsVersionQuery().getResult(newEsStatus) must beEqualTo(Json.parse("""{"status":"ok","version":"0.20.15","fullfillsRequirements":true}"""))
     }
+    "respondError with correct error msg for invalid DateTimeFormat" in new WithApplication {
+      val newEsStatus = Json.parse("""{"ok" : true, "status" : 200, "name" : "Payge, Reeva", "version" : { "number" : "0.20.15", "build_hash" : "c8714e8e0620b62638f660f6144831792b9dedee", "build_timestamp" : "2013-09-17", "build_snapshot" : false, "lucene_version" : "4.4" }, "tagline" : "You Know, for Search" }""")
+      new GetEsVersionQuery().getResult(newEsStatus) must beEqualTo(Json.parse("""{"status":"error","msg":"Elasticsearch responded with a wrong DateTime Format(expected: yyyy-MM-dd'T'HH:mm:ss'Z' received: 2013-09-17). Anyways, if your Elasticsearch version is above 0.90.5 there should not be any compatibility issues."}"""))
+    }
   }  
 }
