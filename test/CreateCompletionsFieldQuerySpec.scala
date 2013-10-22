@@ -31,7 +31,7 @@ class CreateCompletionsFieldQuerySpec extends Specification {
     
     "toJson should return the correct Json object" in new WithApplication {
       new CreateCompletionsFieldQuery("indexName", "fieldName").toJson must beEqualTo(
-        Json.parse("""{"mappings":{"indexName":{"properties":{"fieldName":{"type":"completion"}}}}}""")
+        Json.parse("""{"mappings":{"indexName":{"properties":{"fieldName":{"type":"completion"},"searchId":{"type":"string"}}}}}""")
       )
     }
     

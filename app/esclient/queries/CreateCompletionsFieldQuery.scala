@@ -33,5 +33,7 @@ class CreateCompletionsFieldQuery(indexName: String, fieldName: String) extends 
             indexName -> Json.obj(
                 "properties" -> Json.obj(
                     fieldName -> Json.obj(
-                        "type" -> "completion")))))
+                        "type" -> "completion"),
+                    "searchId" -> Json.obj(
+                        "type" -> "string")))))
 }

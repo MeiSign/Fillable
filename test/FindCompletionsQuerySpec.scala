@@ -38,7 +38,7 @@ class FindCompletionsQuerySpec extends Specification {
         Json.obj(
           "indexName" -> Json.obj(
             "text" -> "text",
-            "completion" -> Json.obj("field" -> "fieldName")
+            "completion" -> Json.obj("field" -> "fieldName", "fuzzy" -> Json.obj("edit_distance" -> 1))
           )
         )
       )
