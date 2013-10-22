@@ -31,7 +31,7 @@ class GetEsVersionQuery extends EsQuery {
         }
       }
     } else {
-      respondError("Could not determine elasticsearch version. Es Cluster up and running?")
+      respondError(Messages("error.unknownEsVersion"))
     }
   }
  

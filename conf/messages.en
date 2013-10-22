@@ -3,3 +3,4 @@
 error.wrongDateTimeFormat=Elasticsearch responded with a wrong DateTime Format(expected: {0} received: {1}). Anyways, if your Elasticsearch version is above 0.90.5 there should not be any compatibility issues.
 error.connectionRefused=Connection refused from {0}. Elasticsearch up and running? Original Exception: " {1}
 error.hostConfigMissing=Could not find any Elasticsearch host. Trying to use localhost
+error.unknownEsVersion=Could not determine elasticsearch version.
