@@ -15,15 +15,15 @@ object ApplicationApi extends Controller {
   
   def status = TODO
   
-  def getCompletions(indexName: String, fieldName: String, toBeCompleted: String) = Action.async {
-    val query: FindCompletionsQuery = new FindCompletionsQuery(indexName, fieldName, toBeCompleted)
+  def getCompletions(indexName: String, toBeCompleted: String) = Action.async {
+    val query: FindCompletionsQuery = new FindCompletionsQuery(indexName, toBeCompleted)
     EsClient.execute(query).map(response => Ok(query.getResult(response))).recover {
       case e: Exception => { EsClient.logException(e); Ok(ErrorJson)}
     }
   }
 
-  def addCompletion(indexName: String, fieldName: String, completion: String) = Action.async {
-    val query: CreateCompletionsFieldQuery = new CreateCompletionsFieldQuery(indexName, fieldName)
+  def addCompletion(indexName: String, completion: String) = Action.async {
+    val query: CreateCompletionsFieldQuery = new CreateCompletionsFieldQuery(indexName)
     EsClient.execute(query).map(response => Ok(query.getResult(response))).recover {
       case e: Exception => { EsClient.logException(e); Ok(ErrorJson)}
     }

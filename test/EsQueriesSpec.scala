@@ -17,11 +17,11 @@ class EsQueriesSpec extends Specification {
   
   "EsQuery" should {
     "respondError should report a valid error object" in new WithApplication {
-      new FindCompletionsQuery("","","").respondError("errormsg") must beEqualTo(Json.obj("status" -> "error", "msg" -> "errormsg"))
+      new FindCompletionsQuery("", "").respondError("errormsg") must beEqualTo(Json.obj("status" -> "error", "msg" -> "errormsg"))
     }
     "respondSuccess should report a valid object" in new WithApplication {
       val testObj: JsObject = Json.obj("bla" -> "blub");
-      new FindCompletionsQuery("","","").respondSuccess(testObj) must beEqualTo(Json.obj("status" -> "ok") ++ testObj)
+      new FindCompletionsQuery("", "").respondSuccess(testObj) must beEqualTo(Json.obj("status" -> "ok") ++ testObj)
     }
   }  
 }

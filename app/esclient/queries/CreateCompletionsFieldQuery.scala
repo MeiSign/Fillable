@@ -7,9 +7,8 @@ import esclient.HttpType
 import play.api.libs.json.Json
 
 
-class CreateCompletionsFieldQuery(indexName: String, fieldName: String) extends EsQuery {
+class CreateCompletionsFieldQuery(indexName: String) extends EsQuery {
   require(indexName != null, "indexName parameter must not be null")
-  require(fieldName != null, "fieldName parameter must not be null")
   
   val httpType: HttpType.Value = HttpType.Put
   
@@ -32,7 +31,7 @@ class CreateCompletionsFieldQuery(indexName: String, fieldName: String) extends 
         "mappings" -> Json.obj(
             indexName -> Json.obj(
                 "properties" -> Json.obj(
-                    fieldName -> Json.obj(
+                    "suggest" -> Json.obj(
                         "type" -> "completion"),
                     "searchId" -> Json.obj(
                         "type" -> "string")))))

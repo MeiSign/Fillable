@@ -18,41 +18,37 @@ class CreateCompletionsFieldQuerySpec extends Specification {
   "CreateCompletionsFieldQuery Constructor" should {
 
     "throw an Illegal Argument Exception for a null indexName text" in new WithApplication {
-      new CreateCompletionsFieldQuery(null, "test") must throwA[IllegalArgumentException]
-    }
-    
-    "throw an Illegal Argument Exception for a null fieldName text" in new WithApplication {
-      new CreateCompletionsFieldQuery("test", null) must throwA[IllegalArgumentException]
+      new CreateCompletionsFieldQuery(null) must throwA[IllegalArgumentException]
     }
     
     "getUrlAddon must return the correct url Addon" in new WithApplication {
-      new CreateCompletionsFieldQuery("index", "field").getUrlAddon must beEqualTo("/index")
+      new CreateCompletionsFieldQuery("index").getUrlAddon must beEqualTo("/index")
     }
     
     "toJson should return the correct Json object" in new WithApplication {
-      new CreateCompletionsFieldQuery("indexName", "fieldName").toJson must beEqualTo(
-        Json.parse("""{"mappings":{"indexName":{"properties":{"fieldName":{"type":"completion"},"searchId":{"type":"string"}}}}}""")
+      new CreateCompletionsFieldQuery("indexName").toJson must beEqualTo(
+        Json.parse("""{"mappings":{"indexName":{"properties":{"suggest":{"type":"completion"},"searchId":{"type":"string"}}}}}""")
       )
     }
     
     "query must be of http type put" in new WithApplication {
-      new CreateCompletionsFieldQuery("test", "test").httpType must beEqualTo(HttpType.Put)
+      new CreateCompletionsFieldQuery("test").httpType must beEqualTo(HttpType.Put)
     }
   }
   
   "CreateCompletionsFieldQuery getResult" should {
     "throw an Illegal Argument Exception for a null response getResult call" in new WithApplication {
-      new CreateCompletionsFieldQuery("Test", "test").getResult(null) must throwA[IllegalArgumentException]
+      new CreateCompletionsFieldQuery("Test").getResult(null) must throwA[IllegalArgumentException]
     }
     
     "should return an error object for an error response" in new WithApplication {
       val response: JsValue = Json.parse("""{"error" : "bla"}""")
-      new CreateCompletionsFieldQuery("Test", "test").getResult(response) must beEqualTo(Json.parse("""{"status":"error", "msg" : "bla"}""").as[JsObject])
+      new CreateCompletionsFieldQuery("Test").getResult(response) must beEqualTo(Json.parse("""{"status":"error", "msg" : "bla"}""").as[JsObject])
     }
     
     "should return an empty success object for a valid json response" in new WithApplication {
       val response: JsValue = Json.parse("""{"ok":true,"acknowledged":true}""")
-      new CreateCompletionsFieldQuery("Test", "test").getResult(response) must beEqualTo(Json.parse("""{"status":"ok"}""").as[JsObject])
+      new CreateCompletionsFieldQuery("Test").getResult(response) must beEqualTo(Json.parse("""{"status":"ok"}""").as[JsObject])
     }
   }
   

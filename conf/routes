@@ -4,10 +4,10 @@
 
 # Fillable API
 GET   /                           controllers.ApplicationApi.status
-GET   /complete/:indexName/:fieldName/:toBeCompleted	controllers.ApplicationApi.getCompletions(indexName: String, fieldName: String, toBeCompleted: String)
+GET   /complete/:indexName/:toBeCompleted	controllers.ApplicationApi.getCompletions(indexName: String, toBeCompleted: String)
 GET		/status						controllers.ApplicationApi.status
 GET   /status/requirements  controllers.ApplicationApi.checkRequirements
-POST	/addCompletion/:indexName/:fieldName/:completion  controllers.ApplicationApi.addCompletion(indexName: String, fieldName: String, completion: String)
+POST	/addCompletion/:indexName/:completion  controllers.ApplicationApi.addCompletion(indexName: String, completion: String)
 
 # Admin Backend
 GET		/admin						controllers.Backend.index

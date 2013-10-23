@@ -5,9 +5,8 @@ import esclient.HttpType
 import play.api.libs.json._
 import play.Logger
 
-class FindCompletionsQuery(indexName: String, fieldName: String, toBeCompleted: String) extends EsQuery {
+class FindCompletionsQuery(indexName: String, toBeCompleted: String) extends EsQuery {
   require(toBeCompleted != null, "toBeCompleted String must not be null")
-  require(fieldName != null, "fieldName String must not be null")
   require(indexName != null, "indexName String must not be null")
   
   val httpType = HttpType.Post
@@ -18,7 +17,7 @@ class FindCompletionsQuery(indexName: String, fieldName: String, toBeCompleted: 
      Json.obj(
     		 indexName -> Json.obj(
     		     "text" -> toBeCompleted,
-    		     "completion" -> Json.obj("field" -> fieldName, "fuzzy" -> Json.obj("edit_distance" -> 1))
+    		     "completion" -> Json.obj("field" -> "suggest", "fuzzy" -> Json.obj("edit_distance" -> 1))
     		 )
      )
   
