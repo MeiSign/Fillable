@@ -8,6 +8,7 @@ import play.api.libs.json.JsValue
 import org.joda.time.format.DateTimeFormatter
 import org.joda.time.format.DateTimeFormat
 import play.api.i18n.Messages
+import play.api.libs.ws.Response
 
 class GetEsVersionQuery extends EsQuery {
  val httpType = HttpType.Get
@@ -16,22 +17,23 @@ class GetEsVersionQuery extends EsQuery {
   
   def toJson: JsObject = Json.obj()
   
-  def getResult(response: JsValue): JsObject = {
-    require(response != null, "response JsValue must not be null")
-    
+  def getJsResult(jsResponse: Response): JsObject = {
+    require(jsResponse != null, "response JsValue must not be null")
+   
+    val response = jsResponse.json
     val version: Option[String] = (response \ "version" \ "number").asOpt[String]
     val buildTimestamp: Option[String] = (response \ "version" \ "build_timestamp").asOpt[String]
     
     if (version.isDefined && buildTimestamp.isDefined) {
       try {
-        respondSuccess(Json.obj("version" -> version.get, "fullfillsRequirements" -> isAfterOrEqualToRequiredBuildtime(buildTimestamp.get)))
+        EsQuery.respondWithSuccess(Json.obj("version" -> version.get, "fullfillsRequirements" -> isAfterOrEqualToRequiredBuildtime(buildTimestamp.get)))
       } catch {
         case e: Exception => e.getMessage match {
-          case msg: String if msg.startsWith("Invalid format") => respondError(Messages("error.wrongDateTimeFormat", "yyyy-MM-dd'T'HH:mm:ss'Z'", buildTimestamp.get))
+          case msg: String if msg.startsWith("Invalid format") => EsQuery.respondWithError(Messages("error.wrongDateTimeFormat", "yyyy-MM-dd'T'HH:mm:ss'Z'", buildTimestamp.get))
         }
       }
     } else {
-      respondError(Messages("error.unknownEsVersion"))
+      EsQuery.respondWithError(Messages("error.unknownEsVersion"))
     }
   }
  

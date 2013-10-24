@@ -4,8 +4,9 @@ import esclient.EsQuery
 import esclient.HttpType
 import play.api.libs.json._
 import play.Logger
+import play.api.libs.ws.Response
 
-class FindCompletionsQuery(indexName: String, toBeCompleted: String) extends EsQuery {
+class GetSuggestionsQuery(indexName: String, toBeCompleted: String) extends EsQuery {
   require(toBeCompleted != null, "toBeCompleted String must not be null")
   require(indexName != null, "indexName String must not be null")
   
@@ -21,17 +22,18 @@ class FindCompletionsQuery(indexName: String, toBeCompleted: String) extends EsQ
     		 )
      )
   
-  def getResult(response: JsValue): JsObject = {
+  def getJsResult(response: Response): JsObject = {
     require(response != null, "response JsValue must not be null")
     
-    val error: Option[String] = (response \ "error").asOpt[String]
+    val jsResponse = response.json
+    val error: Option[String] = (jsResponse \ "error").asOpt[String]
     
     if (!error.isDefined) {
-      val options: Seq[JsValue] = (response \\ "options")
-      if (options.size > 0) respondSuccess(Json.obj("completions" -> options(0))) 
-      else respondSuccess(Json.obj("completions" -> List[String]()))
+      val options: Seq[JsValue] = (jsResponse \\ "options")
+      if (options.size > 0) EsQuery.respondWithSuccess(Json.obj("completions" -> options(0))) 
+      else EsQuery.respondWithSuccess(Json.obj("completions" -> List[String]()))
     } else {
-      respondError(error.get)
+      EsQuery.respondWithError(error.get)
     }
   }
 }

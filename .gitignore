@@ -3,6 +3,8 @@ project/
 bin/
 target/
 .target/
+.idea/
+.idea_modules/
 tmp
 dist
 .cache
