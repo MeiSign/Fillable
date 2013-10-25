@@ -8,12 +8,13 @@ import play.api.libs.json.Json
 import play.api.libs.ws.Response
 
 
-class CreateSuggestionIndexQuery(indexName: String) extends EsQuery {
-  require(indexName != null, "indexName parameter must not be null")
+class CreateSuggestionIndexQuery(index: String) extends EsQuery {
+  require(index != null, "indexName parameter must not be null")
   
   val httpType: HttpType.Value = HttpType.Put
+  val indexName = index.toLowerCase
   
-  def getUrlAddon(): String = "/" + indexName
+  def getUrlAddon(): String = "/" + indexName.toLowerCase
 
   def getJsResult(response: Response): JsObject = {
     require(response != null, "response JsValue must not be null")

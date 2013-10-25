@@ -5,10 +5,8 @@
 # Fillable API
 GET   /                           controllers.ApplicationApi.status
 GET   /complete/:indexName/:toBeCompleted	controllers.ApplicationApi.getCompletions(indexName: String, toBeCompleted: String)
-GET		/status						controllers.ApplicationApi.status
 GET   /status/requirements  controllers.ApplicationApi.checkRequirements
 POST	/addSuggestion/:indexName/:suggestion  controllers.ApplicationApi.addSuggestion(indexName: String, suggestion: String)
-GET   /indexExists/:indexName controllers.ApplicationApi.test(indexName: String)
 
 # Admin Backend
 GET		/admin						controllers.Backend.index

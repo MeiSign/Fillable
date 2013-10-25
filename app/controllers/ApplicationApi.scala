@@ -9,13 +9,15 @@ import esclient.queries.AddSuggestionQuery
 import esclient.queries.IndexExistsQuery
 import esclient.queries.CreateSuggestionIndexQuery
 import play.api.libs.ws.Response
+import esclient.queries.GetEsVersionQuery
+import esclient.EsQuery
 
 object ApplicationApi extends Controller {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
   val ErrorJson: JsObject = Json.obj("status" -> "error");
 
   def status = TODO
-
+  
   def getCompletions(indexName: String, toBeCompleted: String) = Action.async {
     val query: GetSuggestionsQuery = new GetSuggestionsQuery(indexName, toBeCompleted)
     EsClient.execute(query) map { response: Response =>
@@ -35,24 +37,17 @@ object ApplicationApi extends Controller {
     } flatMap { _ =>
       EsClient.execute(addSuggestionQuery)
     } map { response: Response =>
-      Ok("Feed title: " + (response.json))
+      Ok(addSuggestionQuery.getJsResult(response))
     } recover {
-      case _ => Ok("recover")
+      case e: Exception => { EsClient.logException(e); Ok(EsQuery.respondWithError(e.getMessage())) }
+      case _ => Ok(EsQuery.respondWithError(""))
     }
   }
 
-  def checkRequirements() = TODO //Action.async {
-  //    val query: GetEsVersionQuery = new GetEsVersionQuery()
-  //    EsClient.execute(query).map(response => Ok(query.getResult(response))).recover {
-  //      case e: Exception => { EsClient.logException(e); Ok(ErrorJson) }
-  //    }
-  //  }
-
-  def test(indexName: String) = TODO //Action.async {
-  //    val query: IndexExistsQuery = new IndexExistsQuery(indexName)
-  //    EsClient.execute(query).map(response => Ok(query.getResult(response))).recover {
-  //      case e: Exception => { EsClient.logException(e); Ok(ErrorJson) }
-  //    }
-  //  }
-
+  def checkRequirements() = Action.async {
+    val query: GetEsVersionQuery = new GetEsVersionQuery()
+    EsClient.execute(query).map(response => Ok(query.getJsResult(response))).recover {
+      case e: Exception => { EsClient.logException(e); Ok(ErrorJson) }
+    }
+  }
 }

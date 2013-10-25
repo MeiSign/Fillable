@@ -7,32 +7,22 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.ws.Response
 
-class AddSuggestionQuery(indexName: String, suggestion: String) extends EsQuery {
-  require(indexName != null, "indexName parameter must not be null")
+class AddSuggestionQuery(index: String, suggestion: String) extends EsQuery {
+  require(index != null, "indexName parameter must not be null")
 
   val httpType: HttpType.Value = HttpType.Put
+  val indexName = index.toLowerCase
 
   def getUrlAddon(): String = "/" + indexName + "/" + indexName + "/" + suggestion.hashCode()
 
   def getJsResult(response: Response): JsObject = {
-    Json.obj("funzt" -> "super")
-
-    //    require(response != null, "response JsValue must not be null")
-    //    
-    //    val error: Option[String] = (response \ "error").asOpt[String]
-    //    
-    //    if (!error.isDefined) {
-    //      EsQuery.respondWithSuccess(Json.obj())
-    //    } else {
-    //      EsQuery.respondWithError(error.get)
-    //    }
-  }
-
-  def getBooleanResult(response: JsValue): Boolean = {
     require(response != null, "response JsValue must not be null")
 
-    val error: Option[String] = (response \ "error").asOpt[String]
-    !error.isDefined
+    val jsResponse = response.json
+    val error: Option[String] = (jsResponse \ "error").asOpt[String]
+
+    if (!error.isDefined) EsQuery.respondWithSuccess(Json.obj())
+    else EsQuery.respondWithError(error.get)
   }
 
   def toJson: JsObject = Json.obj(
