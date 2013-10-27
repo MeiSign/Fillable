@@ -9,7 +9,12 @@ GET   /status/requirements  controllers.ApplicationApi.checkRequirements
 POST	/addSuggestion/:indexName/:suggestion  controllers.ApplicationApi.addSuggestion(indexName: String, suggestion: String)
 
 # Admin Backend
-GET		/admin						controllers.Backend.index
+GET		/index						controllers.Backend.index
+
+# Create Index
+GET   /createIndex      controllers.CreateIndex.form
+POST  /createIndex      controllers.CreateIndex.submit
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
+

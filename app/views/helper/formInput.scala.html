@@ -1,0 +1,9 @@
+@(elements: helper.FieldElements)
+
+<div class="form-group @if(elements.hasErrors) {has-error}">
+	<label for="@elements.id" class="col-lg-2 control-label">@elements.label</label>
+	<div class="col-lg-4">
+		@elements.input
+    @if(elements.hasErrors) {<p class="help-block">@elements.errors.mkString(",")</p>}
+	</div>
+</div>
