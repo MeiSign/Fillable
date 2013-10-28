@@ -8,17 +8,12 @@ trait EsQuery {
 	val httpType: HttpType.Value
 	def toJson: JsObject
 	def getUrlAddon: String
-	def getJsResult(response: Response): JsObject 
-	def execute: Future[JsValue] = EsClient.execute(this)
 }
 
 object EsQuery extends EsQuery {
   val httpType: HttpType.Value = HttpType.Get
   def toJson: JsObject = Json.obj()
   def getUrlAddon: String = ""
-  def getJsResult(response: Response): JsObject = Json.obj()
-  def respondWithError(msg: String): JsObject = Json.obj("status" -> "error", "msg" -> msg)
-  def respondWithSuccess(obj: JsObject): JsObject = Json.obj("status" -> "ok") ++ obj
 }
 
 object HttpType extends Enumeration {
