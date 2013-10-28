@@ -1,11 +1,12 @@
-@(createIndexForm: Form[Index]) 
+@(createIndexForm: Form[Index], level: String = "", msg: String = "")
 
 @import helper._ 
 @implicitField = @{ FieldConstructor(formInput.f) } 
 @title = { Create Fillable Index }
 
 @main(title, nav = "createIndex") { 
-
+  @notice(level, msg)
+  
 	@helper.form(action = routes.CreateIndex.submit, 'class -> "form-horizontal") {
 		@inputText(
 		  createIndexForm("indexname"), 

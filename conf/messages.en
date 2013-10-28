@@ -4,4 +4,10 @@ error.wrongDateTimeFormat=Elasticsearch responded with a wrong DateTime Format(e
 error.connectionRefused=Connection refused from {0}. Elasticsearch up and running? Original Exception: " {1}
 error.hostConfigMissing=Please configure your elasticsearch host in conf/fillable.conf => esclient.url
 error.unknownEsVersion=Could not determine elasticsearch version.
-error.indexNotFoundAndNotCreated=No Index with the name {0} found. Tried to create Index but failed.
+
+error.indexNotCreated=Fillable was unable to create the settings Index. Please check your config and elasticsearch cluster.
+error.couldNotGetIndex=Fillable was unable to read the settings Index. Please check your config and elasticsearch cluster.
+
+# Success messages
+# ~~~~~
+success.setupComplete=Congratulations! You are creating your first Fillable Index. The Fillable System is up and ready!

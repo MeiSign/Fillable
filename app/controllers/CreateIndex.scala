@@ -4,6 +4,7 @@ import play.api._
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
+import play.api.i18n.Messages
 import models._
 import views._
 import play.api.libs.ws.WS
@@ -27,38 +28,38 @@ object CreateIndex extends Controller {
         index => Some(index.name)
       })
 
-  def form = Action {
-    Ok(html.createindex.form(createIndexForm))
+  def form = Action.async { implicit request =>
+    EsClient.execute(new IndexExistsQuery("fbl_indices", "indices")) flatMap {
+      index => {
+        if (index.status == 200) { 
+          Future.successful(Ok(html.createindex.form(createIndexForm))) 
+        } else {
+          println("trotztdem else" + index.status)
+          EsClient.execute(new FillableSetupQuery()) map {
+            indexCreated =>
+              if (indexCreated.status == 200) Ok(html.createindex.form(createIndexForm, "success", Messages("success.setupComplete")))
+              else Ok(html.createindex.form(createIndexForm, "error", Messages("error.indexNotCreated")))
+          } recover {
+            case e: Throwable => Ok(html.createindex.form(createIndexForm, "error", Messages("error.indexNotCreated")))
+          }
+        }
+      }
+    } recover {
+      case e: Throwable => { 
+        Ok(html.createindex.form(createIndexForm, "error", Messages("error.couldNotGetIndex")))
+      }
+    }
   }
 
   def submit = Action.async { implicit request =>
     createIndexForm.bindFromRequest.fold(
-      errors => Future.successful(BadRequest(html.createindex.form(errors))),
+      errors => Future.successful(Ok(html.createindex.form(errors))),
       index => {
-        val result: Future[Response] = EsClient.execute(new IndexExistsQuery("fbl_indices"))
-        result flatMap {
-          case result if result.status == 404 => {
-            val createIndexResult: Future[Response] = EsClient.execute(new FillableSetupQuery()) 
-            createIndexResult map {
-              indexCreated => Ok(indexCreated.json)
-            } recover {
-              case e: Throwable => BadRequest(e.getMessage())
-            }
-          } recover {
-            case e: Throwable => BadRequest(e.getMessage())
-          }
-          case result if result.status == 200 => Future.successful(Response) 
-        } flatMap {
-          _ => {
-            for {
-              indexCreate <- EsClient.execute(new FillableIndexCreateQuery(index.name))
-              indexRegister <- EsClient.execute(new FillableIndexRegisterQuery(index.name))
-            } yield {
-              Ok(indexCreate.json)
-            }
-          }
-        } recover {
-          case e: Throwable => BadRequest(e.getMessage())
+        for {
+          indexCreate <- EsClient.execute(new FillableIndexCreateQuery(index.name))
+          indexRegister <- EsClient.execute(new FillableIndexRegisterQuery(index.name))
+        } yield {
+          Ok(indexCreate.json)
         }
       })
   }
