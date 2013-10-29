@@ -9,7 +9,7 @@ import play.api.mvc.Results.Redirect
 case class Authenticated[A](action: Action[A]) extends Action[A] {
 
   def apply(request: Request[A]): Future[SimpleResult] = {
-    if (request.session.get("loggedIn").getOrElse("").equals("user")) { action(request) 
+    if (request.session.get("user").getOrElse("").equals("user")) { action(request) 
     } else {
       Future.successful(Redirect("/login").withSession(("returnUrl", request.path)))
     }

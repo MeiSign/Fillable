@@ -38,7 +38,7 @@ object Login extends Controller {
         val user: String = Play.current.configuration.getString("fillable.user").getOrElse("")
         val password: String = Play.current.configuration.getString("fillable.password").getOrElse("")
         if (requestUser.name.equals(user) && requestUser.pw.equals(password))
-          Redirect(request.session.get("returnUrl").getOrElse("/")).withSession(session + ("loggedIn" -> requestUser.name) - "returnUrl")
+          Redirect(request.session.get("returnUrl").getOrElse("/")).withSession(session + ("user" -> requestUser.name) - "returnUrl")
         else
           Ok(html.login.form(loginForm, "error", Messages("error.wrongCredentials")))
       })
