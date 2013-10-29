@@ -16,7 +16,7 @@ object Login extends Controller {
 
   val loginForm: Form[User] = Form(
     mapping(
-      "name" -> text,
+      "name" -> nonEmptyText,
       "pw" -> text) {
         (name, pw) => User(name, pw)
       } {

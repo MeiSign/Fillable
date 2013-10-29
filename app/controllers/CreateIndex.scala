@@ -23,7 +23,7 @@ object CreateIndex extends Controller {
 
   val createIndexForm: Form[Index] = Form(
     mapping(
-      "indexname" -> text(minLength = 4)) {
+      "indexname" -> nonEmptyText(minLength = 4)) {
         (indexname) => Index(indexname)
       } {
         index => Some(index.name)
