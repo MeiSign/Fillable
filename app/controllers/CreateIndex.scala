@@ -29,37 +29,42 @@ object CreateIndex extends Controller {
         index => Some(index.name)
       })
 
-  def form = Action.async { implicit request =>
-    EsClient.execute(new IndexExistsQuery("fbl_indices", "indices")) flatMap {
-      index => {
-        if (index.status == 200) { 
-          Future.successful(Ok(html.createindex.form(createIndexForm))) 
-        } else {
-          EsClient.execute(new FillableSetupQuery()) map {
-            indexCreated =>
-              if (indexCreated.status == 200) Ok(html.createindex.form(createIndexForm, "success", Messages("success.setupComplete")))
-              else Ok(html.createindex.form(createIndexForm, "error", Messages("error.indexNotCreated")))
-          } recover {
-            case e: Throwable => Ok(html.createindex.form(createIndexForm, "error", Messages("error.indexNotCreated")))
+  def form = Authenticated {
+    Action.async { implicit request =>
+      EsClient.execute(new IndexExistsQuery("fbl_indices", "indices")) flatMap {
+        index =>
+          {
+            if (index.status == 200) {
+              Future.successful(Ok(html.createindex.form(createIndexForm)))
+            } else {
+              EsClient.execute(new FillableSetupQuery()) map {
+                indexCreated =>
+                  if (indexCreated.status == 200) Ok(html.createindex.form(createIndexForm, "success", Messages("success.setupComplete")))
+                  else Ok(html.createindex.form(createIndexForm, "error", Messages("error.indexNotCreated")))
+              } recover {
+                case e: Throwable => Ok(html.createindex.form(createIndexForm, "error", Messages("error.indexNotCreated")))
+              }
+            }
           }
-        }
+      } recover {
+        case e: ConnectException => Ok(html.createindex.form(createIndexForm, "error", Messages("error.connectionRefused", EsClient.url)))
+        case e: Throwable => Ok(html.createindex.form(createIndexForm, "error", Messages("error.couldNotGetIndex")))
       }
-    } recover {
-      case e: ConnectException => Ok(html.createindex.form(createIndexForm, "error", Messages("error.connectionRefused", EsClient.url)))
-      case e: Throwable => Ok(html.createindex.form(createIndexForm, "error", Messages("error.couldNotGetIndex")))
     }
   }
 
-  def submit = Action.async { implicit request =>
-    createIndexForm.bindFromRequest.fold(
-      errors => Future.successful(Ok(html.createindex.form(errors))),
-      index => {
-        for {
-          indexCreate <- EsClient.execute(new FillableIndexCreateQuery(index.name))
-          indexRegister <- EsClient.execute(new FillableIndexRegisterQuery(index.name))
-        } yield {
-          Ok(indexCreate.json)
-        }
-      })
+  def submit = Authenticated {
+    Action.async { implicit request =>
+      createIndexForm.bindFromRequest.fold(
+        errors => Future.successful(Ok(html.createindex.form(errors))),
+        index => {
+          for {
+            indexCreate <- EsClient.execute(new FillableIndexCreateQuery(index.name))
+            indexRegister <- EsClient.execute(new FillableIndexRegisterQuery(index.name))
+          } yield {
+            Ok(indexCreate.json)
+          }
+        })
+    }
   }
 }
