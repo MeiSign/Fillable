@@ -28,7 +28,7 @@ object Login extends Controller {
   }
 
   def logout = Action { implicit request =>
-    Ok(html.login.form(loginForm)).withNewSession
+    Redirect("/login").withNewSession
   }
 
   def submit = Action { implicit request =>
