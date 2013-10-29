@@ -23,11 +23,11 @@ object Login extends Controller {
         user => Some(user.name, user.pw)
       })
 
-  def login = Action {
+  def login = Action { implicit request =>
     Ok(html.login.form(loginForm))
   }
 
-  def logout = Action {
+  def logout = Action { implicit request =>
     Ok("loggedOut").withNewSession
   }
 

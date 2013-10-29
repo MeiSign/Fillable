@@ -1,4 +1,4 @@
-@(createIndexForm: Form[Index], level: String = "", msg: String = "")
+@(createIndexForm: Form[Index], level: String = "", msg: String = "")(implicit request: Request[Any])
 
 @import helper._ 
 @implicitField = @{ FieldConstructor(formInput.f) } 

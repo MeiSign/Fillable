@@ -1,4 +1,4 @@
-@(loginForm: Form[User], level:String = "", msg: String = "")
+@(loginForm: Form[User], level:String = "", msg: String = "")(implicit request: Request[Any])
 
 @import helper._ 
 @implicitField = @{ FieldConstructor(formInput.f) } 

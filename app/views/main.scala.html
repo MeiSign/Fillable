@@ -1,4 +1,4 @@
-@(title: Html, nav: String = "")(content: Html)
+@(title: Html, nav: String = "")(content: Html)(implicit request: Request[Any])
 
 <!DOCTYPE html>
 <html>
@@ -38,7 +38,11 @@
 		      </li>
 		    </ul>
 		    <ul class="nav navbar-nav navbar-right">
-		      <li><a href="/login">Login</a></li>
+			    @if(request.session.get("user").getOrElse("").equals("")) {
+			      <li><a href="/login">Login</a></li>
+			    } else {
+			      <li><a href="/logout">Logout</a></li>
+			    }
 		    </ul>
 		  </div><!-- /.navbar-collapse -->
 	  </nav>
