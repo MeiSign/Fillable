@@ -15,6 +15,7 @@ import esclient.queries.IndexExistsQuery
 import esclient.queries.FillableSetupQuery
 import esclient.queries.FillableIndexCreateQuery
 import esclient.queries.FillableIndexRegisterQuery
+import java.net.ConnectException
 
 object CreateIndex extends Controller {
 
@@ -34,7 +35,6 @@ object CreateIndex extends Controller {
         if (index.status == 200) { 
           Future.successful(Ok(html.createindex.form(createIndexForm))) 
         } else {
-          println("trotztdem else" + index.status)
           EsClient.execute(new FillableSetupQuery()) map {
             indexCreated =>
               if (indexCreated.status == 200) Ok(html.createindex.form(createIndexForm, "success", Messages("success.setupComplete")))
@@ -45,9 +45,8 @@ object CreateIndex extends Controller {
         }
       }
     } recover {
-      case e: Throwable => { 
-        Ok(html.createindex.form(createIndexForm, "error", Messages("error.couldNotGetIndex")))
-      }
+      case e: ConnectException => Ok(html.createindex.form(createIndexForm, "error", Messages("error.connectionRefused", EsClient.url)))
+      case e: Throwable => Ok(html.createindex.form(createIndexForm, "error", Messages("error.couldNotGetIndex")))
     }
   }
 

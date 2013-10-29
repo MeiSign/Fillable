@@ -1,10 +1,10 @@
 # Error messages
 # ~~~~~
 error.wrongDateTimeFormat=Elasticsearch responded with a wrong DateTime Format(expected: {0} received: {1}). Anyways, if your Elasticsearch version is above 0.90.5 there should not be any compatibility issues.
-error.connectionRefused=Connection refused from {0}. Elasticsearch up and running? Original Exception: " {1}
 error.hostConfigMissing=Please configure your elasticsearch host in conf/fillable.conf => esclient.url
 error.unknownEsVersion=Could not determine elasticsearch version.
 
+error.connectionRefused=Connection refused from Elasticsearch Cluster. Elasticsearch up and running at {0}?"
 error.indexNotCreated=Fillable was unable to create the settings Index. Please check your config and elasticsearch cluster.
 error.couldNotGetIndex=Fillable was unable to read the settings Index. Please check your config and elasticsearch cluster.
 
