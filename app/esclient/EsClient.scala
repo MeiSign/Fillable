@@ -16,10 +16,7 @@ object EsClient {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   val url: String = {
-    val urlString: String = Play.current.configuration.getString("esclient.url") getOrElse {
-      Logger.error(Messages("error.hostConfigMissing"))
-      ""
-    }
+    val urlString: String = Play.current.configuration.getString("esclient.url").getOrElse("")
     if (urlString.startsWith("http://")) urlString
     else "http://" + urlString
   }

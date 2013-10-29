@@ -26,7 +26,7 @@ object Login extends Controller {
   def login = Action {
     Ok(html.login.form(loginForm))
   }
-  
+
   def logout = Action {
     Ok("loggedOut").withNewSession
   }
@@ -34,9 +34,13 @@ object Login extends Controller {
   def submit = Action { implicit request =>
     loginForm.bindFromRequest.fold(
       errors => Ok(html.login.form(errors)),
-      user => if (user.name.equals("user") && user.pw.equals("pw"))
-        Redirect(request.session.get("returnUrl").getOrElse("/")).withSession(session + ("loggedIn" -> user.name) - "returnUrl")
-      else
-        Ok(html.login.form(loginForm)))
+      requestUser => {
+        val user: String = Play.current.configuration.getString("fillable.user").getOrElse("")
+        val password: String = Play.current.configuration.getString("fillable.password").getOrElse("")
+        if (requestUser.name.equals(user) && requestUser.pw.equals(password))
+          Redirect(request.session.get("returnUrl").getOrElse("/")).withSession(session + ("loggedIn" -> requestUser.name) - "returnUrl")
+        else
+          Ok(html.login.form(loginForm, "error", Messages("error.wrongCredentials")))
+      })
   }
 }

@@ -7,6 +7,7 @@ error.unknownEsVersion=Could not determine elasticsearch version.
 error.connectionRefused=Connection refused from Elasticsearch Cluster. Elasticsearch up and running at {0}?"
 error.indexNotCreated=Fillable was unable to create the settings Index. Please check your config and elasticsearch cluster.
 error.couldNotGetIndex=Fillable was unable to read the settings Index. Please check your config and elasticsearch cluster.
+error.wrongCredentials=Username or Password was incorrect
 
 # Success messages
 # ~~~~~

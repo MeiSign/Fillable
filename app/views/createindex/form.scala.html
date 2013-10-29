@@ -7,7 +7,6 @@
 @main(title, nav = "createIndex") { 
   @notice(level, msg)
   
-  
   @helper.form(action = routes.CreateIndex.submit, 'class -> "form-horizontal") {
 		<fieldset @if(level.equals("error")) {disabled}>
 			@inputText(

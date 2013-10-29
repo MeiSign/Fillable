@@ -1,10 +1,11 @@
-@(loginForm: Form[User])
+@(loginForm: Form[User], level:String = "", msg: String = "")
 
 @import helper._ 
 @implicitField = @{ FieldConstructor(formInput.f) } 
 @title = { Login }
 
 @main(title, nav = "") {   
+  @notice(level, msg)
   
   @helper.form(action = routes.Login.submit, 'class -> "form-horizontal") {
       @inputText(
