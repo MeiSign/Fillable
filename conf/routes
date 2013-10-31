@@ -9,7 +9,7 @@ GET   /status/requirements  controllers.ApplicationApi.checkRequirements
 POST	/addSuggestion/:indexName/:suggestion  controllers.ApplicationApi.addSuggestion(indexName: String, suggestion: String)
 
 # Admin Backend
-GET	 /index 						controllers.Backend.index
+GET	 /index 						controllers.ListIndices.index
 
 # Create Index
 GET  /createIndex       controllers.CreateIndex.form

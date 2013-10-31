@@ -1,0 +1,32 @@
+@(indices: Seq[Index], level:String = "", msg: String = "")(implicit request: Request[Any])
+
+@import helper._ 
+@implicitField = @{ FieldConstructor(formInput.f) } 
+@title = { @Messages("titel.indexList") }
+
+@main(title, nav = "") {   
+  @notice(level, msg)
+  
+  @if(!indices.isEmpty) {
+	  <table class="table table-striped">
+	    <thead>
+	       <tr>
+	         <th>#</th>
+	         <th>Name</th>
+	         <th>Shards</th>
+	         <th>Replicas</th>
+	       </tr>
+	     </thead>
+	     <tbody>
+		  @for((index, number) <- indices.zipWithIndex) {
+		    <tr>
+          <td>@{number + 1}</td>
+          <td>@index.name</td>
+          <td>@index.shards</td>
+          <td>@index.replicas</td>
+        </tr>
+		  }
+	   </tbody>
+	  </table>
+  }
+}
