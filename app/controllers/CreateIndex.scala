@@ -16,14 +16,16 @@ import esclient.queries.FillableSetupQuery
 import esclient.queries.FillableIndexCreateQuery
 import esclient.queries.FillableIndexRegisterQuery
 import java.net.ConnectException
+import scala.util.matching.Regex
 
 object CreateIndex extends Controller {
+  val indexNamePattern = "^[a-zA-Z0-9]*$".r
 
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   val createIndexForm: Form[Index] = Form(
     mapping(
-      "indexname" -> nonEmptyText(minLength = 4).verifying(Messages("error.noSpecialchars"), indexname => containsOnlyValidChars(indexname)),
+      "indexname" -> nonEmptyText(minLength = 4).verifying(Messages("error.noSpecialchars"), indexname => containsOnlyValidChars(indexname, indexNamePattern)),
       "shards" -> number(min = 0, max = 10),
       "replicas" -> number(min = 0, max = 10)) {
         (indexname, shards, replicas) => Index(indexname, shards, replicas)
@@ -31,8 +33,7 @@ object CreateIndex extends Controller {
         (index => Some(index.name, index.shards, index.replicas))
       })
 
-  def containsOnlyValidChars(name: String): Boolean = {
-    val pattern = "^[a-zA-Z0-9]*$".r
+  def containsOnlyValidChars(name: String, pattern: Regex): Boolean = {
     pattern.findAllIn(name).mkString.length == name.length
   }
 
@@ -47,15 +48,15 @@ object CreateIndex extends Controller {
               EsClient.execute(new FillableSetupQuery()) map {
                 indexCreated =>
                   if (indexCreated.status == 200) Ok(html.createindex.form(createIndexForm, "success", Messages("success.setupComplete")))
-                  else Ok(html.createindex.form(createIndexForm, "error", Messages("error.indexNotCreated")))
+                  else Ok(html.createindex.form(createIndexForm, "error", Messages("error.indexNotCreated"), true))
               } recover {
-                case e: Throwable => Ok(html.createindex.form(createIndexForm, "error", Messages("error.indexNotCreated")))
+                case e: Throwable => Ok(html.createindex.form(createIndexForm, "error", Messages("error.indexNotCreated"), true))
               }
             }
           }
       } recover {
-        case e: ConnectException => Ok(html.createindex.form(createIndexForm, "error", Messages("error.connectionRefused", EsClient.url)))
-        case e: Throwable => Ok(html.createindex.form(createIndexForm, "error", Messages("error.couldNotGetIndex")))
+        case e: ConnectException => Ok(html.createindex.form(createIndexForm, "error", Messages("error.connectionRefused", EsClient.url), true))
+        case e: Throwable => Ok(html.createindex.form(createIndexForm, "error", Messages("error.couldNotGetIndex"), true))
       }
     }
   }
@@ -65,11 +66,23 @@ object CreateIndex extends Controller {
       createIndexForm.bindFromRequest.fold(
         errors => Future.successful(Ok(html.createindex.form(errors))),
         index => {
-          for {
-            indexCreate <- EsClient.execute(new FillableIndexCreateQuery(index.name, index.shards, index.replicas))
-            indexRegister <- EsClient.execute(new FillableIndexRegisterQuery(index.name, index.shards, index.replicas))
-          } yield {
-            Ok(html.createindex.snippetSummary(index.name, "success", Messages("success.indexCreated")))
+          EsClient.execute(new FillableIndexCreateQuery(index.name, index.shards, index.replicas)) map {
+            indexCreated =>
+              {
+                if (indexCreated.status == 200) {
+                  EsClient.execute(new FillableIndexRegisterQuery(index.name, index.shards, index.replicas))
+                  Ok(html.createindex.snippetSummary(index.name, "success", Messages("success.indexCreated")))
+                } else {
+                  (indexCreated.json \ "error") match {
+                    case error if error.toString.contains("IndexAlreadyExistsException") =>
+                      Ok(html.createindex.form(
+                        createIndexForm.fill(Index(index.name, index.shards, index.replicas)),
+                        "error",
+                        Messages("error.indexAlreadyExists", "fbl_" + index.name),
+                        false))
+                  }
+                }
+              }
           }
         })
     }

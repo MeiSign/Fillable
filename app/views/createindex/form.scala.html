@@ -1,4 +1,4 @@
-@(createIndexForm: Form[Index], level: String = "", msg: String = "")(implicit request: Request[Any])
+@(createIndexForm: Form[Index], level: String = "", msg: String = "", disableForm: Boolean = false)(implicit request: Request[Any])
 
 @import helper._ 
 @implicitField = @{ FieldConstructor(formInput.f) } 
@@ -8,7 +8,7 @@
   @notice(level, msg)
   
   @helper.form(action = routes.CreateIndex.submit, 'class -> "form-horizontal") {
-		<fieldset @if(level.equals("error")) {disabled}>
+		<fieldset @if(disableForm) {disabled}>
 			@inputText(
 			  createIndexForm("indexname"), 
 			  '_label -> "Index name",
