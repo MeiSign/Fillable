@@ -32,8 +32,8 @@ object CreateIndex extends Controller {
       })
 
   def containsOnlyValidChars(name: String): Boolean = {
-    val pattern = "^[a-zA-Z0-9]*$"
-    name.matches(pattern)
+    val pattern = "^[a-zA-Z0-9]*$".r
+    pattern.findAllIn(name).mkString.length == name.length
   }
 
   def form = Authenticated {
