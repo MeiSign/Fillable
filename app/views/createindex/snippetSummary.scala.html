@@ -1,0 +1,19 @@
+@(indexName: String, level: String = "", msg: String = "")(implicit request: Request[Any])
+
+@import helper._ 
+@implicitField = @{ FieldConstructor(formInput.f) } 
+@title = { @Messages("titel.indexCreated") }
+
+@main(title, nav = "createIndex") { 
+  @notice(level, msg)
+  
+  <p>@Messages("text.snippetSummary")<p>
+  <pre>
+voll der miese javascript code hier für den fillable index @indexName
+  ist sogar eingerückt
+    whoop whoop
+  </pre> 
+  <div class="col-lg-offset-10 col-lg-1">
+    <a href="@routes.CreateIndex.form" class="btn">Create another Index</a>
+  </div>
+}

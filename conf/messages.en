@@ -13,3 +13,14 @@ error.noSpecialchars=Special characters are not allowed
 # Success messages
 # ~~~~~
 success.setupComplete=Congratulations! You are creating your first Fillable Index. The Fillable System is up and ready!
+success.indexCreated=New Fillable Index was successfully created!
+
+# General text messages
+# ~~~~~
+text.snippetSummary=Include this snippet on any page with a form where you want to use your new Fillable Autocompletion Index. Set the formField variable to the id of the input field which shall be autocompleted.
+
+# Titel messages
+# ~~~~~
+titel.indexCreated=Index created
+titel.createNewIndex=Create a new Fillable Index
+titel.login=Login

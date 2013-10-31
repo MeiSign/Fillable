@@ -69,8 +69,7 @@ object CreateIndex extends Controller {
             indexCreate <- EsClient.execute(new FillableIndexCreateQuery(index.name, index.shards, index.replicas))
             indexRegister <- EsClient.execute(new FillableIndexRegisterQuery(index.name, index.shards, index.replicas))
           } yield {
-            Redirect("/")
-            //Ok(indexCreate.json)
+            Ok(html.createindex.snippetSummary(index.name, "success", Messages("success.indexCreated")))
           }
         })
     }
