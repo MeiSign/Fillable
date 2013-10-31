@@ -10,6 +10,7 @@ error.couldNotGetIndex=Fillable was unable to read the settings Index. Please ch
 error.wrongCredentials=Username or Password was incorrect
 error.noSpecialchars=Special characters are not allowed
 error.indexAlreadyExists=Can not create Index {0}. An index with that name already exists.
+error.unkownIndexAlreadyExists=Can not create Index. An index with that name already exists.
 
 # Success messages
 # ~~~~~

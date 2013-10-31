@@ -36,7 +36,7 @@ object CreateIndex extends Controller {
   def containsOnlyValidChars(name: String, pattern: Regex): Boolean = {
     pattern.findAllIn(name).mkString.length == name.length
   }
-
+  
   def form = Authenticated {
     Action.async { implicit request =>
       EsClient.execute(new IndexExistsQuery("fbl_indices", "indices")) flatMap {
