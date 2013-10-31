@@ -11,7 +11,6 @@ import views._
 import play.api.i18n.Messages
 import play.api.libs.json.Reads
 import play.api.libs.json.JsValue
-import org.hamcrest.core.IsInstanceOf
 import play.api.libs.json.JsResult
 import play.api.libs.json.JsSuccess
 
