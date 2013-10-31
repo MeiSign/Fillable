@@ -15,6 +15,18 @@
 			  'placeholder -> "Name (a-z, 0-9)", 
 			  '_error -> createIndexForm.globalError,
 			  'class -> "form-control")
+			@inputText(
+        createIndexForm("shards"), 
+        '_label -> "Shards",
+        'placeholder -> "Number of shards", 
+        '_error -> createIndexForm.globalError,
+        'class -> "form-control")
+      @inputText(
+        createIndexForm("replicas"), 
+        '_label -> "Replicas",
+        'placeholder -> "Number of replicas", 
+        '_error -> createIndexForm.globalError,
+        'class -> "form-control")
 			<div class="form-group">
 				<div class="col-lg-offset-4 col-lg-2">
 					<a href="@routes.Backend.index" class="btn">Cancel</a>

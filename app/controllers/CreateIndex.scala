@@ -23,10 +23,12 @@ object CreateIndex extends Controller {
 
   val createIndexForm: Form[Index] = Form(
     mapping(
-      "indexname" -> nonEmptyText(minLength = 4)) {
-        (indexname) => Index(indexname)
+      "indexname" -> nonEmptyText(minLength = 4),
+      "shards" -> number,
+      "replicas" -> number) {
+        (indexname, shards, replicas) => Index(indexname, shards, replicas)
       } {
-        index => Some(index.name)
+        index => Some(index.name, index.shards, index.replicas)
       })
 
   def form = Authenticated {
@@ -59,10 +61,11 @@ object CreateIndex extends Controller {
         errors => Future.successful(Ok(html.createindex.form(errors))),
         index => {
           for {
-            indexCreate <- EsClient.execute(new FillableIndexCreateQuery(index.name))
+            indexCreate <- EsClient.execute(new FillableIndexCreateQuery(index.name, index.shards, index.replicas))
             indexRegister <- EsClient.execute(new FillableIndexRegisterQuery(index.name))
           } yield {
-            Ok(indexCreate.json)
+            Redirect("/")
+            //Ok(indexCreate.json)
           }
         })
     }
