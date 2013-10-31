@@ -17,7 +17,8 @@ class FillableSetupQuery() extends EsQuery {
       "mappings" -> Json.obj(
             "indices" -> Json.obj(
                 "properties" -> Json.obj(
-                    "name" -> Json.obj(
-                        "type" -> "String")
+                    "name" -> Json.obj("type" -> "String"),
+                    "shards" -> Json.obj("type" -> "integer"),
+                    "replicas" -> Json.obj("type" -> "integer")
                         ))))
 }

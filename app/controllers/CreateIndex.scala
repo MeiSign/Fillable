@@ -23,13 +23,18 @@ object CreateIndex extends Controller {
 
   val createIndexForm: Form[Index] = Form(
     mapping(
-      "indexname" -> nonEmptyText(minLength = 4),
-      "shards" -> number,
-      "replicas" -> number) {
+      "indexname" -> nonEmptyText(minLength = 4).verifying(Messages("error.noSpecialchars"), indexname => containsNoSpecialchars(indexname)),
+      "shards" -> number(min = 0, max = 10),
+      "replicas" -> number(min = 0, max = 10)) {
         (indexname, shards, replicas) => Index(indexname, shards, replicas)
       } {
-        index => Some(index.name, index.shards, index.replicas)
+        (index => Some(index.name, index.shards, index.replicas))
       })
+
+  def containsNoSpecialchars(name: String): Boolean = {
+    val pattern = "^[a-zA-Z0-9]*$".r
+    pattern.findAllIn(name).mkString.length == name.length
+  }
 
   def form = Authenticated {
     Action.async { implicit request =>
@@ -62,7 +67,7 @@ object CreateIndex extends Controller {
         index => {
           for {
             indexCreate <- EsClient.execute(new FillableIndexCreateQuery(index.name, index.shards, index.replicas))
-            indexRegister <- EsClient.execute(new FillableIndexRegisterQuery(index.name))
+            indexRegister <- EsClient.execute(new FillableIndexRegisterQuery(index.name, index.shards, index.replicas))
           } yield {
             Redirect("/")
             //Ok(indexCreate.json)

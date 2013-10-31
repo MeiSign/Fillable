@@ -8,6 +8,7 @@ error.connectionRefused=Connection refused from Elasticsearch Cluster. Elasticse
 error.indexNotCreated=Fillable was unable to create the settings Index. Please check your config and elasticsearch cluster.
 error.couldNotGetIndex=Fillable was unable to read the settings Index. Please check your config and elasticsearch cluster.
 error.wrongCredentials=Username or Password was incorrect
+error.noSpecialchars=Special characters are not allowed
 
 # Success messages
 # ~~~~~
