@@ -30,16 +30,18 @@
 		
 		  <div class="collapse navbar-collapse navbar-ex1-collapse">
 		    <ul class="nav navbar-nav">
-		      <li class="@("active".when(nav == "Indices"))">
+		      <li class="@("active".when(nav == "indexList"))">
 		        <a href="@routes.ListIndices.index()">Indices</a>
 		      </li>
 		      <li class="@("active".when(nav == "createIndex"))">
-		        <a href="@routes.CreateIndex.form">Create Index</a>
+		        <a href="@routes.CrudIndex.createForm">Create Index</a>
 		      </li>
 		    </ul>
 		    <ul class="nav navbar-nav navbar-right">
 			    @if(request.session.get("user").getOrElse("").equals("")) {
-			      <li><a href="/login">Login</a></li>
+			      <li class="@("active".when(nav == "login"))">
+			       <a href="/login">Login</a>
+			     </li>
 			    } else {
 			      <li><a href="/logout">Logout</a></li>
 			    }

@@ -4,7 +4,7 @@
 @implicitField = @{ FieldConstructor(formInput.f) } 
 @title = { @Messages("titel.login") }
 
-@main(title, nav = "") {   
+@main(title, nav = "login") {   
   @notice(level, msg)
   
   @helper.form(action = routes.Login.submit, 'class -> "form-horizontal") {

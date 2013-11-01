@@ -6,11 +6,13 @@ error.unknownEsVersion=Could not determine elasticsearch version.
 
 error.connectionRefused=Connection refused from Elasticsearch Cluster. Elasticsearch up and running at {0}?
 error.indexNotCreated=Fillable was unable to create the settings Index. Please check your config and elasticsearch cluster.
-error.couldNotGetIndex=Fillable was unable to read the settings Index. Please check your config and elasticsearch cluster.
+error.couldNotGetSettingsIndex=Fillable was unable to read the settings Index. Please check your config and elasticsearch cluster.
 error.wrongCredentials=Username or Password was incorrect
 error.noSpecialchars=Special characters are not allowed
 error.indexAlreadyExists=Can not create Index {0}. An index with that name already exists.
 error.unkownIndexAlreadyExists=Can not create Index. An index with that name already exists.
+error.indexNotFound=There is no Fillable index with the name {0}
+error.unkownUpdateError=Unknown error happened during Index update.
 
 # Success messages
 # ~~~~~
@@ -25,5 +27,6 @@ text.snippetSummary=Include this snippet on any page with a form where you want 
 # ~~~~~
 titel.indexCreated=Index created
 titel.createNewIndex=Create a new Fillable Index
+titel.editIndex=Edit Fillable Index
 titel.login=Login
 titel.indexList=All your Fillable Indices

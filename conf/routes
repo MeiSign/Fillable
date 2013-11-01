@@ -11,9 +11,11 @@ POST	/addSuggestion/:indexName/:suggestion  controllers.ApplicationApi.addSugges
 GET	 /index 						controllers.ListIndices.index
 GET  /                  controllers.ListIndices.index
 
-# Create Index
-GET  /createIndex       controllers.CreateIndex.form
-POST /createIndex       controllers.CreateIndex.submit
+# Crud Index
+GET  /createIndex       controllers.CrudIndex.createForm
+POST /createIndex       controllers.CrudIndex.submitNewIndex
+GET  /editIndex/:indexName controllers.CrudIndex.editForm(indexName: String)
+POST /editIndex         controllers.CrudIndex.submitEditIndex
 
 # Login
 GET  /login             controllers.Login.login

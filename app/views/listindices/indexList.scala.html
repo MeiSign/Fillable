@@ -4,17 +4,18 @@
 @implicitField = @{ FieldConstructor(formInput.f) } 
 @title = { @Messages("titel.indexList") }
 
-@main(title, nav = "") {   
+@main(title, nav = "indexList") {   
   @notice(level, msg)
   
   @if(!indices.isEmpty) {
 	  <table class="table table-striped">
 	    <thead>
 	       <tr>
-	         <th>#</th>
-	         <th>Name</th>
-	         <th>Shards</th>
-	         <th>Replicas</th>
+	         <th class="col-sm-1">#</th>
+	         <th class="col-sm-6">Name</th>
+	         <th class="text-center">Shards</th>
+	         <th class="text-center">Replicas</th>
+	         <th><div class="text-center">Actions</div></th>
 	       </tr>
 	     </thead>
 	     <tbody>
@@ -22,8 +23,18 @@
 		    <tr>
           <td>@{number + 1}</td>
           <td>@index.name</td>
-          <td>@index.shards</td>
-          <td>@index.replicas</td>
+          <td class="text-center">@index.shards</td>
+          <td class="text-center">@index.replicas</td>
+          <td>
+	          <div class="text-center">
+	             <div class="btn-group btn-group-xs text-right">
+	              <a href="http://www.google.de" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></a>
+	              <a href="@routes.CrudIndex.editForm(index.name)" class="btn btn-default"><span class="glyphicon glyphicon-wrench"></span></a>
+							  <a href="" class="btn btn-default"><span class="glyphicon glyphicon-trash"></span></a>
+							</div>  
+	          </div>
+          </td>
+        
         </tr>
 		  }
 	   </tbody>
