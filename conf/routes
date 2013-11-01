@@ -16,6 +16,7 @@ GET  /createIndex       controllers.CrudIndex.createForm
 POST /createIndex       controllers.CrudIndex.submitNewIndex
 GET  /editIndex/:indexName controllers.CrudIndex.editForm(indexName: String)
 POST /editIndex         controllers.CrudIndex.submitEditIndex
+GET /deleteIndex/:indexName controllers.CrudIndex.deleteIndex(indexName: String)
 
 # Login
 GET  /login             controllers.Login.login

@@ -13,13 +13,15 @@ import scala.concurrent._
 import esclient.EsClient
 import esclient.queries.IndexExistsQuery
 import esclient.queries.FillableSetupQuery
-import esclient.queries.FillableIndexCreateQuery
+import esclient.queries.CreateFillableIndexQuery
 import esclient.queries.FillableIndexRegisterQuery
 import java.net.ConnectException
 import scala.util.matching.Regex
 import esclient.queries.GetFillableIndexQuery
 import esclient.queries.EditFillableIndexQuery
 import esclient.queries.FillableIndexReregisterQuery
+import esclient.queries.DeleteFillableIndexQuery
+import esclient.queries.FillableIndexUnregisterQuery
 
 object CrudIndex extends Controller {
   val indexNamePattern = "^[a-zA-Z0-9_]*$".r
@@ -95,11 +97,12 @@ object CrudIndex extends Controller {
       indexForm.bindFromRequest.fold(
         errors => Future.successful(Ok(html.crudindex.form(errors))),
         index => {
-          EsClient.execute(new FillableIndexCreateQuery(index.name, index.shards, index.replicas)) map {
+          EsClient.execute(new CreateFillableIndexQuery(index.name, index.shards, index.replicas)) map {
             indexCreated =>
               {
                 if (indexCreated.status == 200) {
                   EsClient.execute(new FillableIndexRegisterQuery(index.name, index.shards, index.replicas))
+                  // hier noch ein map rein zur sicherheit
                   Ok(html.crudindex.snippetSummary(index.name, "success", Messages("success.indexCreated")))
                 } else {
                   (indexCreated.json \ "error") match {
@@ -127,6 +130,7 @@ object CrudIndex extends Controller {
               {
                 if (indexUpdated.status == 200) {
                   EsClient.execute(new FillableIndexReregisterQuery(index.name, index.shards, index.replicas))
+                  // hier noch ein map rein zur sicherheit
                   Redirect(routes.ListIndices.index)
                 } else {
                   (indexUpdated.json \ "error") match {
@@ -142,6 +146,26 @@ object CrudIndex extends Controller {
           }
           Future.successful(Redirect(routes.ListIndices.index))
         })
+    }
+  }
+  
+  def deleteIndex(indexName: String) = Authenticated {
+    Action.async { implicit request =>
+      EsClient.execute(new DeleteFillableIndexQuery(indexName)) map {
+            indexDeleted =>
+              {
+                if (indexDeleted.status == 200) {
+                  EsClient.execute(new FillableIndexUnregisterQuery(indexName))
+                  // hier noch ein map rein zur sicherheit
+                  Ok("index deleted")
+                } else {
+                  (indexDeleted.json \ "error") match {
+                    case error if error.toString.contains("IndexMissingException") =>
+                      Ok("index gibts nicht")
+                  }
+                }
+              }
+          }
     }
   }
 }

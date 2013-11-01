@@ -27,6 +27,7 @@ object EsClient {
       case HttpType.Post => WS.url(url + query.getUrlAddon).post(query.toJson)
       case HttpType.Put => WS.url(url + query.getUrlAddon).put(query.toJson)
       case HttpType.Head => WS.url(url + query.getUrlAddon).head
+      case HttpType.Delete => WS.url(url + query.getUrlAddon).delete
       case _ => WS.url(url + query.getUrlAddon).get()
     }
   }

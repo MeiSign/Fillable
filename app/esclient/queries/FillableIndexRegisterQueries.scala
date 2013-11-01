@@ -27,7 +27,7 @@ class FillableIndexReregisterQuery(name: String, shards: Int, replicas: Int) ext
       "replicas" -> replicas)
 }
 
-class FillableIndexUnregisterQuery(name: String, shards: Int, replicas: Int) extends EsQuery {
+class FillableIndexUnregisterQuery(name: String) extends EsQuery {
   val httpType: HttpType.Value = HttpType.Delete
   
   def getUrlAddon: String = "/fbl_indices/indices/" + name.hashCode()
