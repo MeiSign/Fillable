@@ -11,15 +11,13 @@ import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.libs.concurrent.Promise
 import play.api.libs.ws.Response
+import collection.JavaConversions._
 
 object EsClient {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
-  val url: String = {
-    val urlString: String = Play.current.configuration.getString("esclient.url").getOrElse("")
-    if (urlString.startsWith("http://")) urlString
-    else "http://" + urlString
-  }
+  val optHosts: Option[List[String]] = Play.current.configuration.getStringList("esclient.url").map(_.toList)
+  var hosts: List[String] = optHosts.getOrElse(List())
 
   def execute(query: EsQuery): Future[Response] = {
     query.httpType match {
@@ -30,5 +28,11 @@ object EsClient {
       case HttpType.Delete => WS.url(url + query.getUrlAddon).delete
       case _ => WS.url(url + query.getUrlAddon).get()
     }
+  }
+  
+  def url: String = {
+    hosts = hosts.tail ++ List(hosts.head)
+    println(hosts(0))
+    hosts(0)
   }
 }
