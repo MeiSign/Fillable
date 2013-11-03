@@ -24,13 +24,13 @@ import esclient.queries.DeleteFillableIndexQuery
 import esclient.queries.FillableIndexUnregisterQuery
 
 object CrudIndex extends Controller {
-  val indexNamePattern = "^[a-zA-Z0-9_]*$".r
+  val validIndexChars = (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9') ++ List('_')).toSet
 
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   val indexForm: Form[Index] = Form(
     mapping(
-      "indexname" -> nonEmptyText(minLength = 4).verifying(Messages("error.noSpecialchars"), indexname => containsOnlyValidChars(indexname, indexNamePattern)),
+      "indexname" -> nonEmptyText(minLength = 4).verifying(Messages("error.noSpecialchars"), indexname => containsOnlyValidChars(indexname, validIndexChars)),
       "shards" -> number(min = 0, max = 10),
       "replicas" -> number(min = 0, max = 10)) {
         (indexname, shards, replicas) => Index(indexname, shards, replicas)
@@ -38,9 +38,7 @@ object CrudIndex extends Controller {
         (index => Some(index.name, index.shards, index.replicas))
       })
 
-  def containsOnlyValidChars(name: String, pattern: Regex): Boolean = {
-    pattern.findAllIn(name).mkString.length == name.length
-  }
+  def containsOnlyValidChars(name: String, pattern: Set[Char]): Boolean = name.forall(validIndexChars.contains(_))
 
   def createForm = Authenticated {
     Action.async { implicit request =>
