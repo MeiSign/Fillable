@@ -1,5 +1,6 @@
 package controllers
 
+import helper.AuthenticatedAction
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
@@ -8,16 +9,9 @@ import models._
 import views._
 import scala.concurrent._
 import esclient.EsClient
-import esclient.queries.IndexExistsQuery
-import esclient.queries.FillableSetupQuery
-import esclient.queries.CreateFillableIndexQuery
-import esclient.queries.FillableIndexRegisterQuery
+import esclient.queries._
 import java.net.ConnectException
-import esclient.queries.GetFillableIndexQuery
-import esclient.queries.EditFillableIndexQuery
-import esclient.queries.FillableIndexReregisterQuery
-import esclient.queries.DeleteFillableIndexQuery
-import esclient.queries.FillableIndexUnregisterQuery
+import scala.Some
 
 object CrudIndex extends Controller {
   val validIndexChars = (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9') ++ List('_')).toSet
@@ -36,7 +30,7 @@ object CrudIndex extends Controller {
 
   def containsOnlyValidChars(name: String, pattern: Set[Char]): Boolean = name.forall(validIndexChars.contains(_))
 
-  def createForm = Authenticated {
+  def createForm = AuthenticatedAction {
     Action.async { implicit request =>
       EsClient.execute(new IndexExistsQuery("fbl_indices", "indices")) flatMap {
         index =>
@@ -44,7 +38,7 @@ object CrudIndex extends Controller {
             if (index.status == 200) {
               Future.successful(Ok(html.crudindex.form(indexForm)))
             } else {
-              EsClient.execute(new FillableSetupQuery()) map {
+              EsClient.execute(new FillableIndexSetupQuery()) map {
                 indexCreated =>
                   if (indexCreated.status == 200) Ok(html.crudindex.form(indexForm, "success", Messages("success.setupComplete")))
                   else Ok(html.crudindex.form(indexForm, "error", Messages("error.indexNotCreated"), true))
@@ -61,7 +55,7 @@ object CrudIndex extends Controller {
   }
 
   def editForm(indexName: String) = {
-    Authenticated {
+    AuthenticatedAction {
       Action.async {
         implicit request =>
           {
@@ -86,7 +80,7 @@ object CrudIndex extends Controller {
     }
   }
 
-  def submitNewIndex = Authenticated {
+  def submitNewIndex = AuthenticatedAction {
     Action.async { implicit request =>
       indexForm.bindFromRequest.fold(
         errors => Future.successful(Ok(html.crudindex.form(errors))),
@@ -114,7 +108,7 @@ object CrudIndex extends Controller {
     }
   }
 
-  def submitEditIndex = Authenticated {
+  def submitEditIndex = AuthenticatedAction {
     Action.async { implicit request =>
       indexForm.bindFromRequest.fold(
         errors => Future.successful(Ok(html.crudindex.form(errors))),
@@ -143,7 +137,7 @@ object CrudIndex extends Controller {
     }
   }
   
-  def deleteIndex(indexName: String) = Authenticated {
+  def deleteIndex(indexName: String) = AuthenticatedAction {
     Action.async { implicit request =>
       EsClient.execute(new DeleteFillableIndexQuery(indexName)) map {
             indexDeleted =>

@@ -1,5 +1,6 @@
 package controllers
 
+import helper.AuthenticatedAction
 import play.api.mvc._
 import esclient.EsClient
 import esclient.queries.GetFillableIndicesQuery
@@ -13,7 +14,7 @@ object ListIndices extends Controller {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
   
   def index = {
-    Authenticated {
+    AuthenticatedAction {
       Action.async {
         implicit request =>
           {

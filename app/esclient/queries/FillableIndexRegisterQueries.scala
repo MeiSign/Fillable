@@ -34,3 +34,19 @@ class FillableIndexUnregisterQuery(name: String) extends EsQuery {
   
   def toJson: JsObject = Json.obj()
 }
+
+class FillableIndexSetupQuery() extends EsQuery {
+  val httpType: HttpType.Value = HttpType.Post
+
+  def getUrlAddon: String = "/fbl_indices"
+
+  def toJson: JsObject = Json.obj(
+    "settings" -> Json.obj("number_of_shards" -> 1, "number_of_replicas" -> 0),
+    "mappings" -> Json.obj(
+      "indices" -> Json.obj(
+        "properties" -> Json.obj(
+          "name" -> Json.obj("type" -> "String"),
+          "shards" -> Json.obj("type" -> "integer"),
+          "replicas" -> Json.obj("type" -> "integer")
+        ))))
+}
