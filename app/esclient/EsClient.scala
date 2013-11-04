@@ -26,7 +26,8 @@ object EsClient {
   
   def url: String = {
     hosts = hosts.tail ++ List(hosts.head)
-    hosts(0)
+    if (hosts(0).startsWith("http://")) hosts(0)
+    else "http://" + hosts(0)
   }
   
 }
