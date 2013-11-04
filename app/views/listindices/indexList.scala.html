@@ -1,12 +1,14 @@
-@(indices: Seq[Index], level:String = "", msg: String = "")(implicit request: Request[Any])
+@(indices: Seq[Index], highlightName: String = "",  level:String = "", msg: String = "")(implicit request: Request[Any], flash: Flash)
 
 @import helper._ 
 @implicitField = @{ FieldConstructor(formInput.f) } 
 @title = { @Messages("titel.indexList") }
 
-@main(title, nav = "indexList") {   
+@main(title, nav = "indexList") {
   @notice(level, msg)
-  
+
+  @highlightName
+
   @if(!indices.isEmpty) {
 	  <table class="table table-striped">
 	    <thead>
@@ -20,7 +22,7 @@
 	     </thead>
 	     <tbody>
 		  @for((index, number) <- indices.zipWithIndex) {
-		    <tr>
+		    <tr class="@("warning".when(index.name.equals(highlightName)))">
           <td>@{number + 1}</td>
           <td>@index.name</td>
           <td class="text-center">@index.shards</td>

@@ -19,6 +19,7 @@ error.noHostConfig=no-host-specified-in-configuration
 # ~~~~~
 success.setupComplete=Congratulations! You are creating your first Fillable Index. The Fillable System is up and ready!
 success.indexCreated=New Fillable Index was successfully created!
+success.indexWillBeChangedSoon=Ok! Your requested change is queued and will be processed soon. <a href="/">Refresh</a>
 
 # General text messages
 # ~~~~~

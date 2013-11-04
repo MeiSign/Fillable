@@ -5,11 +5,11 @@
 # Fillable API
 GET   /complete/:indexName/:toBeCompleted	controllers.ApplicationApi.getCompletions(indexName: String, toBeCompleted: String)
 GET   /status/requirements  controllers.ApplicationApi.checkRequirements
-POST	/addSuggestion/:indexName/:suggestion  controllers.ApplicationApi.addSuggestion(indexName: String, suggestion: String)
+POST  /addSuggestion/:indexName/:suggestion  controllers.ApplicationApi.addSuggestion(indexName: String, suggestion: String)
 
 # Admin Backend
-GET	 /index 						controllers.ListIndices.index
-GET  /                  controllers.ListIndices.index
+GET	 /index          	controllers.ListIndices.index(highlightIndex: Option[String], level: Option[String], msg: Option[String])
+GET  /                  controllers.ListIndices.index(highlightIndex: Option[String], level: Option[String], msg: Option[String])
 
 # Crud Index
 GET  /createIndex       controllers.CrudIndex.createForm

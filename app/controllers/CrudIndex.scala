@@ -59,10 +59,8 @@ object CrudIndex extends Controller {
       Action.async {
         implicit request =>
           {
-            println(new GetFillableIndexQuery(indexName).getUrlAddon)
             EsClient.execute(new GetFillableIndexQuery(indexName)) map {
               index => {
-                println(index.status)
                 if (index.status == 200) {
                   val indexJson = index.json.validate[Index].getOrElse(new Index("", 0, 0))
                   Ok(html.crudindex.form(indexForm.fill(indexJson), "", "", false, true))
@@ -112,26 +110,34 @@ object CrudIndex extends Controller {
       indexForm.bindFromRequest.fold(
         errors => Future.successful(Ok(html.crudindex.form(errors))),
         index => {
-          EsClient.execute(new EditFillableIndexQuery(index.name, index.replicas)) map {
+          EsClient.execute(new EditFillableIndexQuery(index.name, index.replicas)) flatMap {
             indexUpdated =>
               {
                 if (indexUpdated.status == 200) {
-                  EsClient.execute(new FillableIndexReregisterQuery(index.name, index.shards, index.replicas))
-                  // hier noch ein map rein zur sicherheit
-                  Redirect(routes.ListIndices.index)
+                  EsClient.execute(new FillableIndexReregisterQuery(index.name, index.shards, index.replicas)) map {
+                    indexChangeRegistered => {
+                      if (indexChangeRegistered.status == 200) {
+                        println(index.name)
+                        Redirect(routes.ListIndices.index(Option[String](index.name), Option("success"), Option(Messages("success.indexWillBeChangedSoon"))))
+                      }
+                      else
+                        Redirect("/")
+                    }
+                  } recover {
+                    case _ => Ok("kacka")
+                  }
                 } else {
                   (indexUpdated.json \ "error") match {
                     case error =>
-                      Ok(html.crudindex.form(
+                      Future.successful(Ok(html.crudindex.form(
                         indexForm.fill(Index(index.name, index.shards, index.replicas)),
                         "error",
                         Messages("error.unkownUpdateError", "fbl_" + index.name),
-                        false))
+                        false)))
                   }
                 }
               }
           }
-          Future.successful(Redirect(routes.ListIndices.index))
         })
     }
   }
@@ -143,11 +149,10 @@ object CrudIndex extends Controller {
           if (indexDeleted.status == 200) {
             EsClient.execute(new FillableIndexUnregisterQuery(indexName)) map {
               indexUnregistered => if ((indexUnregistered.json \ "ok").equals(true)) {
-                println("status 200")
-                Redirect(routes.ListIndices.index)
+                Redirect("/")
               } else Redirect("/")
             } recover {
-              case indexUnregisterFailed: Throwable => Redirect(routes.ListIndices.index)
+              case indexUnregisterFailed: Throwable => Redirect("/")
             }
           } else {
             (indexDeleted.json \ "error") match {

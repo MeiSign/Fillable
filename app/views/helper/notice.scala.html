@@ -4,21 +4,21 @@
   case "success" => {
     <div class="alert alert-success alert-dismissable">
       <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-      @msg
+      @Html(msg)
     </div>
   }
 
   case "info" => {
     <div class="alert alert-info alert-dismissable">
       <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-      <strong>Info:</strong> @msg
+      <strong>Info:</strong> @Html(msg)
     </div>
   }
 
   case "error" => {
     <div class="alert alert-danger alert-dismissable">
       <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-      <strong>Error!</strong> @msg
+      <strong>Error!</strong> @Html(msg)
     </div>
   }  
   
