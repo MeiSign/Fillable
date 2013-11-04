@@ -5,13 +5,14 @@ import scala.concurrent.Future
 import play.api.libs.ws._
 import play.api.libs.ws.Response
 import collection.JavaConversions._
-import scala.collection.immutable.Queue
+import play.api.i18n.Messages
 
 object EsClient {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   val optHosts: Option[List[String]] = Play.current.configuration.getStringList("esclient.url").map(_.toList)
-  var hosts: List[String] = optHosts.getOrElse(List("No host specified in Configuration"))
+  var hosts: List[String] = optHosts.getOrElse(List(Messages("error.noHostConfig")))
+
 
   def execute(query: EsQuery): Future[Response] = {
     query.httpType match {
@@ -25,9 +26,14 @@ object EsClient {
   }
   
   def url: String = {
-    hosts = hosts.tail ++ List(hosts.head)
-    if (hosts(0).startsWith("http://")) hosts(0)
-    else "http://" + hosts(0)
+    if (hosts.isEmpty)
+      ("http://" + Messages("error.noHostConfig"))
+    else {
+      hosts = hosts.tail ++ List(hosts.head)
+      completeUrl(hosts(0))
+    }
   }
+
+  def completeUrl(url: String) = if (url.startsWith("http://")) url else "http://" + url
   
 }
