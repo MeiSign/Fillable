@@ -30,8 +30,8 @@
 	             <div class="btn-group btn-group-xs text-right">
 	              <!-- <a href="http://www.google.de" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></a>  -->
 	              <a href="@routes.CrudIndex.editForm(index.name)" class="btn btn-default"><span class="glyphicon glyphicon-wrench"></span></a>
-							  <a href="@routes.CrudIndex.deleteIndex(index.name)" class="btn btn-default"><span class="glyphicon glyphicon-trash"></span></a>
-							</div>  
+				  <a href="@routes.CrudIndex.deleteIndex(index.name)" class="btn btn-default" onclick="return confirm('@Messages("text.confirmDelete")')"><span class="glyphicon glyphicon-trash"></span></a>
+				</div>
 	          </div>
           </td>
         
