@@ -148,11 +148,14 @@ object CrudIndex extends Controller {
         indexDeleted => {
           if (indexDeleted.status == 200) {
             EsClient.execute(new FillableIndexUnregisterQuery(indexName)) map {
-              indexUnregistered => if ((indexUnregistered.json \ "ok").equals(true)) {
-                Redirect("/")
-              } else Redirect("/")
+              indexUnregistered => if (indexUnregistered.status == 200) {
+                Redirect(routes.ListIndices.index(Option[String](indexName), Option("success"), Option(Messages("success.indexWillBeChangedSoon"))))
+              } else {
+                println("else")
+                Redirect(routes.ListIndices.index(Option[String](indexName), Option("error"), Option(Messages("error.deleteIndexFailed"))))
+              }
             } recover {
-              case indexUnregisterFailed: Throwable => Redirect("/")
+              case _ => Redirect(routes.ListIndices.index(Option[String](indexName), Option("error"), Option(Messages("error.deleteIndexFailed"))))
             }
           } else {
             (indexDeleted.json \ "error") match {
