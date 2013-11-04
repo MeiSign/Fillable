@@ -59,21 +59,20 @@ object CrudIndex extends Controller {
       Action.async {
         implicit request =>
           {
+            println(new GetFillableIndexQuery(indexName).getUrlAddon)
             EsClient.execute(new GetFillableIndexQuery(indexName)) map {
-              indices =>
-                {
-                  val indexSeq: Seq[Index] = (indices.json \\ "_source") map {
-                    index =>
-                      {
-                        index.validate[Index].getOrElse(new Index("", 0, 0))
-                      }
-                  }
-                  if (indexSeq.isEmpty) Ok(html.crudindex.form(indexForm, "error", Messages("error.indexNotFound", indexName), true))
-                  else Ok(html.crudindex.form(indexForm.fill(indexSeq.head), "", "", false, true))
+              index => {
+                println(index.status)
+                if (index.status == 200) {
+                  val indexJson = index.json.validate[Index].getOrElse(new Index("", 0, 0))
+                  Ok(html.crudindex.form(indexForm.fill(indexJson), "", "", false, true))
+                } else {
+                  Ok(html.crudindex.form(indexForm, "error", Messages("error.indexNotFound", indexName), false, true))
                 }
+              }
             } recover {
               case e: ConnectException => Ok(html.listindices.indexList(Seq(), "error", Messages("error.connectionRefused", EsClient.url)))
-              case e: Throwable => Ok(html.listindices.indexList(Seq(), "error", Messages("error.couldNotGetIndex")))
+              case e: Throwable => Ok(html.listindices.indexList(Seq(), "error", Messages("error.indexNotFound", indexName)))
             }
           }
       }
@@ -139,21 +138,25 @@ object CrudIndex extends Controller {
   
   def deleteIndex(indexName: String) = AuthenticatedAction {
     Action.async { implicit request =>
-      EsClient.execute(new DeleteFillableIndexQuery(indexName)) map {
-            indexDeleted =>
-              {
-                if (indexDeleted.status == 200) {
-                  EsClient.execute(new FillableIndexUnregisterQuery(indexName))
-                  // hier noch ein map rein zur sicherheit
-                  Ok("index deleted")
-                } else {
-                  (indexDeleted.json \ "error") match {
-                    case error if error.toString.contains("IndexMissingException") =>
-                      Ok("index gibts nicht")
-                  }
-                }
-              }
+      EsClient.execute(new DeleteFillableIndexQuery(indexName)) flatMap {
+        indexDeleted => {
+          if (indexDeleted.status == 200) {
+            EsClient.execute(new FillableIndexUnregisterQuery(indexName)) map {
+              indexUnregistered => if ((indexUnregistered.json \ "ok").equals(true)) {
+                println("status 200")
+                Redirect(routes.ListIndices.index)
+              } else Redirect("/")
+            } recover {
+              case indexUnregisterFailed: Throwable => Redirect(routes.ListIndices.index)
+            }
+          } else {
+            (indexDeleted.json \ "error") match {
+              case error if error.toString.contains("IndexMissingException") =>
+                Future.successful(Ok("index gibts nicht"))
+            }
           }
+        }
+      }
     }
   }
 }

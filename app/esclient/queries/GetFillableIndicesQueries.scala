@@ -16,9 +16,9 @@ class GetFillableIndicesQuery extends EsQuery {
 
 class GetFillableIndexQuery(index: String) extends EsQuery {
   
-  val httpType: HttpType.Value = HttpType.Post
+  val httpType: HttpType.Value = HttpType.Get
 
-  def getUrlAddon: String = "/fbl_indices/indices/_search"
+  def getUrlAddon: String = "/fbl_indices/indices/" + index.hashCode + "/_source"
 
-  def toJson: JsObject = Json.obj("query" -> Json.obj("term" -> Json.obj("name" -> index)))
+  def toJson: JsObject = Json.obj()
 }
