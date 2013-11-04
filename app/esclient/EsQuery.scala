@@ -1,8 +1,6 @@
 package esclient
 
 import play.api.libs.json._
-import play.api.libs.ws.Response
-import scala.concurrent.Future
 
 trait EsQuery {
 	val httpType: HttpType.Value

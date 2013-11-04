@@ -1,14 +1,11 @@
 package controllers
 
-import play.api._
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.i18n.Messages
 import models._
 import views._
-import play.api.libs.ws.WS
-import play.api.libs.ws.Response
 import scala.concurrent._
 import esclient.EsClient
 import esclient.queries.IndexExistsQuery
@@ -16,7 +13,6 @@ import esclient.queries.FillableSetupQuery
 import esclient.queries.CreateFillableIndexQuery
 import esclient.queries.FillableIndexRegisterQuery
 import java.net.ConnectException
-import scala.util.matching.Regex
 import esclient.queries.GetFillableIndexQuery
 import esclient.queries.EditFillableIndexQuery
 import esclient.queries.FillableIndexReregisterQuery

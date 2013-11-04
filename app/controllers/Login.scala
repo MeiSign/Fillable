@@ -7,10 +7,6 @@ import play.api.data.Forms._
 import play.api.i18n.Messages
 import models._
 import views._
-import play.api.mvc.Security.AuthenticatedBuilder
-import play.api.libs.json.Json
-import scala.concurrent.Future
-import play.api.mvc.Results._
 
 object Login extends Controller {
 

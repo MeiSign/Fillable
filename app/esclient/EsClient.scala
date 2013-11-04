@@ -1,15 +1,8 @@
 package esclient
 
 import play.api.Play
-import play.api.libs.json.JsResult
 import scala.concurrent.Future
 import play.api.libs.ws._
-import play.Logger
-import play.api.libs.json.Reads
-import play.api.libs.json.JsValue
-import play.api.i18n.Messages
-import play.api.libs.json.Json
-import play.api.libs.concurrent.Promise
 import play.api.libs.ws.Response
 import collection.JavaConversions._
 
@@ -32,7 +25,6 @@ object EsClient {
   
   def url: String = {
     hosts = hosts.tail ++ List(hosts.head)
-    println(hosts(0))
     hosts(0)
   }
 }

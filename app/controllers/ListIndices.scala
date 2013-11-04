@@ -1,18 +1,12 @@
 package controllers
 
-import play.api._
 import play.api.mvc._
-import scala.concurrent.Future
 import esclient.EsClient
 import esclient.queries.GetFillableIndicesQuery
 import java.net.ConnectException
 import models._
 import views._
 import play.api.i18n.Messages
-import play.api.libs.json.Reads
-import play.api.libs.json.JsValue
-import play.api.libs.json.JsResult
-import play.api.libs.json.JsSuccess
 
 object ListIndices extends Controller {
 
