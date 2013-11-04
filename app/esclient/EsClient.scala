@@ -5,12 +5,13 @@ import scala.concurrent.Future
 import play.api.libs.ws._
 import play.api.libs.ws.Response
 import collection.JavaConversions._
+import scala.collection.immutable.Queue
 
 object EsClient {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   val optHosts: Option[List[String]] = Play.current.configuration.getStringList("esclient.url").map(_.toList)
-  var hosts: List[String] = optHosts.getOrElse(List())
+  var hosts: List[String] = optHosts.getOrElse(List("No host specified in Configuration"))
 
   def execute(query: EsQuery): Future[Response] = {
     query.httpType match {
@@ -27,4 +28,5 @@ object EsClient {
     hosts = hosts.tail ++ List(hosts.head)
     hosts(0)
   }
+  
 }
