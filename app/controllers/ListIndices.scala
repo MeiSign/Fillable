@@ -18,7 +18,6 @@ object ListIndices extends Controller {
       Action.async {
         implicit request =>
           {
-            println("Indexresult: " + highlightIndex.getOrElse(""))
             EsClient.execute(new GetFillableIndicesQuery) map {
               indices => { 
                 Ok(html.listindices.indexList((indices.json \\ "_source") map {

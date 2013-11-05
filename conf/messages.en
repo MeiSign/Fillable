@@ -12,9 +12,10 @@ error.noSpecialchars=Special characters are not allowed
 error.indexAlreadyExists=Can not create Index {0}. An index with that name already exists.
 error.unkownIndexAlreadyExists=Can not create Index. An index with that name already exists.
 error.indexNotFound=There is no Fillable index with the name {0}
-error.unkownUpdateError=Unknown error happened during Index update.
-error.deleteIndexFailed=Unknown error happened during Index deletion.
 error.noHostConfig=no-host-specified-in-configuration
+error.unableToCreateIndex=Unknown error happened during Index creation.
+error.unableToUpdateIndex=Unknown error happened during Index update.
+error.deleteIndexFailed=Unknown error happened during Index deletion.
 
 # Success messages
 # ~~~~~

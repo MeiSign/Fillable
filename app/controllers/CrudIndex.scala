@@ -100,6 +100,9 @@ object CrudIndex extends Controller {
                   }
                 }
               }
+          } recover {
+            case e: ConnectException => Ok(html.crudindex.form(indexForm, "error", Messages("error.connectionRefused", EsClient.url), true))
+            case e: Throwable => Ok(html.crudindex.form(indexForm, "error", Messages("error.error.unableToCreateIndex"), false))
           }
         })
     }
@@ -111,34 +114,36 @@ object CrudIndex extends Controller {
         errors => Future.successful(Ok(html.crudindex.form(errors))),
         index => {
           EsClient.execute(new EditFillableIndexQuery(index.name, index.replicas)) flatMap {
-            indexUpdated =>
-              {
-                if (indexUpdated.status == 200) {
-                  EsClient.execute(new FillableIndexReregisterQuery(index.name, index.shards, index.replicas)) map {
-                    indexChangeRegistered => {
-                      if (indexChangeRegistered.status == 200) {
-                        println(index.name)
-                        Redirect(routes.ListIndices.index(Option[String](index.name), Option("success"), Option(Messages("success.indexWillBeChangedSoon"))))
-                      }
-                      else
-                        Redirect("/")
+            indexUpdated => {
+              if (indexUpdated.status == 200) {
+                EsClient.execute(new FillableIndexReregisterQuery(index.name, index.shards, index.replicas)) map {
+                  indexChangeRegistered => {
+                    if (indexChangeRegistered.status == 200) {
+                      Redirect(routes.ListIndices.index(Option[String](index.name), Option("success"), Option(Messages("success.indexWillBeChangedSoon"))))
+                    } else {
+                      Redirect("/")
                     }
-                  } recover {
-                    case _ => Ok("kacka")
                   }
-                } else {
-                  (indexUpdated.json \ "error") match {
-                    case error =>
-                      Future.successful(Ok(html.crudindex.form(
-                        indexForm.fill(Index(index.name, index.shards, index.replicas)),
-                        "error",
-                        Messages("error.unkownUpdateError", "fbl_" + index.name),
-                        false)))
-                  }
+                } recover {
+                  case _ => Ok("kacka")
+                }
+              } else {
+                (indexUpdated.json \ "error") match {
+                  case error =>
+                    Future.successful(Ok(html.crudindex.form(
+                      indexForm.fill(Index(index.name, index.shards, index.replicas)),
+                      "error",
+                      Messages("error.unkownUpdateError", "fbl_" + index.name),
+                      false)))
                 }
               }
+            }
+          } recover {
+            case e: ConnectException => Ok(html.crudindex.form(indexForm, "error", Messages("error.connectionRefused", EsClient.url), true))
+            case e: Throwable => Ok(html.crudindex.form(indexForm, "error", Messages("error.unableToUpdateIndex"), false))
           }
-        })
+        }
+      )
     }
   }
   
@@ -151,7 +156,6 @@ object CrudIndex extends Controller {
               indexUnregistered => if (indexUnregistered.status == 200) {
                 Redirect(routes.ListIndices.index(Option[String](indexName), Option("success"), Option(Messages("success.indexWillBeChangedSoon"))))
               } else {
-                println("else")
                 Redirect(routes.ListIndices.index(Option[String](indexName), Option("error"), Option(Messages("error.deleteIndexFailed"))))
               }
             } recover {
@@ -160,10 +164,13 @@ object CrudIndex extends Controller {
           } else {
             (indexDeleted.json \ "error") match {
               case error if error.toString.contains("IndexMissingException") =>
-                Future.successful(Ok("index gibts nicht"))
+                Future.successful(Redirect(routes.ListIndices.index(Option[String](""), Option("error"), Option(Messages("error.indexNotFound", indexName)))))
             }
           }
         }
+      } recover {
+        case e: ConnectException => Ok(html.crudindex.form(indexForm, "error", Messages("error.connectionRefused", EsClient.url), true))
+        case e: Throwable => Ok(html.crudindex.form(indexForm, "error", Messages("error.deleteIndexFailed"), false))
       }
     }
   }
