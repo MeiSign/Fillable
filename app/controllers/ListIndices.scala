@@ -13,7 +13,7 @@ object ListIndices extends Controller {
 
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
-  def index(highlightIndex: Option[String], level: Option[String], msg: Option[String]) = {
+  def index(highlightIndex: Option[String]) = {
     AuthenticatedAction {
       Action.async {
         implicit request =>
@@ -23,7 +23,7 @@ object ListIndices extends Controller {
                 Ok(html.listindices.indexList((indices.json \\ "_source") map {
                 index => { 
                   index.validate[Index].getOrElse(new Index("", 0, 0)) }
-              }, highlightIndex.getOrElse(""), level.getOrElse(""), msg.getOrElse(""))) }
+              }, highlightIndex.getOrElse(""))) }
             } recover {
               case e: ConnectException => Ok(html.listindices.indexList(Seq(), "error", Messages("error.connectionRefused", EsClient.url)))
               case e: Throwable => Ok(html.listindices.indexList(Seq(), "error", Messages("error.couldNotGetIndex")))

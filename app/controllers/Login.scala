@@ -36,7 +36,7 @@ object Login extends Controller {
         if (requestUser.name.equals(user) && requestUser.pw.equals(password))
           Redirect(request.session.get("returnUrl").getOrElse("/")).withSession(session + ("user" -> requestUser.name) - "returnUrl")
         else
-          Ok(html.login.form(loginForm, "error", Messages("error.wrongCredentials")))
+          Redirect(routes.Login.login).flashing("error" -> Messages("error.wrongCredentials"))
       })
   }
 }

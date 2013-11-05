@@ -1,11 +1,11 @@
-@(createIndexForm: Form[Index], level: String = "", msg: String = "", disableForm: Boolean = false, editForm: Boolean = false)(implicit request: Request[Any])
+@(createIndexForm: Form[Index], disableForm: Boolean = false, editForm: Boolean = false)(implicit request: Request[Any], flash: Flash)
 
 @import helper._ 
 @implicitField = @{ FieldConstructor(formInput.f) } 
 @title = { @Messages(if(editForm){"titel.editIndex"} else {"titel.createNewIndex"}) }
 
 @main(title, nav = if(editForm) {""} else {"createIndex"}) { 
-  @notice(level, msg)
+  @notice(flash)
   
   @helper.form(action = if(editForm) {routes.CrudIndex.submitEditIndex} else {routes.CrudIndex.submitNewIndex}, 'class -> "form-horizontal") {
 		<fieldset @if(disableForm) {disabled}>

@@ -1,11 +1,11 @@
-@(loginForm: Form[User], level:String = "", msg: String = "")(implicit request: Request[Any])
+@(loginForm: Form[User])(implicit request: Request[Any], flash: Flash)
 
 @import helper._ 
 @implicitField = @{ FieldConstructor(formInput.f) } 
 @title = { @Messages("titel.login") }
 
 @main(title, nav = "login") {   
-  @notice(level, msg)
+  @notice(flash)
   
   @helper.form(action = routes.Login.submit, 'class -> "form-horizontal") {
       @inputText(

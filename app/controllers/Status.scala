@@ -18,5 +18,4 @@ object Status extends Controller {
       }
     }
   }
-
 }

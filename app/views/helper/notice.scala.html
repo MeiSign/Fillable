@@ -1,26 +1,23 @@
-@(level: String = "", msg: String = "")
- 
-@level match {
-  case "success" => {
+@(implicit flash: Flash)
+
+@if(flash.get("success").isDefined) {
     <div class="alert alert-success alert-dismissable">
-      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-      @Html(msg)
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        @Html(flash.get("success").getOrElse(""))
     </div>
-  }
-
-  case "info" => {
-    <div class="alert alert-info alert-dismissable">
-      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-      <strong>Info:</strong> @Html(msg)
-    </div>
-  }
-
-  case "error" => {
-    <div class="alert alert-danger alert-dismissable">
-      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-      <strong>Error!</strong> @Html(msg)
-    </div>
-  }  
-  
-  case _ => {}
 }
+
+@if(flash.get("info").isDefined) {
+    <div class="alert alert-info alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        @Html(flash.get("info").getOrElse(""))
+    </div>
+}
+
+@if(flash.get("error").isDefined) {
+    <div class="alert alert-danger alert-dismissable">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        @Html(flash.get("error").getOrElse(""))
+    </div>
+}
+

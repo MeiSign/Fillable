@@ -1,12 +1,12 @@
-@(indexName: String, level: String = "", msg: String = "")(implicit request: Request[Any])
+@(indexName: String)(implicit request: Request[Any], flash: Flash)
 
 @import helper._ 
 @implicitField = @{ FieldConstructor(formInput.f) } 
 @title = { @Messages("titel.indexCreated") }
 
 @main(title, nav = "createIndex") { 
-  @notice(level, msg)
-  
+  @notice(flash)
+
   <p>@Messages("text.snippetSummary")<p>
   <pre class="col-lg-offset-2 col-lg-8">
 voll der miese javascript code hier für den fillable index @indexName

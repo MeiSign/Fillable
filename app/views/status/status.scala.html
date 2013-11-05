@@ -1,10 +1,11 @@
-@()(implicit request: Request[Any])
+@()(implicit request: Request[Any], flash: Flash)
 
 @import helper._
 @implicitField = @{ FieldConstructor(formInput.f) }
 @title = { @Messages("titel.status") }
 
 @main(title, nav = "status") {
+    @notice(flash)
     <div class="panel panel-default">
         <div class="panel-heading ">
             <h3 class="panel-title">System Tests</h3>
