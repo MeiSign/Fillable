@@ -48,8 +48,8 @@ object CrudIndex extends Controller {
             }
           }
       } recover {
-        case e: ConnectException => Ok(html.crudindex.form(indexForm, true)).flashing("error" -> Messages("error.connectionRefused", EsClient.url))
-        case e: Throwable => Ok(html.crudindex.form(indexForm, true)).flashing("error" -> Messages("error.couldNotGetIndex"))
+        case e: ConnectException => Redirect(routes.Status.index()).flashing("error" -> Messages("error.connectionRefused", EsClient.url))
+        case e: Throwable => Redirect(routes.Status.index()).flashing("error" -> Messages("error.couldNotGetIndex"))
       }
     }
   }

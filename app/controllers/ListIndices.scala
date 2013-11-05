@@ -25,8 +25,8 @@ object ListIndices extends Controller {
                   index.validate[Index].getOrElse(new Index("", 0, 0)) }
               }, highlightIndex.getOrElse(""))) }
             } recover {
-              case e: ConnectException => Ok(html.listindices.indexList(Seq(), "error", Messages("error.connectionRefused", EsClient.url)))
-              case e: Throwable => Ok(html.listindices.indexList(Seq(), "error", Messages("error.couldNotGetIndex")))
+              case e: ConnectException => Redirect(routes.Status.index()).flashing("error" -> Messages("error.connectionRefused", EsClient.url))
+              case e: Throwable => Redirect(routes.Status.index()).flashing("error" -> Messages("error.couldNotGetIndex"))
             }
           }
       }
