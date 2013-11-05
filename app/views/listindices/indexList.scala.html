@@ -7,37 +7,35 @@
 @main(title, nav = "indexList") {
   @notice(flash)
 
-  @if(!indices.isEmpty) {
-	  <table class="table table-striped">
-	    <thead>
-	       <tr>
-	         <th class="col-sm-1">#</th>
-	         <th class="col-sm-6">Name</th>
-	         <th class="text-center">Shards</th>
-	         <th class="text-center">Replicas</th>
-	         <th><div class="text-center">Actions</div></th>
-	       </tr>
-	     </thead>
-	     <tbody>
-		  @for((index, number) <- indices.zipWithIndex) {
-		    <tr class="@("warning".when(index.name.equals(highlightName)))">
-          <td>@{number + 1}</td>
-          <td>@index.name</td>
-          <td class="text-center">@index.shards</td>
-          <td class="text-center">@index.replicas</td>
-          <td>
-	          <div class="text-center">
-	             <div class="btn-group btn-group-xs text-right">
-	              <a href="@routes.CrudIndex.showSummary(index.name)" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></a>
-	              <a href="@routes.CrudIndex.editForm(index.name)" class="btn btn-default"><span class="glyphicon glyphicon-wrench"></span></a>
-				  <a href="@routes.CrudIndex.deleteIndex(index.name)" class="btn btn-default" onclick="return confirm('@Messages("text.confirmDelete")')"><span class="glyphicon glyphicon-trash"></span></a>
-				</div>
-	          </div>
-          </td>
-        
-        </tr>
-		  }
-	   </tbody>
-	  </table>
-  }
+  <table class="table table-striped">
+    <thead>
+       <tr>
+         <th class="col-sm-1">#</th>
+         <th class="col-sm-6">Name</th>
+         <th class="text-center">Shards</th>
+         <th class="text-center">Replicas</th>
+         <th><div class="text-center">Actions</div></th>
+       </tr>
+     </thead>
+     <tbody>
+      @for((index, number) <- indices.reverse.zipWithIndex) {
+        <tr class="@("warning".when(index.name.equals(highlightName)))">
+      <td>@{number + 1}</td>
+      <td>@index.name</td>
+      <td class="text-center">@index.shards</td>
+      <td class="text-center">@index.replicas</td>
+      <td>
+          <div class="text-center">
+             <div class="btn-group btn-group-xs text-right">
+              <a href="@routes.CrudIndex.showSummary(index.name)" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></a>
+              <a href="@routes.CrudIndex.editForm(index.name)" class="btn btn-default"><span class="glyphicon glyphicon-wrench"></span></a>
+              <a href="@routes.CrudIndex.deleteIndex(index.name)" class="btn btn-default" onclick="return confirm('@Messages("text.confirmDelete")')"><span class="glyphicon glyphicon-trash"></span></a>
+            </div>
+          </div>
+      </td>
+
+    </tr>
+      }
+   </tbody>
+  </table>
 }
