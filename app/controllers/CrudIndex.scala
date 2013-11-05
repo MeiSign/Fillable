@@ -83,12 +83,13 @@ object CrudIndex extends Controller {
         errors => Future.successful(Ok(html.crudindex.form(errors))),
         index => {
           EsClient.execute(new CreateFillableIndexQuery(index.name, index.shards, index.replicas)) flatMap {
+            println("inside flatmap")
             indexCreated =>
               {
                 if (indexCreated.status == 200) {
                   EsClient.execute(new FillableIndexRegisterQuery(index.name, index.shards, index.replicas)) map {
                     indexRegistered => {
-                      if (indexRegistered.status == 200) {
+                      if (indexRegistered.status == 201) {
                         Ok(html.crudindex.snippetSummary(index.name, "success", Messages("success.indexCreated")))
                       } else {
                         Ok(html.crudindex.form(indexForm, "error", Messages("error.indexCreatedButNotRegistered"), false))
@@ -105,14 +106,23 @@ object CrudIndex extends Controller {
                         "error",
                         Messages("error.indexAlreadyExists", "fbl_" + index.name),
                         false)))
+                    case _ => Future.successful(Ok(html.crudindex.form(indexForm, "error", Messages("error.unableToCreateIndex"), false)))
                   }
                 }
               }
           } recover {
             case e: ConnectException => Ok(html.crudindex.form(indexForm, "error", Messages("error.connectionRefused", EsClient.url), true))
-            case e: Throwable => Ok(html.crudindex.form(indexForm, "error", Messages("error.unableToCreateIndex"), false))
+            case e: Throwable => {
+              Ok(html.crudindex.form(indexForm, "error", Messages("error.unableToCreateIndex"), false))
+            }
           }
         })
+    }
+  }
+
+  def showSummary(indexName: String) = AuthenticatedAction {
+    Action {
+      implicit request => Ok(html.crudindex.snippetSummary(indexName))
     }
   }
 

@@ -12,11 +12,12 @@ GET	 /index          	controllers.ListIndices.index(highlightIndex: Option[Strin
 GET  /                  controllers.ListIndices.index(highlightIndex: Option[String], level: Option[String], msg: Option[String])
 
 # Crud Index
-GET  /createIndex       controllers.CrudIndex.createForm
-POST /createIndex       controllers.CrudIndex.submitNewIndex
-GET  /editIndex/:indexName controllers.CrudIndex.editForm(indexName: String)
-POST /editIndex         controllers.CrudIndex.submitEditIndex
-GET /deleteIndex/:indexName controllers.CrudIndex.deleteIndex(indexName: String)
+GET  /createIndex               controllers.CrudIndex.createForm
+POST /createIndex               controllers.CrudIndex.submitNewIndex
+GET  /editIndex/:indexName      controllers.CrudIndex.editForm(indexName: String)
+POST /editIndex                 controllers.CrudIndex.submitEditIndex
+GET /deleteIndex/:indexName     controllers.CrudIndex.deleteIndex(indexName: String)
+GET /snippetSummary/:indexName  controllers.CrudIndex.showSummary(indexName: String)
 
 # Login
 GET  /login             controllers.Login.login
