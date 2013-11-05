@@ -82,27 +82,35 @@ object CrudIndex extends Controller {
       indexForm.bindFromRequest.fold(
         errors => Future.successful(Ok(html.crudindex.form(errors))),
         index => {
-          EsClient.execute(new CreateFillableIndexQuery(index.name, index.shards, index.replicas)) map {
+          EsClient.execute(new CreateFillableIndexQuery(index.name, index.shards, index.replicas)) flatMap {
             indexCreated =>
               {
                 if (indexCreated.status == 200) {
-                  EsClient.execute(new FillableIndexRegisterQuery(index.name, index.shards, index.replicas))
-                  // hier noch ein map rein zur sicherheit
-                  Ok(html.crudindex.snippetSummary(index.name, "success", Messages("success.indexCreated")))
+                  EsClient.execute(new FillableIndexRegisterQuery(index.name, index.shards, index.replicas)) map {
+                    indexRegistered => {
+                      if (indexRegistered.status == 200) {
+                        Ok(html.crudindex.snippetSummary(index.name, "success", Messages("success.indexCreated")))
+                      } else {
+                        Ok(html.crudindex.form(indexForm, "error", Messages("error.indexCreatedButNotRegistered"), false))
+                      }
+                    }
+                  } recover {
+                    case _ => Ok(html.crudindex.form(indexForm, "error", Messages("error.indexCreatedButNotRegistered"), false))
+                  }
                 } else {
                   (indexCreated.json \ "error") match {
                     case error if error.toString.contains("IndexAlreadyExistsException") =>
-                      Ok(html.crudindex.form(
+                      Future.successful(Ok(html.crudindex.form(
                         indexForm.fill(Index(index.name, index.shards, index.replicas)),
                         "error",
                         Messages("error.indexAlreadyExists", "fbl_" + index.name),
-                        false))
+                        false)))
                   }
                 }
               }
           } recover {
             case e: ConnectException => Ok(html.crudindex.form(indexForm, "error", Messages("error.connectionRefused", EsClient.url), true))
-            case e: Throwable => Ok(html.crudindex.form(indexForm, "error", Messages("error.error.unableToCreateIndex"), false))
+            case e: Throwable => Ok(html.crudindex.form(indexForm, "error", Messages("error.unableToCreateIndex"), false))
           }
         })
     }
@@ -121,11 +129,11 @@ object CrudIndex extends Controller {
                     if (indexChangeRegistered.status == 200) {
                       Redirect(routes.ListIndices.index(Option[String](index.name), Option("success"), Option(Messages("success.indexWillBeChangedSoon"))))
                     } else {
-                      Redirect("/")
+                      Redirect(routes.ListIndices.index(Option[String](index.name), Option("error"), Option(Messages("error.indexUpdatedButNotRegistered"))))
                     }
                   }
                 } recover {
-                  case _ => Ok("kacka")
+                  case _ => Redirect(routes.ListIndices.index(Option[String](index.name), Option("error"), Option(Messages("error.indexUpdatedButNotRegistered"))))
                 }
               } else {
                 (indexUpdated.json \ "error") match {

@@ -16,6 +16,8 @@ error.noHostConfig=no-host-specified-in-configuration
 error.unableToCreateIndex=Unknown error happened during Index creation.
 error.unableToUpdateIndex=Unknown error happened during Index update.
 error.deleteIndexFailed=Unknown error happened during Index deletion.
+error.indexUpdatedButNotRegistered=Index was updated in elasticsearch but not reregistered in the Fillable Monitoring Index
+error.indexCreatedButNotRegistered=Index was created in elasticsearch but not registered in the Fillable Monitoring Index
 
 # Success messages
 # ~~~~~
