@@ -10,6 +10,7 @@ POST  /addSuggestion/:indexName/:suggestion  controllers.ApplicationApi.addSugge
 # Admin Backend
 GET	 /index          	controllers.ListIndices.index(highlightIndex: Option[String], level: Option[String], msg: Option[String])
 GET  /                  controllers.ListIndices.index(highlightIndex: Option[String], level: Option[String], msg: Option[String])
+GET  /status            controllers.Status.index()
 
 # Crud Index
 GET  /createIndex               controllers.CrudIndex.createForm

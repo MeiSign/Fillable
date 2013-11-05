@@ -36,6 +36,10 @@
 		      <li class="@("active".when(nav == "createIndex"))">
 		        <a href="@routes.CrudIndex.createForm">Create Index</a>
 		      </li>
+              </li>
+                <li class="@("active".when(nav == "status"))">
+                <a href="@routes.Status.index">Status</a>
+              </li>
 		    </ul>
 		    <ul class="nav navbar-nav navbar-right">
 			    @if(request.session.get("user").getOrElse("").equals("")) {
