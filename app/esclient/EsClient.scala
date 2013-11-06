@@ -13,7 +13,6 @@ object EsClient {
   val optHosts: Option[List[String]] = Play.current.configuration.getStringList("esclient.url").map(_.toList)
   var hosts: List[String] = optHosts.getOrElse(List(Messages("error.noHostConfig")))
 
-
   def execute(query: EsQuery): Future[Response] = {
     query.httpType match {
       case HttpType.Get => WS.url(url + query.getUrlAddon).get()

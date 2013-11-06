@@ -33,7 +33,7 @@ class CreateFillableIndexQuery(name: String, shards: Int = 4, replicas: Int = 0)
         "mappings" -> Json.obj(
             index -> Json.obj(
                 "properties" -> Json.obj(
-                    "fillableSuggest" -> Json.obj(
+                    "fillableOptions" -> Json.obj(
                         "type" -> "completion")
                         ))))
 }

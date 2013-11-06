@@ -3,9 +3,8 @@
 # ~~~~
 
 # Fillable API
-GET   /complete/:indexName/:toBeCompleted	controllers.ApplicationApi.getCompletions(indexName: String, toBeCompleted: String)
-GET   /status/requirements  controllers.ApplicationApi.checkRequirements
-POST  /addSuggestion/:indexName/:suggestion  controllers.ApplicationApi.addSuggestion(indexName: String, suggestion: String)
+GET   /complete/:indexName/:toBeCompleted	    controllers.ApplicationApi.getOptions(indexName: String, toBeCompleted: String)
+POST  /addCompletion/:indexName                 controllers.ApplicationApi.addOption(indexName: String, typed: Option[String], chosen: Option[String])
 
 # Admin Backend
 GET  /                  controllers.ListIndices.index(highlightIndex: Option[String])
