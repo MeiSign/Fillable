@@ -19,25 +19,25 @@ object ApplicationApi extends Controller {
   }
 
   def addOption(indexName: String, typed: Option[String], chosen: Option[String]) = Action.async {
-    if (typed.isDefined) {
+    if (!typed.getOrElse("").equals("")) {
       val docIdString: String = if (chosen.isDefined) chosen.get else typed.get
       EsClient.execute(new GetDocumentById(indexName, docIdString)) flatMap {
         document => {
           val doc: OptionDocument = document.json.validate[OptionDocument].getOrElse(OptionDocument(List[String](), "", 0))
           if (doc.isEmpty) {
             EsClient.execute(new AddOptionDocumentQuery(indexName, docIdString, OptionDocument(List(typed.get), typed.get, 0))) map {
-              result => Ok(result.json)
+              result => Ok(Json.obj("status" -> "added new option"))
             }
           } else {
             val input: List[String] = if(doc.input.contains(typed.get)) doc.input else (typed.get :: doc.input)
             EsClient.execute(new AddOptionDocumentQuery(indexName, docIdString, OptionDocument(input, doc.output, doc.weight + 1))) map {
-              result => Ok(result.json)
+              result => Ok(Json.obj("status" -> "extended option"))
             }
           }
         }
       }
     } else {
-      Future.successful(Ok(Json.obj()))
+      Future.successful(Ok(Json.obj("status" -> "nothing to add")))
     }
   }
 }
