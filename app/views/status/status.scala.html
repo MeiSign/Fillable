@@ -13,10 +13,10 @@
         <div class="panel-body">
             <p>Tests passed: @passed Tests failed: @failed</p>
             <div class="progress">
-                <div class="progress-bar progress-bar-success" style="width: 65%">
+                <div class="progress-bar progress-bar-success" style="width: @(passed.toDouble / (passed.toDouble + failed.toDouble) * 100.0)%">
                     <span class="sr-only">@passed passed (success)</span>
                 </div>
-                <div class="progress-bar progress-bar-danger" style="width: 35%">
+                <div class="progress-bar progress-bar-danger" style="width: @(100 - (passed.toDouble / (passed.toDouble + failed.toDouble) * 100.0))%">
                     <span class="sr-only">@failed failed (danger)</span>
                 </div>
             </div>
@@ -25,10 +25,8 @@
         <!-- List group -->
         <ul class="list-group">
             <li class="list-group-item"><span class="glyphicon glyphicon-ok"></span> Elasticsearch connection</li>
+            <li class="list-group-item"><span class="glyphicon @("glyphicon-ok".when(tests(1)))  @("glyphicon-remove".when(!tests(1)))"></span> Elasticsearch version is >=0.90.5</li>
             <li class="list-group-item"><span class="glyphicon @("glyphicon-ok".when(tests(0)))  @("glyphicon-remove".when(!tests(0)))"></span> User credentials changed</li>
-            <li class="list-group-item"><span class="glyphicon glyphicon-ok"></span> Morbi leo risus</li>
-            <li class="list-group-item"><span class="glyphicon glyphicon-ok"></span> Porta ac consectetur ac</li>
-            <li class="list-group-item"><span class="glyphicon glyphicon-remove"></span> Vestibulum at eros</li>
         </ul>
     </div>
 }
