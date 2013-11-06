@@ -1,4 +1,4 @@
-@()(implicit request: Request[Any], flash: Flash)
+@(tests: List[Boolean], failed: Int, passed: Int)(implicit request: Request[Any], flash: Flash)
 
 @import helper._
 @implicitField = @{ FieldConstructor(formInput.f) }
@@ -11,13 +11,13 @@
             <h3 class="panel-title">System Tests</h3>
         </div>
         <div class="panel-body">
-            <p>Tests passed: 3 Tests failed: 2</p>
+            <p>Tests passed: @passed Tests failed: @failed</p>
             <div class="progress">
                 <div class="progress-bar progress-bar-success" style="width: 65%">
-                    <span class="sr-only">65% Complete (success)</span>
+                    <span class="sr-only">@passed passed (success)</span>
                 </div>
                 <div class="progress-bar progress-bar-danger" style="width: 35%">
-                    <span class="sr-only">35% Complete (danger)</span>
+                    <span class="sr-only">@failed failed (danger)</span>
                 </div>
             </div>
         </div>
@@ -25,7 +25,7 @@
         <!-- List group -->
         <ul class="list-group">
             <li class="list-group-item"><span class="glyphicon glyphicon-ok"></span> Elasticsearch connection</li>
-            <li class="list-group-item"><span class="glyphicon glyphicon-remove"></span> Dapibus ac facilisis in</li>
+            <li class="list-group-item"><span class="glyphicon @("glyphicon-ok".when(tests(0)))  @("glyphicon-remove".when(!tests(0)))"></span> User credentials changed</li>
             <li class="list-group-item"><span class="glyphicon glyphicon-ok"></span> Morbi leo risus</li>
             <li class="list-group-item"><span class="glyphicon glyphicon-ok"></span> Porta ac consectetur ac</li>
             <li class="list-group-item"><span class="glyphicon glyphicon-remove"></span> Vestibulum at eros</li>
