@@ -10,7 +10,7 @@ class AddOptionDocumentQuery(indexName: String, docIdString: String, doc: Option
   val docId = docIdString.hashCode
 
   def toJson: JsObject = Json.obj(
-    "fillableOption" -> Json.obj(
+    "fillableOptions" -> Json.obj(
       "input" -> doc.input,
       "output" -> doc.output,
       "weight" -> (doc.weight)

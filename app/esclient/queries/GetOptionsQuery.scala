@@ -18,7 +18,7 @@ class GetOptionsQuery(indexName: String, toBeCompleted: String) extends EsQuery 
      Json.obj(
     		 indexName -> Json.obj(
     		     "text" -> toBeCompleted,
-    		     "completion" -> Json.obj("field" -> "fillableSuggest", "fuzzy" -> Json.obj("edit_distance" -> 1))
+    		     "completion" -> Json.obj("field" -> "fillableOptions", "fuzzy" -> Json.obj("edit_distance" -> 1))
     		 )
      )
 }

@@ -11,6 +11,7 @@ import esclient.{EsClient, EsQuery}
 import play.api.libs.json.Json
 import play.api.i18n.Messages
 import esclient.queries.GetEsVersionQuery
+import java.net.ConnectException
 
 object Status extends Controller {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
@@ -21,16 +22,16 @@ object Status extends Controller {
         implicit request =>
         {
           val tests: Future[List[Boolean]] = for {
-            pwChanged <- testCredentialsChanged
             version <- testElasticsearchVersion
+            pwChanged <- testCredentialsChanged
           } yield {
-            List(pwChanged, version)
+            List(version, pwChanged)
           }
 
           tests map {
-            result => Ok(html.status.status(result, 4, 1))
+            result => Ok(html.status.status(true :: result, result.filter(value => value).length, result.filter(value => !value).length + 1))
           } recover {
-            case _ => Ok("")
+            case _ => Ok(html.status.status(List(false,false,false), 3, 0))
           }
         }
       }

@@ -10,11 +10,11 @@ import models.OptionDocument
 object ApplicationApi extends Controller {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
-  def status = TODO
-
   def getOptions(indexName: String, toBeCompleted: String) = Action.async {
     EsClient.execute(new GetOptionsQuery(indexName, toBeCompleted)) map {
-      options => Ok((options.json \ indexName).asInstanceOf[JsArray](0))
+      options => {
+        Ok((options.json \ indexName).asInstanceOf[JsArray](0)).withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
+      }
     }
   }
 
@@ -26,12 +26,12 @@ object ApplicationApi extends Controller {
           val doc: OptionDocument = document.json.validate[OptionDocument].getOrElse(OptionDocument(List[String](), "", 0))
           if (doc.isEmpty) {
             EsClient.execute(new AddOptionDocumentQuery(indexName, docIdString, OptionDocument(List(typed.get), typed.get, 0))) map {
-              result => Ok(Json.obj("status" -> "added new option"))
+              result => Ok(Json.obj("status" -> "added new option")).withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
             }
           } else {
             val input: List[String] = if(doc.input.contains(typed.get)) doc.input else (typed.get :: doc.input)
             EsClient.execute(new AddOptionDocumentQuery(indexName, docIdString, OptionDocument(input, doc.output, doc.weight + 1))) map {
-              result => Ok(Json.obj("status" -> "extended option"))
+              result => Ok(Json.obj("status" -> "extended option")).withHeaders(ACCESS_CONTROL_ALLOW_ORIGIN -> "*")
             }
           }
         }
