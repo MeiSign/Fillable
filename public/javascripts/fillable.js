@@ -41,18 +41,28 @@ var settings, FillableWidget = {
         settings.values.chosen = option;
         settings.inputField.value = option;
         settings.inputField.focus();
-        settings.optionBox.className += " flbHidden";
+        FillableHelper.addClass(settings.optionBox, "flbHidden")
     },
 
     changeInput: function() {
         if (settings.values.typed != settings.inputField.value) {
             settings.values.typed = settings.inputField.value;
-            settings.optionBox.className = settings.optionBox.className.replace(/(?:^|\s)flbHidden(?!\S)/g , '');
+            FillableHelper.removeClass(settings.optionBox, "flbHidden");
             console.log(settings.values.typed)
         }
     },
 
     submitForm: function() {
         alert("Select")
+    }
+}
+
+var FillableHelper = {
+    removeClass: function(element, className) {
+        element.className = element.className.replace(new RegExp('(\\s|^)' + className + '(\\s|$)') , '');
+    },
+
+    addClass: function(element, className) {
+        element.className += " " + className;
     }
 }
