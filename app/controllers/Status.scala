@@ -16,6 +16,8 @@ import java.net.ConnectException
 object Status extends Controller {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
+  def test() = Action { Ok(html.helper.test()) }
+
   def index() = {
     AuthenticatedAction {
       Action.async {
