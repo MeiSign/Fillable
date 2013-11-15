@@ -1,7 +1,5 @@
 var settings, FillableWidget = {
-    settings: {
-        values: {}
-    },
+    settings: {},
 
     init: function(inputFieldId, fblHost, fblIndex) {
         settings = this.settings;

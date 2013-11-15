@@ -88,7 +88,7 @@ object CrudIndex extends Controller {
                 if (indexCreated.status == 200) {
                   EsClient.execute(new FillableIndexRegisterQuery(index.name, index.shards, index.replicas)) map {
                     indexRegistered => {
-                      if (indexRegistered.status == 201) {
+                      if (indexRegistered.status == 201 || indexRegistered.status == 200) {
                         Redirect(routes.CrudIndex.showSummary(index.name)).flashing("success" -> Messages("success.indexCreated"))
                       } else {
                         Redirect(routes.CrudIndex.showSummary(index.name)).flashing("error" -> Messages("error.indexCreatedButNotRegistered"))

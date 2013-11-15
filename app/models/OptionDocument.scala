@@ -10,9 +10,9 @@ case class OptionDocument(input: List[String] = List[String](), output: String =
 
 object OptionDocument {
   implicit val reader = (
-    (__ \ "_source" \ "fillableOption" \ "input").read[List[String]] and
-    (__ \ "_source" \ "fillableOption" \ "output").read[String] and
-    (__ \ "_source" \ "fillableOption" \ "weight").read[Int]) {
+    (__ \ "_source" \ "fillableOptions" \ "input").read[List[String]] and
+    (__ \ "_source" \ "fillableOptions" \ "output").read[String] and
+    (__ \ "_source" \ "fillableOptions" \ "weight").read[Int]) {
     (input, output, weight) => OptionDocument(input, output, weight)
   }
   (OptionDocument.apply _)
