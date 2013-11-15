@@ -1,4 +1,4 @@
-.flbOptionbox {
+.fblOptionbox {
     position: absolute;
     display: block;
     border: 1px solid #cccccc;
@@ -10,16 +10,16 @@
     padding: 0px;
 }
 
-.flbOptionbox li {
+.fblOptionbox li {
     padding: 5px 10px;
     color: #555555;
 }
 
-.flbOptionbox li:hover {
+.fblOptionbox li:hover {
     color: #FFF;
     background: #66afe9;
 }
 
-.flbHidden {
+.fblHidden {
     display: none;
 }

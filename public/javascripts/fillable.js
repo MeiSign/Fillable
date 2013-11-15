@@ -8,13 +8,23 @@ var settings, FillableWidget = {
         settings.inputField = document.getElementById(inputFieldId);
         settings.inputField.setAttribute("autocomplete", "off");
         settings.form = this.getFormFrom();
+        this.createUi();
         this.bindUiActions();
+    },
+
+    createUi: function() {
+        this.createOptionBox();
     },
 
     bindUiActions: function() {
         settings.form.setAttribute("onsubmit", "FillableWidget.submitForm()");
         settings.inputField.onkeyup = function() { FillableWidget.changeInput(); }
-        this.createOptionBox();
+
+        document.querySelector('body').addEventListener('click', function(event) {
+            if (event.target.className === 'fblOption') {
+                FillableWidget.selectOption(event.target.innerText)
+            }
+        });
     },
 
     getFormFrom: function() {
@@ -23,7 +33,7 @@ var settings, FillableWidget = {
 
     createOptionBox: function() {
         var styleOptionbox = function(optionBox) {
-            optionBox.setAttribute("class", "flbOptionbox");
+            optionBox.setAttribute("class", "fblOptionbox");
             var rect = settings.inputField.getBoundingClientRect();
             optionBox.style.left = rect.left + "px";
             optionBox.style.top = rect.bottom + "px";
@@ -31,7 +41,7 @@ var settings, FillableWidget = {
         }
 
         var optionBox = document.createElement("ul");
-        optionBox.innerHTML = "<li class='flbOption' onClick='FillableWidget.selectOption(this.innerText)'>test0</li><li class='flbOption' onClick='FillableWidget.selectOption(this.innerText)'>test1</li><li class='flbOption' onClick='FillableWidget.selectOption(this.innerText)'>test2</li>";
+        optionBox.innerHTML = "<li class='fblOption'>test0 test0 test0 </li><li class='fblOption'>test1</li><li class='fblOption'>test2</li>";
         styleOptionbox(optionBox);
         settings.inputField.parentNode.insertBefore(optionBox, settings.inputField)
         settings.optionBox = optionBox;
@@ -41,13 +51,13 @@ var settings, FillableWidget = {
         settings.values.chosen = option;
         settings.inputField.value = option;
         settings.inputField.focus();
-        FillableHelper.addClass(settings.optionBox, "flbHidden")
+        FillableHelper.addClass(settings.optionBox, "fblHidden")
     },
 
     changeInput: function() {
         if (settings.values.typed != settings.inputField.value) {
             settings.values.typed = settings.inputField.value;
-            FillableHelper.removeClass(settings.optionBox, "flbHidden");
+            FillableHelper.removeClass(settings.optionBox, "fblHidden");
             console.log(settings.values.typed)
         }
     },
