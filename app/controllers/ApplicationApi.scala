@@ -4,7 +4,7 @@ import play.api.mvc._
 import esclient.EsClient
 import play.api.libs.json._
 import scala.concurrent.Future
-import esclient.queries.{AddOptionDocumentQuery, GetDocumentById, GetOptionsQuery}
+import esclient.queries.{AddOptionDocumentQuery, GetDocumentByIdQuery, GetOptionsQuery}
 import models.OptionDocument
 import play.api.Play
 import collection.JavaConversions._
@@ -28,8 +28,8 @@ object ApplicationApi extends Controller {
   def addOption(indexName: String, typed: Option[String], chosen: Option[String]) = Action.async { implicit request => {
     val respHeader = if (allowAllOrigins || originWhitelist.contains(request.host)) (ACCESS_CONTROL_ALLOW_ORIGIN -> "*") else ("" -> "")
     if (!typed.getOrElse("").equals("")) {
-      val docIdString: String = if (chosen.isDefined) chosen.get else typed.get
-      EsClient.execute(new GetDocumentById(indexName, docIdString)) flatMap {
+      val docIdString: String = if (chosen.isDefined) chosen.get.hashCode.toString else typed.get.hashCode.toString
+      EsClient.execute(new GetDocumentByIdQuery(indexName, docIdString)) flatMap {
         document => {
           val doc: OptionDocument = document.json.validate[OptionDocument].getOrElse(OptionDocument(List[String](), "", 0))
           if (doc.isEmpty) {

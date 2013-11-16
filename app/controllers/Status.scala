@@ -58,7 +58,7 @@ object Status extends Controller {
           try {
             isAfterOrEqualToRequiredBuildtime(buildTimestamp.get)
           } catch {
-            case _ => false
+            case _: Throwable => false
           }
         } else {
           false

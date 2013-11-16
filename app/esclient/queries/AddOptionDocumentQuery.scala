@@ -19,3 +19,4 @@ class AddOptionDocumentQuery(indexName: String, docIdString: String, doc: Option
 
   def getUrlAddon: String = "/" + indexName + "/" + indexName + "/" + docId
 }
+

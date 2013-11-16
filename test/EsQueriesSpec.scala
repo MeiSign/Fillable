@@ -14,12 +14,14 @@ import esclient.EsQuery
 class EsQueriesSpec extends Specification {
   
   "EsQuery" should {
-    "respondError should report a valid error object" in new WithApplication {
-      EsQuery.respondWithError("errormsg") must beEqualTo(Json.obj("status" -> "error", "msg" -> "errormsg"))
+    "use get as default http method" in {
+      EsQuery.httpType must beEqualTo(HttpType.Get)
     }
-    "respondSuccess should report a valid object" in new WithApplication {
-      val testObj: JsObject = Json.obj("bla" -> "blub");
-      EsQuery.respondWithSuccess(testObj) must beEqualTo(Json.obj("status" -> "ok") ++ testObj)
+    "send an empty json object as default" in {
+      EsQuery.toJson must beEqualTo(Json.obj())
+    }
+    "use an empty string as default urladdon" in {
+      EsQuery.getUrlAddon must beEqualTo("")
     }
   }  
 }

@@ -31,8 +31,9 @@ object CrudIndex extends Controller {
   def containsOnlyValidChars(name: String, pattern: Set[Char]): Boolean = name.forall(validIndexChars.contains(_))
 
   def createForm = AuthenticatedAction {
-    Action.async { implicit request =>
-      EsClient.execute(new IndexExistsQuery("fbl_indices", "indices")) flatMap {
+    Action.async { implicit request => {
+      val indexExistsQuery = new IndexExistsQuery("fbl_indices", "indices")
+      EsClient.execute(indexExistsQuery) flatMap {
         index =>
           {
             if (index.status == 200) {
@@ -48,9 +49,10 @@ object CrudIndex extends Controller {
             }
           }
       } recover {
-        case e: ConnectException => Redirect(routes.Status.index()).flashing("error" -> Messages("error.connectionRefused", EsClient.url))
+        case e: ConnectException => Redirect(routes.Status.index()).flashing("error" -> Messages("error.connectionRefused", EsClient.url(indexExistsQuery)))
         case e: Throwable => Redirect(routes.Status.index()).flashing("error" -> Messages("error.couldNotGetIndex"))
       }
+    }
     }
   }
 
@@ -59,7 +61,8 @@ object CrudIndex extends Controller {
       Action.async {
         implicit request =>
           {
-            EsClient.execute(new GetFillableIndexQuery(indexName)) map {
+            val query = new GetFillableIndexQuery(indexName)
+            EsClient.execute(query) map {
               index => {
                 if (index.status == 200) {
                   val indexJson = index.json.validate[Index].getOrElse(new Index("", 0, 0))
@@ -69,7 +72,7 @@ object CrudIndex extends Controller {
                 }
               }
             } recover {
-              case e: ConnectException => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.connectionRefused", EsClient.url))
+              case e: ConnectException => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.connectionRefused", EsClient.url(query)))
               case e: Throwable => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.indexNotFound", indexName))
             }
           }
@@ -82,7 +85,8 @@ object CrudIndex extends Controller {
       indexForm.bindFromRequest.fold(
         errors => Future.successful(Ok(html.crudindex.form(errors))),
         index => {
-          EsClient.execute(new CreateFillableIndexQuery(index.name, index.shards, index.replicas)) flatMap {
+          val query = new CreateFillableIndexQuery(index.name, index.shards, index.replicas)
+          EsClient.execute(query) flatMap {
             indexCreated =>
               {
                 if (indexCreated.status == 200) {
@@ -107,7 +111,7 @@ object CrudIndex extends Controller {
                 }
               }
           } recover {
-            case e: ConnectException => Redirect(routes.CrudIndex.createForm()).flashing("error" -> Messages("error.connectionRefused", EsClient.url))
+            case e: ConnectException => Redirect(routes.CrudIndex.createForm()).flashing("error" -> Messages("error.connectionRefused", EsClient.url(query)))
             case e: Throwable => Redirect(routes.CrudIndex.createForm()).flashing("error" -> Messages("error.unableToCreateIndex"))
           }
         })
@@ -125,7 +129,8 @@ object CrudIndex extends Controller {
       indexForm.bindFromRequest.fold(
         errors => Future.successful(Ok(html.crudindex.form(errors))),
         index => {
-          EsClient.execute(new EditFillableIndexQuery(index.name, index.replicas)) flatMap {
+          val editQuery = new EditFillableIndexQuery(index.name, index.replicas)
+          EsClient.execute(editQuery) flatMap {
             indexUpdated => {
               if (indexUpdated.status == 200) {
                 EsClient.execute(new FillableIndexReregisterQuery(index.name, index.shards, index.replicas)) map {
@@ -149,7 +154,7 @@ object CrudIndex extends Controller {
               }
             }
           } recover {
-            case e: ConnectException => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.connectionRefused", EsClient.url))
+            case e: ConnectException => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.connectionRefused", EsClient.url(editQuery)))
             case e: Throwable => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.unableToUpdateIndex"))
           }
         }
@@ -158,8 +163,9 @@ object CrudIndex extends Controller {
   }
   
   def deleteIndex(indexName: String) = AuthenticatedAction {
-    Action.async { implicit request =>
-      EsClient.execute(new DeleteFillableIndexQuery(indexName)) flatMap {
+    Action.async { implicit request => {
+      val deleteIndexQuery = new DeleteFillableIndexQuery(indexName)
+      EsClient.execute(deleteIndexQuery) flatMap {
         indexDeleted => {
           if (indexDeleted.status == 200) {
             EsClient.execute(new FillableIndexUnregisterQuery(indexName)) map {
@@ -179,9 +185,10 @@ object CrudIndex extends Controller {
           }
         }
       } recover {
-        case e: ConnectException => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.connectionRefused", EsClient.url))
+        case e: ConnectException => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.connectionRefused", EsClient.url(deleteIndexQuery)))
         case e: Throwable => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.deleteIndexFailed"))
       }
     }
+  }
   }
 }

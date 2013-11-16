@@ -18,14 +18,15 @@ object ListIndices extends Controller {
       Action.async {
         implicit request =>
           {
-            EsClient.execute(new GetFillableIndicesQuery) map {
+            val getIndicesQuery = new GetFillableIndicesQuery
+            EsClient.execute(getIndicesQuery) map {
               indices => { 
                 Ok(html.listindices.indexList((indices.json \\ "_source") map {
                 index => { 
                   index.validate[Index].getOrElse(new Index("", 0, 0)) }
               }, highlightIndex.getOrElse(""))) }
             } recover {
-              case e: ConnectException => Redirect(routes.Status.index()).flashing("error" -> Messages("error.connectionRefused", EsClient.url))
+              case e: ConnectException => Redirect(routes.Status.index()).flashing("error" -> Messages("error.connectionRefused", EsClient.url(getIndicesQuery)))
               case e: Throwable => Redirect(routes.Status.index()).flashing("error" -> Messages("error.couldNotGetIndex"))
             }
           }
