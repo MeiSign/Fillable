@@ -22,6 +22,5 @@ class IndexExistsQuerySpec extends Specification {
       val query: IndexExistsQuery = new IndexExistsQuery("index", "type")
       query.toJson.toString() must beEqualTo("{}")
     }
-
   }
 }
