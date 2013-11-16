@@ -25,7 +25,7 @@ class FillableIndexRegisterQueriesSpec extends Specification {
 
     "return the correct http method" in new WithApplication {
       val query: FillableIndexRegisterQuery = new FillableIndexRegisterQuery("name", 4, 0)
-      query.httpType must beEqualTo(HttpType.Post)
+      query.httpType must beEqualTo(HttpType.post)
     }
 
     "return the correct json object for a valid query object" in new WithApplication {
@@ -42,7 +42,7 @@ class FillableIndexRegisterQueriesSpec extends Specification {
 
     "return the correct http method" in new WithApplication {
       val query: FillableIndexReregisterQuery= new FillableIndexReregisterQuery("name", 4, 0)
-      query.httpType must beEqualTo(HttpType.Put)
+      query.httpType must beEqualTo(HttpType.put)
     }
 
     "return the correct json object for a valid query object" in new WithApplication {
@@ -59,7 +59,7 @@ class FillableIndexRegisterQueriesSpec extends Specification {
 
     "return the correct http method" in new WithApplication {
       val query: FillableIndexUnregisterQuery = new FillableIndexUnregisterQuery("name")
-      query.httpType must beEqualTo(HttpType.Delete)
+      query.httpType must beEqualTo(HttpType.delete)
     }
 
     "return the correct json object for a valid query object" in new WithApplication {
@@ -67,7 +67,6 @@ class FillableIndexRegisterQueriesSpec extends Specification {
       query.toJson.toString() must beEqualTo("{}")
     }
   }
-
 
   "FillableIndexSetupQuery" should  {
     "return the correct url addon for a valid query object" in new WithApplication {
@@ -77,7 +76,7 @@ class FillableIndexRegisterQueriesSpec extends Specification {
 
     "return the correct http method" in new WithApplication {
       val query: FillableIndexSetupQuery = new FillableIndexSetupQuery()
-      query.httpType must beEqualTo(HttpType.Post)
+      query.httpType must beEqualTo(HttpType.post)
     }
 
     "return the correct json object for a valid query object" in new WithApplication {

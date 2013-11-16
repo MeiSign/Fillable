@@ -11,7 +11,7 @@ import play.api.i18n.Messages
 import play.api.libs.ws.Response
 
 class GetEsVersionQuery extends EsQuery {
- val httpType = HttpType.Get
+ val httpType = HttpType.get
   
   def getUrlAddon: String = "/"
   

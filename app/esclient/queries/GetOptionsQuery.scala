@@ -10,7 +10,7 @@ class GetOptionsQuery(indexName: String, toBeCompleted: String) extends EsQuery 
   require(toBeCompleted != null, "toBeCompleted String must not be null")
   require(indexName != null, "indexName String must not be null")
   
-  val httpType = HttpType.Post
+  val httpType = HttpType.post
   
   def getUrlAddon: String = "/" + indexName + "/_suggest"
   

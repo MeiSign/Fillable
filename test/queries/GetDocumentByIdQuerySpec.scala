@@ -19,7 +19,7 @@ class GetDocumentByIdQuerySpec extends Specification {
 
        "return the correct http method" in new WithApplication {
           val query: GetDocumentByIdQuery = new GetDocumentByIdQuery("index", "id")
-          query.httpType must beEqualTo(HttpType.Get)
+          query.httpType must beEqualTo(HttpType.get)
        }
   }
 }

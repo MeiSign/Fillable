@@ -15,7 +15,7 @@ class EsQueriesSpec extends Specification {
   
   "EsQuery" should {
     "use get as default http method" in {
-      EsQuery.httpType must beEqualTo(HttpType.Get)
+      EsQuery.httpType must beEqualTo(HttpType.get)
     }
     "send an empty json object as default" in {
       EsQuery.toJson must beEqualTo(Json.obj())

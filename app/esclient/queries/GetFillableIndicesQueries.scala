@@ -7,7 +7,7 @@ import play.api.libs.json.Json
 
 class GetFillableIndicesQuery extends EsQuery {
   
-  val httpType: HttpType.Value = HttpType.Get
+  val httpType: HttpType.Value = HttpType.get
 
   def getUrlAddon: String = "/fbl_indices/indices/_search"
 
@@ -16,7 +16,7 @@ class GetFillableIndicesQuery extends EsQuery {
 
 class GetFillableIndexQuery(index: String) extends EsQuery {
   
-  val httpType: HttpType.Value = HttpType.Get
+  val httpType: HttpType.Value = HttpType.get
 
   def getUrlAddon: String = "/fbl_indices/indices/" + index.hashCode + "/_source"
 

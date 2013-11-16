@@ -8,7 +8,7 @@ import play.api.libs.json.JsObject
 
 class IndexExistsQuery(indexName: String, typeName: String) extends EsQuery {
 
-  val httpType: HttpType.Value = HttpType.Head
+  val httpType: HttpType.Value = HttpType.head
   
   def getUrlAddon: String = "/" + indexName + "/" + typeName
   

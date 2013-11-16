@@ -6,7 +6,7 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 
 class EditFillableIndexQuery(name: String, replicas: Int) extends EsQuery {
-  val httpType: HttpType.Value = HttpType.Put
+  val httpType: HttpType.Value = HttpType.put
   
   def getUrlAddon: String = "/" + name + "/_settings"
   
@@ -14,7 +14,7 @@ class EditFillableIndexQuery(name: String, replicas: Int) extends EsQuery {
 }
 
 class DeleteFillableIndexQuery(name: String) extends EsQuery {
-  val httpType: HttpType.Value = HttpType.Delete
+  val httpType: HttpType.Value = HttpType.delete
   
   def getUrlAddon: String = "/" + name
   
@@ -24,7 +24,7 @@ class DeleteFillableIndexQuery(name: String) extends EsQuery {
 class CreateFillableIndexQuery(name: String, shards: Int = 4, replicas: Int = 0) extends EsQuery {
   val index = "fbl_" + name.toLowerCase()
 
-  val httpType: HttpType.Value = HttpType.Post
+  val httpType: HttpType.Value = HttpType.post
   
   def getUrlAddon: String = "/" + index
   

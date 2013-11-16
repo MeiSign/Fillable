@@ -5,7 +5,7 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 
 class GetDocumentByIdQuery(indexName: String, id: String) extends EsQuery {
-  val httpType: HttpType.Value = HttpType.Get
+  val httpType: HttpType.Value = HttpType.get
 
   def toJson: JsObject = Json.obj()
 

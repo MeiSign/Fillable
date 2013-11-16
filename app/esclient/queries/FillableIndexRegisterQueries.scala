@@ -8,7 +8,7 @@ import play.api.libs.json.JsObject
 
 class FillableIndexRegisterQuery(name: String, shards: Int, replicas: Int) extends EsQuery {
   val index = "fbl_" + name.toLowerCase()
-  val httpType: HttpType.Value = HttpType.Post
+  val httpType: HttpType.Value = HttpType.post
   
   def getUrlAddon: String = "/fbl_indices/indices/" + index.hashCode()
   
@@ -18,7 +18,7 @@ class FillableIndexRegisterQuery(name: String, shards: Int, replicas: Int) exten
 }
 
 class FillableIndexReregisterQuery(name: String, shards: Int, replicas: Int) extends EsQuery {
-  val httpType: HttpType.Value = HttpType.Put
+  val httpType: HttpType.Value = HttpType.put
   
   def getUrlAddon: String = "/fbl_indices/indices/" + name.hashCode()
   
@@ -28,7 +28,7 @@ class FillableIndexReregisterQuery(name: String, shards: Int, replicas: Int) ext
 }
 
 class FillableIndexUnregisterQuery(name: String) extends EsQuery {
-  val httpType: HttpType.Value = HttpType.Delete
+  val httpType: HttpType.Value = HttpType.delete
   
   def getUrlAddon: String = "/fbl_indices/indices/" + name.hashCode()
   
@@ -36,7 +36,7 @@ class FillableIndexUnregisterQuery(name: String) extends EsQuery {
 }
 
 class FillableIndexSetupQuery() extends EsQuery {
-  val httpType: HttpType.Value = HttpType.Post
+  val httpType: HttpType.Value = HttpType.post
 
   def getUrlAddon: String = "/fbl_indices"
 

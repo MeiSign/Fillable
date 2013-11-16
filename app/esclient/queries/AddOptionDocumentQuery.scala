@@ -6,7 +6,7 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 
 class AddOptionDocumentQuery(indexName: String, docIdString: String, doc: OptionDocument) extends EsQuery {
-  val httpType: HttpType.Value = HttpType.Put
+  val httpType: HttpType.Value = HttpType.put
   val docId = docIdString.hashCode
 
   def toJson: JsObject = Json.obj(

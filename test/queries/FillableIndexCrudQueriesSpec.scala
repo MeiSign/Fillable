@@ -20,7 +20,7 @@ class FillableIndexCrudQueriesSpec extends Specification {
 
     "return the correct http method" in new WithApplication {
       val query: CreateFillableIndexQuery= new CreateFillableIndexQuery("name", 4, 0)
-      query.httpType must beEqualTo(HttpType.Post)
+      query.httpType must beEqualTo(HttpType.post)
     }
 
     "return the correct json object for a valid query object" in new WithApplication {
@@ -37,7 +37,7 @@ class FillableIndexCrudQueriesSpec extends Specification {
 
     "return the correct http method" in new WithApplication {
       val query: DeleteFillableIndexQuery= new DeleteFillableIndexQuery("name")
-      query.httpType must beEqualTo(HttpType.Delete)
+      query.httpType must beEqualTo(HttpType.delete)
     }
 
     "return the correct json object for a valid query object" in new WithApplication {
@@ -54,7 +54,7 @@ class FillableIndexCrudQueriesSpec extends Specification {
 
     "return the correct http method" in new WithApplication {
       val query: EditFillableIndexQuery = new EditFillableIndexQuery("name", 4)
-      query.httpType must beEqualTo(HttpType.Put)
+      query.httpType must beEqualTo(HttpType.put)
     }
 
     "return the correct json object for a valid query object" in new WithApplication {

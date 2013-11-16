@@ -15,11 +15,11 @@ case class EsClient(val requestHolder: Option[WS.WSRequestHolder]) {
 
   def execute(query: EsQuery): Future[Response] = {
     query.httpType match {
-      case HttpType.Get => get(query)
-      case HttpType.Post => post(query)
-      case HttpType.Put => put(query)
-      case HttpType.Head => head(query)
-      case HttpType.Delete => delete(query)
+      case HttpType.`get` => get(query)
+      case HttpType.`post` => post(query)
+      case HttpType.`put` => put(query)
+      case HttpType.`head` => head(query)
+      case HttpType.`delete` => delete(query)
       case _ => get(query)
     }
   }

@@ -20,7 +20,7 @@ class AddOptionDocumentQuerySpec extends Specification {
 
     "return the correct http method" in new WithApplication {
       val query: AddOptionDocumentQuery = new AddOptionDocumentQuery("index", "id", new OptionDocument())
-      query.httpType must beEqualTo(HttpType.Put)
+      query.httpType must beEqualTo(HttpType.put)
     }
 
     "return the correct Json object for a valid query object" in new WithApplication {

@@ -47,31 +47,31 @@ class EsClientSpec extends Specification with Mockito {
 }
 
 class TestGetQuery() extends EsQuery {
-  val httpType: HttpType.Value = HttpType.Get
+  val httpType: HttpType.Value = HttpType.get
   def getUrlAddon: String = ""
   def toJson: JsObject = Json.obj()
 }
 
 class TestPostQuery() extends EsQuery {
-  val httpType: HttpType.Value = HttpType.Post
+  val httpType: HttpType.Value = HttpType.post
   def getUrlAddon: String = ""
   def toJson: JsObject = Json.obj()
 }
 
 class TestPutQuery() extends EsQuery {
-  val httpType: HttpType.Value = HttpType.Put
+  val httpType: HttpType.Value = HttpType.put
   def getUrlAddon: String = ""
   def toJson: JsObject = Json.obj()
 }
 
 class TestHeadQuery() extends EsQuery {
-  val httpType: HttpType.Value = HttpType.Head
+  val httpType: HttpType.Value = HttpType.head
   def getUrlAddon: String = ""
   def toJson: JsObject = Json.obj()
 }
 
 class TestDeleteQuery() extends EsQuery {
-  val httpType: HttpType.Value = HttpType.Delete
+  val httpType: HttpType.Value = HttpType.delete
   def getUrlAddon: String = ""
   def toJson: JsObject = Json.obj()
 }
