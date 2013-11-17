@@ -4,8 +4,6 @@ import org.specs2.mutable.Specification
 import play.api.test.WithApplication
 import org.specs2.mock.Mockito
 import play.api.libs.json.Json
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration.Duration
 
 class AutoCompletionServiceSpec extends Specification with Mockito {
 
@@ -54,12 +52,12 @@ class AutoCompletionServiceSpec extends Specification with Mockito {
 
     "getOption should return empty js array for empty index parameter" in new WithApplication {
       val autoCompletionService: AutoCompletionService = new AutoCompletionService
-      autoCompletionService.getOptions("", "toBeCompleted") must beEqualTo(Json.arr())
+      autoCompletionService.getOptions("", "toBeCompleted") must beEqualTo(Json.arr()).await
     }
 
     "getOption should return empty js array for empty toBeCompleted parameter" in new WithApplication {
       val autoCompletionService: AutoCompletionService = new AutoCompletionService
-      autoCompletionService.getOptions("index", "") must beEqualTo(Json.arr())
+      autoCompletionService.getOptions("index", "") must beEqualTo(Json.arr()).await
     }
   }
 

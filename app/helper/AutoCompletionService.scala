@@ -1,9 +1,9 @@
 package helper
 
-import play.api.libs.json.{JsValue, JsArray}
+import play.api.libs.json.{Json, JsValue, JsArray}
 import models.OptionDocument
 import esclient.EsClient
-import esclient.queries.{AddOptionDocumentQuery, GetDocumentByIdQuery}
+import esclient.queries.{GetOptionsQuery, AddOptionDocumentQuery, GetDocumentByIdQuery}
 import scala.concurrent.Future
 
 class AutoCompletionService {
@@ -43,7 +43,18 @@ class AutoCompletionService {
     }
   }
 
-  def getOptions(indexName: String, toBeCompleted: String): JsArray = ???
+  def getOptions(indexName: String, toBeCompleted: String): Future[JsArray] = {
+    if (indexName.isEmpty || toBeCompleted.isEmpty) {
+      Future.successful(Json.arr())
+    } else {
+      EsClient.execute(new GetOptionsQuery(indexName, toBeCompleted)) map {
+        options => (options.json \ indexName).asInstanceOf[JsArray](0).asInstanceOf[JsArray]
+      } recover {
+        case _ => Json.arr()
+      }
+    }
+  }
+
   def parseDocument(json: JsValue): OptionDocument = {
     json.validate[OptionDocument].getOrElse(OptionDocument(List[String](), "", 0))
   }

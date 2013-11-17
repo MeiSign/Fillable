@@ -19,10 +19,9 @@ object ApplicationApi extends Controller {
   def getOptions(indexName: String, toBeCompleted: String) = Action.async {
     implicit request => {
       val respHeader = if (allowAllOrigins || originWhitelist.contains(request.host)) (ACCESS_CONTROL_ALLOW_ORIGIN -> "*") else ("" -> "")
-      EsClient.execute(new GetOptionsQuery(indexName, toBeCompleted)) map {
-        options => {
-          Ok((options.json \ indexName).asInstanceOf[JsArray](0)).withHeaders(respHeader)
-        }
+      val autoCompletionService: AutoCompletionService = new AutoCompletionService
+      autoCompletionService.getOptions(indexName, toBeCompleted) map {
+        json => Ok(json).withHeaders(respHeader)
       }
     }
   }
