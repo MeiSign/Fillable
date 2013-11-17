@@ -1,6 +1,6 @@
 package controllers
 
-import helper.AuthenticatedAction
+import _root_.helper.{IndexNameValidator, AuthenticatedAction}
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
@@ -14,21 +14,18 @@ import java.net.ConnectException
 import scala.Some
 
 object CrudIndex extends Controller {
-  val validIndexChars = (('a' to 'z') ++ ('A' to 'Z') ++ ('0' to '9') ++ List('_')).toSet
 
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   val indexForm: Form[Index] = Form(
     mapping(
-      "indexname" -> nonEmptyText(minLength = 4).verifying(Messages("error.noSpecialchars"), indexname => containsOnlyValidChars(indexname, validIndexChars)),
+      "indexname" -> nonEmptyText(minLength = 4).verifying(Messages("error.noSpecialchars"), indexname => IndexNameValidator.containsOnlyValidChars(indexname)),
       "shards" -> number(min = 0, max = 10),
       "replicas" -> number(min = 0, max = 10)) {
         (indexname, shards, replicas) => Index(indexname, shards, replicas)
       } {
         (index => Some(index.name, index.shards, index.replicas))
       })
-
-  def containsOnlyValidChars(name: String, pattern: Set[Char]): Boolean = name.forall(validIndexChars.contains(_))
 
   def createForm = AuthenticatedAction {
     Action.async { implicit request => {
