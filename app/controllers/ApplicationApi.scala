@@ -26,11 +26,14 @@ object ApplicationApi extends Controller {
     }
   }
 
-  def addOption(indexName: String, typed: Option[String], chosen: Option[String]) = Action.async {
+  def addOption(indexName: String) = Action.async {
     implicit request => {
       val respHeader = if (allowAllOrigins || originWhitelist.contains(request.host)) (ACCESS_CONTROL_ALLOW_ORIGIN -> "*") else ("" -> "")
       val autoCompletionService: AutoCompletionService = new AutoCompletionService
 
+      val map : Map[String,Seq[String]] = request.body.asFormUrlEncoded.getOrElse(Map())
+      val typed: Option[String] = map.getOrElse("typed", List()).headOption
+      val chosen: Option[String] = map.getOrElse("chosen", List()).headOption
       autoCompletionService.addOption(indexName, typed, chosen) map {
         statusCode => statusCode match {
           case 400 => Ok(Json.obj("status" -> "error")).withHeaders(respHeader)

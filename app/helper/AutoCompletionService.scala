@@ -48,7 +48,9 @@ class AutoCompletionService {
       Future.successful(Json.arr())
     } else {
       EsClient.execute(new GetOptionsQuery(indexName, toBeCompleted)) map {
-        options => (options.json \ indexName).asInstanceOf[JsArray](0).asInstanceOf[JsArray]
+        options => {
+          ((options.json \ indexName).asInstanceOf[JsArray](0) \ "options").asInstanceOf[JsArray]
+        }
       } recover {
         case _ => Json.arr()
       }

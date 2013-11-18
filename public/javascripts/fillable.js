@@ -1,5 +1,10 @@
 var settings, FillableWidget = {
-    settings: {},
+    settings: {
+        values: {
+            typed: "",
+            chosen: ""
+        }
+    },
 
     init: function(inputFieldId, fblHost, fblIndex) {
         settings = this.settings;
@@ -23,7 +28,10 @@ var settings, FillableWidget = {
         }
 
         document.querySelector('body').addEventListener('click', function(event) {
+            console.log("click event");
+            console.log(event)
             if (event.target.className === 'fblOption') {
+                console.log("click on option");
                 FillableWidget.selectOption(event.target.innerText)
             }
         });
@@ -64,44 +72,52 @@ var settings, FillableWidget = {
     },
 
     submitForm: function() {
-        alert("Select")
+        FillableWidget.addOption()
     },
 
     getOptions: function() {
-        var http = getHttpRequestObject();
+        var http = FillableHelper.getHttpRequestObject();
         if (http != null) {
             http.open("GET", getOptionsUrl(), true);
             http.send();
             http.onreadystatechange = function() {
                 if ((http.readyState == 4) && (http.status == 200)) {
                     emptyOptionList();
-                    var json = eval("("+http.responseText+")")
-                    for (var i = 0; i < json.options.length; i++) {
-                        var newLi = document.createElement("li");
-                        var text = document.createTextNode(json.options[i].text);
-                        newLi.appendChild(text);
-                        settings.optionBox.appendChild(newLi)
+                    var options = eval("(" + http.responseText + ")")
+                    if (options !== undefined) {
+                        for (var i = 0; i < options.length; i++) {
+                            var newLi = document.createElement("li");
+                            newLi.className = "fblOption"
+                            var text = document.createTextNode(options[i].text);
+                            newLi.appendChild(text);
+                            settings.optionBox.appendChild(newLi)
+                        }
                     }
                 }
             }
         }
 
-        function getHttpRequestObject() {
-            if (window.XMLHttpRequest) {
-                return new XMLHttpRequest();
-            } else if (window.ActiveXObject) {
-                return new ActiveXObject("Microsoft.XMLHTTP");
-            }
-        }
-
         function getOptionsUrl() {
-            return settings.host + "/complete/" + settings.index + "/" + settings.inputField.value;
+            return settings.host + "/complete/" + settings.index + "?toBeCompleted=" + settings.inputField.value;
         }
 
         function emptyOptionList() {
             while (settings.optionBox.firstChild) {
                 settings.optionBox.removeChild(settings.optionBox.firstChild);
             }
+        }
+    },
+
+    addOption: function () {
+        var http = FillableHelper.getHttpRequestObject();
+        if (http != null) {
+            http.open("POST", addOptionsUrl(), true);
+            http.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+            http.send("typed=" + encodeURIComponent(settings.values.typed) + "&chosen=" + encodeURIComponent(settings.values.chosen));
+        }
+
+        function addOptionsUrl() {
+            return settings.host + "/addCompletion/" + settings.index;
         }
     }
 }
@@ -113,5 +129,13 @@ var FillableHelper = {
 
     addClass: function(element, className) {
         element.className += " " + className;
+    },
+
+    getHttpRequestObject: function() {
+        if (window.XMLHttpRequest) {
+            return new XMLHttpRequest();
+        } else if (window.ActiveXObject) {
+            return new ActiveXObject("Microsoft.XMLHTTP");
+        }
     }
 }

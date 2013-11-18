@@ -3,12 +3,11 @@
 # ~~~~
 
 # Fillable API
-GET   /complete/:indexName/:toBeCompleted	    controllers.ApplicationApi.getOptions(indexName: String, toBeCompleted: String)
-POST  /addCompletion/:indexName                 controllers.ApplicationApi.addOption(indexName: String, typed: Option[String], chosen: Option[String])
+GET   /complete/:indexName          controllers.ApplicationApi.getOptions(indexName: String, toBeCompleted: String)
+POST  /addCompletion/:indexName     controllers.ApplicationApi.addOption(indexName: String)
 
 # Admin Backend
 GET  /                  controllers.ListIndices.index(highlightIndex: Option[String])
-GET	 /index          	controllers.ListIndices.index(highlightIndex: Option[String])
 GET  /status            controllers.Status.index()
 
 # Crud Index
