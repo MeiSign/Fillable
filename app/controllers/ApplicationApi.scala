@@ -35,13 +35,7 @@ object ApplicationApi extends Controller {
       val typed: Option[String] = map.getOrElse("typed", List()).headOption
       val chosen: Option[String] = map.getOrElse("chosen", List()).headOption
       autoCompletionService.addOption(indexName, typed, chosen) map {
-        statusCode => statusCode match {
-          case 400 => Ok(Json.obj("status" -> "error")).withHeaders(respHeader)
-          case 200 => Ok(Json.obj("status" -> "added new option")).withHeaders(respHeader)
-          case 202 => Ok(Json.obj("status" -> "extended option")).withHeaders(respHeader)
-          case 204 => Ok(Json.obj("status" -> "nothing to add")).withHeaders(respHeader)
-          case _ => Ok(Json.obj("status" -> "unknown")).withHeaders(respHeader)
-        }
+        statusCode => Ok(autoCompletionService.getJsonResponse(statusCode)).withHeaders(respHeader)
       }
     }
   }

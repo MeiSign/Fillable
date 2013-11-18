@@ -28,6 +28,11 @@ var settings, FillableWidget = {
             FillableWidget.changeInput();
         }
 
+        settings.form.addEventListener("submit", function(e) {
+            e.preventDefault();
+            FillableWidget.addOption();
+        });
+
         document.querySelector('body').addEventListener('click', function(event) {
              if (event.target.className === 'fblOption') {
                 FillableWidget.selectOption(event.target.innerText)
@@ -70,7 +75,7 @@ var settings, FillableWidget = {
     },
 
     submitForm: function() {
-        FillableWidget.addOption()
+        FillableWidget.addOption();
     },
 
     getOptions: function() {

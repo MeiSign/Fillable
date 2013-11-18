@@ -10,6 +10,16 @@ class AutoCompletionService {
 
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
+  def getJsonResponse(statusCode: Int): JsValue = {
+    statusCode match {
+      case 400 => Json.obj("status" -> "error")
+      case 200 => Json.obj("status" -> "added new option")
+      case 202 => Json.obj("status" -> "extended option")
+      case 204 => Json.obj("status" -> "nothing to add")
+      case _ => Json.obj("status" -> "unknown")
+    }
+  }
+
   def addOption(indexNameParam: String, typed: Option[String], chosen: Option[String]): Future[Int] = {
     indexNameParam match {
       case emptyName if (emptyName.isEmpty) => Future.successful(400)
@@ -26,7 +36,7 @@ class AutoCompletionService {
   }
 
   def addOptionToEs(indexName: String, docIdString: String, typed: String): Future[Int] = {
-    EsClient.execute(new GetDocumentByIdQuery(indexName, docIdString)) flatMap {
+    EsClient.execute(new GetDocumentByIdQuery(indexName, docIdString.hashCode.toString)) flatMap {
       document => {
         val doc: OptionDocument = parseDocument(document.json)
         if (doc.isEmpty) {
@@ -58,13 +68,14 @@ class AutoCompletionService {
   }
 
   def parseDocument(json: JsValue): OptionDocument = {
+    println(json)
     json.validate[OptionDocument].getOrElse(OptionDocument(List[String](), "", 0))
   }
 
   def getDocumentId(typed: String, chosen: Option[String]): String = {
     chosen.getOrElse("") match {
-      case emptyChosenString if (emptyChosenString.isEmpty) => typed.hashCode.toString
-      case nonEmptyChosenString => nonEmptyChosenString.hashCode.toString
+      case emptyChosenString if (emptyChosenString.isEmpty) => typed
+      case nonEmptyChosenString => nonEmptyChosenString
     }
   }
 }
