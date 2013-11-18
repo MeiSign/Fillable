@@ -23,17 +23,15 @@ var settings, FillableWidget = {
 
     bindUiActions: function() {
         settings.form.setAttribute("onsubmit", "FillableWidget.submitForm()");
-        settings.inputField.onkeyup = function() {
+
+        settings.inputField.onkeyup = function(event) {
             FillableWidget.changeInput();
         }
 
         document.querySelector('body').addEventListener('click', function(event) {
-            console.log("click event");
-            console.log(event)
-            if (event.target.className === 'fblOption') {
-                console.log("click on option");
+             if (event.target.className === 'fblOption') {
                 FillableWidget.selectOption(event.target.innerText)
-            }
+             }
         });
     },
 
@@ -84,7 +82,9 @@ var settings, FillableWidget = {
                 if ((http.readyState == 4) && (http.status == 200)) {
                     emptyOptionList();
                     var options = eval("(" + http.responseText + ")")
-                    if (options !== undefined) {
+                    if (options === undefined || options.length == 0) {
+                        FillableHelper.addClass(settings.optionBox, "fblHidden")
+                    } else {
                         for (var i = 0; i < options.length; i++) {
                             var newLi = document.createElement("li");
                             newLi.className = "fblOption"
