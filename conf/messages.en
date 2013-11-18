@@ -8,7 +8,7 @@ error.connectionRefused=Connection refused from Elasticsearch Cluster. Elasticse
 error.indexNotCreated=Fillable was unable to create the settings Index. Please check your config and elasticsearch cluster.
 error.couldNotGetSettingsIndex=Fillable was unable to read the settings Index. Please check your config and elasticsearch cluster.
 error.wrongCredentials=Username or Password was incorrect
-error.noSpecialchars=Special characters are not allowed
+error.noSpecialchars=No upper case letters and special characters(except "_") allowed.
 error.indexAlreadyExists=Can not create Index {0}. An index with that name already exists.
 error.unkownIndexAlreadyExists=Can not create Index. An index with that name already exists.
 error.indexNotFound=There is no Fillable index with the name {0}
@@ -27,7 +27,7 @@ success.indexWillBeChangedSoon=Ok! Your requested change is queued and will be p
 
 # General text messages
 # ~~~~~
-text.snippetSummary=Include this snippet on any page with a form where you want to use your new Fillable Autocompletion Index. Set the formField variable to the id of the input field which shall be autocompleted.
+text.snippetSummary=Include the black parts of this snippet on any page with a form where you want to use your new Fillable Autocompletion Index.
 text.confirmDelete= Are you sure that you want to delete the Index and all its data?
 
 # Titel messages

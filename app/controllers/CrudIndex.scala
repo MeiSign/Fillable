@@ -117,7 +117,9 @@ object CrudIndex extends Controller {
 
   def showSummary(indexName: String) = AuthenticatedAction {
     Action {
-      implicit request => Ok(html.crudindex.snippetSummary(indexName))
+      implicit request => {
+        Ok(html.crudindex.snippetSummary("http://" + request.host, indexName.toLowerCase))
+      }
     }
   }
 

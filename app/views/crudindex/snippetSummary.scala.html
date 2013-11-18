@@ -1,4 +1,4 @@
-@(indexName: String)(implicit request: Request[Any], flash: Flash)
+@(host: String, indexName: String)(implicit request: Request[Any], flash: Flash)
 
 @import helper._ 
 @implicitField = @{ FieldConstructor(formInput.f) } 
@@ -8,9 +8,23 @@
   @notice(flash)
 
   <p>@Messages("text.snippetSummary")<p>
-  <pre class="col-lg-offset-2 col-lg-8">
-voll der miese javascript code hier für den fillable index @indexName
-  ist sogar eingerückt
-    whoop whoop
+  <pre class="col-lg-12">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        <span class="important">&lt;script src="@host/assets/javascripts/fillable.js"&gt;&lt;/script&gt;</span>
+        <span class="important">&lt;link href="@host/assets/stylesheets/fillable.css" rel="stylesheet"&gt;</span>
+    &lt;/head&gt;
+
+    &lt;body&gt;
+        &lt;form&gt;
+            ...
+            <span class="important">&lt;input type="text" id="@(indexName)AutoCompletion"&gt;</span>
+            ...
+        &lt;/form&gt;
+
+        <span class="important">&lt;script&gt;FillableWidget.init("@(indexName)AutoCompletion", "@host", "fbl_@indexName");&lt;/script&gt;</span>
+    &lt;/body&gt;
+&lt;/html&gt;
   </pre>
 }
