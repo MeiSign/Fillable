@@ -5,10 +5,6 @@ import esclient.queries.{GetFillableIndexQuery, GetFillableIndicesQuery}
 import esclient.EsClient
 import models.{Index, IndexListEntry}
 import play.api.libs.json.JsObject
-import views.html
-import controllers.routes
-import play.api.i18n.Messages
-import java.net.ConnectException
 
 class IndicesStatsService {
 

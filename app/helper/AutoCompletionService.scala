@@ -68,7 +68,6 @@ class AutoCompletionService {
   }
 
   def parseDocument(json: JsValue): OptionDocument = {
-    println(json)
     json.validate[OptionDocument].getOrElse(OptionDocument(List[String](), "", 0))
   }
 

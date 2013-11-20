@@ -38,7 +38,7 @@ object CrudIndex extends Controller {
           val indicesStatsService = new IndicesStatsService
           indicesStatsService.getIndexSettings(indexName) map {
             case index if index.isEmpty => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.indexNotFound", indexName))
-            case index if index.isDefined => Ok(html.crudindex.form(indexForm.fill(index.getOrElse(Index("", 0, 0))), false, true))
+            case index => Ok(html.crudindex.form(indexForm.fill(index.getOrElse(Index("", 0, 0))), false, true))
           }
         }
       }
