@@ -1,4 +1,4 @@
-@(indices: Seq[Index], highlightName: String = "",  level:String = "", msg: String = "")(implicit request: Request[Any], flash: Flash)
+@(indices: List[IndexListEntry], highlightName: String = "",  level:String = "", msg: String = "")(implicit request: Request[Any], flash: Flash)
 
 @import helper._ 
 @implicitField = @{ FieldConstructor(formInput.f) } 
@@ -12,8 +12,8 @@
        <tr>
          <th class="col-sm-1">#</th>
          <th class="col-sm-6">Name</th>
-         <th class="text-center">Shards</th>
-         <th class="text-center">Replicas</th>
+         <th class="text-center">documents</th>
+         <th class="text-center">Size</th>
          <th><div class="text-center">Actions</div></th>
        </tr>
      </thead>
@@ -22,8 +22,8 @@
         <tr class="@("warning".when(index.name.equals(highlightName)))">
       <td>@{number + 1}</td>
       <td>@index.name</td>
-      <td class="text-center">@index.shards</td>
-      <td class="text-center">@index.replicas</td>
+      <td class="text-center">@index.documents</td>
+      <td class="text-center">@index.size</td>
       <td>
           <div class="text-center">
              <div class="btn-group btn-group-xs text-right">
