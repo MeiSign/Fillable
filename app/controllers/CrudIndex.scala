@@ -1,6 +1,6 @@
 package controllers
 
-import _root_.helper.{IndexNameValidator, AuthenticatedAction}
+import _root_.helper.{IndicesStatsService, AuthenticatedAction, IndexNameValidator}
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
@@ -11,6 +11,8 @@ import scala.concurrent._
 import esclient.EsClient
 import esclient.queries._
 import java.net.ConnectException
+import scala.Some
+import play.api.libs.json._
 import scala.Some
 
 object CrudIndex extends Controller {
@@ -27,52 +29,18 @@ object CrudIndex extends Controller {
         (index => Some(index.name, index.shards, index.replicas))
       })
 
-  def createForm = AuthenticatedAction {
-    Action.async { implicit request => {
-      val indexExistsQuery = new IndexExistsQuery("fbl_indices", "indices")
-      EsClient.execute(indexExistsQuery) flatMap {
-        index =>
-          {
-            if (index.status == 200) {
-              Future.successful(Ok(html.crudindex.form(indexForm)))
-            } else {
-              EsClient.execute(new FillableIndexSetupQuery()) map {
-                indexCreated =>
-                  if (indexCreated.status == 200) Redirect(routes.CrudIndex.createForm).flashing("success" -> Messages("success.setupComplete"))
-                  else Ok(html.crudindex.form(indexForm, true)).flashing("error" -> Messages("error.indexNotCreated"))
-              } recover {
-                case e: Throwable => Ok(html.crudindex.form(indexForm, true)).flashing("error" -> Messages("error.indexNotCreated"))
-              }
-            }
-          }
-      } recover {
-        case e: ConnectException => Redirect(routes.Status.index()).flashing("error" -> Messages("error.connectionRefused", EsClient.url(indexExistsQuery)))
-        case e: Throwable => Redirect(routes.Status.index()).flashing("error" -> Messages("error.couldNotGetIndex"))
-      }
-    }
-    }
-  }
+  def createForm = AuthenticatedAction { Action { implicit request => Ok(html.crudindex.form(indexForm, false)) }}
 
   def editForm(indexName: String) = {
     AuthenticatedAction {
       Action.async {
-        implicit request =>
-          {
-            val query = new GetFillableIndexQuery(indexName)
-            EsClient.execute(query) map {
-              index => {
-                if (index.status == 200) {
-                  val indexJson = index.json.validate[Index].getOrElse(new Index("", 0, 0))
-                  Ok(html.crudindex.form(indexForm.fill(indexJson), false, true))
-                } else {
-                  Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.indexNotFound", indexName))
-                }
-              }
-            } recover {
-              case e: ConnectException => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.connectionRefused", EsClient.url(query)))
-              case e: Throwable => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.indexNotFound", indexName))
-            }
+        implicit request => {
+          val indicesStatsService = new IndicesStatsService
+          indicesStatsService.getIndexSettings(indexName) map {
+            case index if index.isEmpty => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.indexNotFound", indexName))
+            case index if index.isDefined => Ok(html.crudindex.form(indexForm.fill(index.getOrElse(Index("", 0, 0))), false, true))
           }
+        }
       }
     }
   }
@@ -83,27 +51,14 @@ object CrudIndex extends Controller {
         errors => Future.successful(Ok(html.crudindex.form(errors))),
         index => {
           val query = new CreateFillableIndexQuery(index.name, index.shards, index.replicas)
-          EsClient.execute(query) flatMap {
-            indexCreated =>
-              {
+          EsClient.execute(query) map {
+            indexCreated => {
                 if (indexCreated.status == 200) {
-                  EsClient.execute(new FillableIndexRegisterQuery(index.name, index.shards, index.replicas)) map {
-                    indexRegistered => {
-                      if (indexRegistered.status == 201 || indexRegistered.status == 200) {
-                        Redirect(routes.CrudIndex.showSummary(index.name)).flashing("success" -> Messages("success.indexCreated"))
-                      } else {
-                        Redirect(routes.CrudIndex.showSummary(index.name)).flashing("error" -> Messages("error.indexCreatedButNotRegistered"))
-                      }
-                    }
-                  } recover {
-                    case _ => Redirect(routes.CrudIndex.showSummary(index.name)).flashing("error" -> Messages("error.indexCreatedButNotRegistered"))
-                  }
+                  Redirect(routes.CrudIndex.showSummary(index.name)).flashing("success" -> Messages("success.indexCreated"))
                 } else {
                   (indexCreated.json \ "error") match {
-                    case error if error.toString.contains("IndexAlreadyExistsException") =>
-                      Future.successful(
-                        Redirect(routes.CrudIndex.createForm()).flashing("error" -> Messages("error.indexAlreadyExists", "fbl_" + index.name)))
-                    case _ => Future.successful(Redirect(routes.CrudIndex.createForm).flashing("error" -> Messages("error.unableToCreateIndex")))
+                    case error if error.toString.contains("IndexAlreadyExistsException") => Redirect(routes.CrudIndex.createForm()).flashing("error" -> Messages("error.indexAlreadyExists", "fbl_" + index.name))
+                    case _ => Redirect(routes.CrudIndex.createForm).flashing("error" -> Messages("error.unableToCreateIndex"))
                   }
                 }
               }
@@ -129,26 +84,13 @@ object CrudIndex extends Controller {
         errors => Future.successful(Ok(html.crudindex.form(errors))),
         index => {
           val editQuery = new EditFillableIndexQuery(index.name, index.replicas)
-          EsClient.execute(editQuery) flatMap {
+          EsClient.execute(editQuery) map {
             indexUpdated => {
               if (indexUpdated.status == 200) {
-                EsClient.execute(new FillableIndexReregisterQuery(index.name, index.shards, index.replicas)) map {
-                  indexChangeRegistered => {
-                    if (indexChangeRegistered.status == 200) {
-                      Redirect(routes.ListIndices.index(Option[String](index.name))).flashing("success" -> Messages("success.indexWillBeChangedSoon"))
-                    } else {
-                      Redirect(routes.ListIndices.index(Option[String](index.name))).flashing("error" -> Messages("error.indexUpdatedButNotRegistered"))
-                    }
-                  }
-                } recover {
-                  case _ => Redirect(routes.ListIndices.index(Option[String](index.name))).flashing("error" -> Messages("error.indexUpdatedButNotRegistered"))
-                }
+                Redirect(routes.ListIndices.index(Option[String](index.name))).flashing("success" -> Messages("success.indexWillBeChangedSoon"))
               } else {
                 (indexUpdated.json \ "error") match {
-                  case error =>
-                    Future.successful(
-                      Redirect(routes.ListIndices.index(Option[String](index.name))).flashing("error" -> Messages("error.unkownUpdateError", "fbl_" + index.name))
-                    )
+                  case error => Redirect(routes.ListIndices.index(Option[String](index.name))).flashing("error" -> Messages("error.unkownUpdateError", "fbl_" + index.name))
                 }
               }
             }
@@ -164,22 +106,13 @@ object CrudIndex extends Controller {
   def deleteIndex(indexName: String) = AuthenticatedAction {
     Action.async { implicit request => {
       val deleteIndexQuery = new DeleteFillableIndexQuery(indexName)
-      EsClient.execute(deleteIndexQuery) flatMap {
+      EsClient.execute(deleteIndexQuery) map {
         indexDeleted => {
           if (indexDeleted.status == 200) {
-            EsClient.execute(new FillableIndexUnregisterQuery(indexName)) map {
-              indexUnregistered => if (indexUnregistered.status == 200) {
-                Redirect(routes.ListIndices.index(Option[String](indexName))).flashing("success" -> Messages("success.indexWillBeChangedSoon"))
-              } else {
-                Redirect(routes.ListIndices.index(Option[String](indexName))).flashing("error" -> Messages("error.deleteIndexFailed"))
-              }
-            } recover {
-              case _ => Redirect(routes.ListIndices.index(Option[String](indexName))).flashing("error" -> Messages("error.deleteIndexFailed"))
-            }
+            Redirect(routes.ListIndices.index(Option[String](indexName))).flashing("success" -> Messages("success.indexWillBeChangedSoon"))
           } else {
             (indexDeleted.json \ "error") match {
-              case error if error.toString.contains("IndexMissingException") =>
-                Future.successful(Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.indexNotFound", indexName)))
+              case error if error.toString.contains("IndexMissingException") => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.indexNotFound", indexName))
             }
           }
         }

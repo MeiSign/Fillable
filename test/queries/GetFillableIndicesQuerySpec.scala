@@ -11,7 +11,7 @@ class GetFillableIndicesQuerySpec extends Specification {
   "GetFillableIndicesQuery" should  {
     "return the correct url addon for a valid query object" in new WithApplication {
       val query: GetFillableIndicesQuery = new GetFillableIndicesQuery()
-      query.getUrlAddon must beEqualTo("/fbl_indices/indices/_search")
+      query.getUrlAddon must beEqualTo("/_stats")
     }
 
     "return the correct http method" in new WithApplication {
@@ -28,7 +28,7 @@ class GetFillableIndicesQuerySpec extends Specification {
   "GetFillableIndex" should  {
     "return the correct url addon for a valid query object" in new WithApplication {
       val query: GetFillableIndexQuery = new GetFillableIndexQuery("name")
-      query.getUrlAddon must beEqualTo("/fbl_indices/indices/3373707/_source")
+      query.getUrlAddon must beEqualTo("/name/_settings")
     }
 
     "return the correct http method" in new WithApplication {

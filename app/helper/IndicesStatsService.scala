@@ -1,10 +1,14 @@
 package helper
 
 import scala.concurrent.Future
-import esclient.queries.GetFillableIndicesQuery
+import esclient.queries.{GetFillableIndexQuery, GetFillableIndicesQuery}
 import esclient.EsClient
-import models.IndexListEntry
+import models.{Index, IndexListEntry}
 import play.api.libs.json.JsObject
+import views.html
+import controllers.routes
+import play.api.i18n.Messages
+import java.net.ConnectException
 
 class IndicesStatsService {
 
@@ -17,7 +21,6 @@ class IndicesStatsService {
           case (key, value) => key.startsWith("fbl_")
         }
 
-        println(indexListAsJson.size)
         val result = for {
           (name, stats) <- indexListAsJson
         } yield {
@@ -28,6 +31,24 @@ class IndicesStatsService {
       }
     } recover {
       case _ => List.empty[IndexListEntry]
+    }
+  }
+
+  def getIndexSettings(indexName: String): Future[Option[Index]] = {
+    val query = new GetFillableIndexQuery(indexName)
+    EsClient.execute(query) map {
+      index => {
+        if (index.status == 200) {
+          val shards = (index.json \\ "index.number_of_shards").head.as[String].toInt
+          val replica = (index.json \\ "index.number_of_replicas").head.as[String].toInt
+          val indexModel = Index(indexName, shards, replica)
+          Option(indexModel)
+        } else {
+          None
+        }
+      }
+    } recover {
+      case _ =>  None
     }
   }
 }
