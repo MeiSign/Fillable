@@ -20,20 +20,4 @@ case class GetOptionsQuery(esClient: Client, indexName: String, toBeCompleted: S
   })
 
   def execute: Future[SuggestResponse] = p.future
-
-
-//  require(toBeCompleted != null, "toBeCompleted String must not be null")
-//  require(indexName != null, "indexName String must not be null")
-//
-//  val httpType = HttpType.post
-//
-//  def getUrlAddon: String = "/" + indexName + "/_suggest"
-//
-//  def toJson: JsObject =
-//     Json.obj(
-//    		 indexName -> Json.obj(
-//    		     "text" -> toBeCompleted,
-//    		     "completion" -> Json.obj("field" -> "fillableOptions", "fuzzy" -> Json.obj("edit_distance" -> 1))
-//    		 )
-//     )
 }
