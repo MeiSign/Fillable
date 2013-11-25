@@ -78,8 +78,7 @@ class AutoCompletionService(esClient: => Client) {
           Json.arr(entries.get(0).getText.string(),
             entries.get(1).getText.string(),
             entries.get(2).getText.string(),
-            entries.get(3).getText.string(),
-            entries.get(4).getText.string())
+            entries.get(3).getText.string())
         }
       } recover {
         case _ => Json.arr()

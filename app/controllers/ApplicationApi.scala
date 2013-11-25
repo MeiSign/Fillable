@@ -6,7 +6,6 @@ import collection.JavaConversions._
 import helper.services.AutoCompletionService
 import helper.utils.ElasticsearchClient
 
-
 object ApplicationApi extends Controller {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
   val allowAllOrigins = Play.current.configuration.getBoolean("fillable.allowAllOrigins").getOrElse(false)
