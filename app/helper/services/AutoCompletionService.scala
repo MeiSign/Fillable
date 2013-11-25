@@ -1,13 +1,16 @@
 package helper.services
 
-import play.api.libs.json.{Json, JsValue, JsArray}
-import esclient.EsClient
-import esclient.queries.{AddOptionDocumentQuery, GetOptionsQuery, GetDocumentByIdQuery}
+import play.api.libs.json.{Json, JsValue}
 import scala.concurrent._
 import org.elasticsearch.client.Client
 import scala.language.implicitConversions
 import models.OptionDocument
 import org.elasticsearch.indices.IndexMissingException
+import esclient.queries.AddOptionDocumentQuery
+import esclient.queries.GetDocumentByIdQuery
+import play.api.libs.json.JsArray
+import esclient.queries.GetOptionsQuery
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion
 
 class AutoCompletionService(esClient: => Client) {
 
@@ -67,9 +70,16 @@ class AutoCompletionService(esClient: => Client) {
     if (indexName.isEmpty || toBeCompleted.isEmpty) {
       Future.successful(Json.arr())
     } else {
-      EsClient.execute(new GetOptionsQuery(indexName, toBeCompleted)) map {
+      GetOptionsQuery(esClient, indexName, toBeCompleted).execute map {
         options => {
-          ((options.json \ indexName).asInstanceOf[JsArray](0) \ "options").asInstanceOf[JsArray]
+          val completion: CompletionSuggestion = options.getSuggest().getSuggestion(indexName)
+          val entries = completion.getEntries().get(0).getOptions()
+
+          Json.arr(entries.get(0).getText.string(),
+            entries.get(1).getText.string(),
+            entries.get(2).getText.string(),
+            entries.get(3).getText.string(),
+            entries.get(4).getText.string())
         }
       } recover {
         case _ => Json.arr()

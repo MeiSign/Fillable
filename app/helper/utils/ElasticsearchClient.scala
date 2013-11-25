@@ -3,19 +3,20 @@ package helper.utils
 import org.elasticsearch.node.Node
 import org.elasticsearch.client.Client
 import org.elasticsearch.node.NodeBuilder._
+import org.elasticsearch.common.settings.ImmutableSettings
 
 object ElasticsearchClient {
-  val node: Node = getElasticNode
+  val settings = ImmutableSettings.settingsBuilder()
+    .put("path.data", "data")
+    .put("http.enabled", true)
+  val node: Node = nodeBuilder().settings(settings).clusterName("fbl_cluster").data(true).node()
   val elasticClient: Client = node.client()
-
-  def getElasticNode: Node = {
-    nodeBuilder().clusterName("flb_cluster").client(false).node()
-    //TODO Insert Settings here and maybe Transportclient for external Elastic Cluster
-  }
 
   def shutdown: Unit = {
     node.close()
   }
 
-  def warmer: Unit = {}
+  def warmer: Unit = {
+
+  }
 }

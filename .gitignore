@@ -3,6 +3,8 @@ project/
 bin/
 target/
 .target/
+target/
+data/
 *.iml
 .idea/
 .idea_modules/
