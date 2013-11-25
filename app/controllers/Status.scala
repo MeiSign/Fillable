@@ -1,7 +1,7 @@
 package controllers
 
+import _root_.helper.utils.AuthenticatedAction
 import play.api.mvc.Controller
-import helper.AuthenticatedAction
 import play.api.mvc.Action
 import scala.concurrent.Future
 import views._

@@ -1,6 +1,7 @@
 package controllers
 
-import _root_.helper.{IndicesStatsService, AuthenticatedAction}
+import _root_.helper.services.IndicesStatsService
+import _root_.helper.utils.AuthenticatedAction
 import play.api.mvc._
 import esclient.EsClient
 import esclient.queries.GetFillableIndicesQuery

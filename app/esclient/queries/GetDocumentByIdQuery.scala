@@ -3,11 +3,26 @@ package esclient.queries
 import esclient.{HttpType, EsQuery}
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
+import scala.concurrent._
+import play.api.libs.json.JsObject
+import org.elasticsearch.action.get.GetResponse
+import org.elasticsearch.action.ActionListener
+import org.elasticsearch.client.Client
 
-class GetDocumentByIdQuery(indexName: String, id: String) extends EsQuery {
-  val httpType: HttpType.Value = HttpType.get
+case class GetDocumentByIdQuery(esClient: Client, indexName: String, typeName: String, id: String) {
+  lazy val p = promise[GetResponse]()
 
-  def toJson: JsObject = Json.obj()
+  esClient
+    .prepareGet(indexName, typeName, id)
+    .execute()
+    .addListener(new ActionListener[GetResponse] {
 
-  def getUrlAddon: String = "/" + indexName + "/" + indexName + "/" + id
+    def onFailure(e: Throwable) = {
+      p failure e
+    }
+
+    def onResponse(response: GetResponse) = p success response
+  })
+
+  def execute: Future[GetResponse] = p.future
 }

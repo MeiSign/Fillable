@@ -1,6 +1,7 @@
 package controllers
 
-import _root_.helper.{IndicesStatsService, AuthenticatedAction, IndexNameValidator}
+import _root_.helper.services.IndicesStatsService
+import _root_.helper.utils.{AuthenticatedAction, IndexNameValidator}
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._

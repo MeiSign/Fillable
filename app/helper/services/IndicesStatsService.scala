@@ -1,4 +1,4 @@
-package helper
+package helper.services
 
 import scala.concurrent.Future
 import esclient.queries.{GetFillableIndexQuery, GetFillableIndicesQuery}

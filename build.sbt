@@ -7,7 +7,8 @@ libraryDependencies ++= Seq(
   jdbc,
   anorm,
   cache,
-  "org.mockito" % "mockito-all" % "1.9.5"
-)     
+  "org.mockito" % "mockito-all" % "1.9.5",
+  "org.elasticsearch" % "elasticsearch" % "0.90.7"
+)
                         
 play.Project.playScalaSettings

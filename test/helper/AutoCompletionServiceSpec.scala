@@ -4,6 +4,7 @@ import org.specs2.mutable.Specification
 import play.api.test.WithApplication
 import org.specs2.mock.Mockito
 import play.api.libs.json.Json
+import helper.services.AutoCompletionService
 
 class AutoCompletionServiceSpec extends Specification with Mockito {
 

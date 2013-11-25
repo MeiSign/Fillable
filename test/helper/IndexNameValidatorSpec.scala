@@ -2,6 +2,7 @@ package helper
 
 import org.specs2.mutable.Specification
 import play.api.test.WithApplication
+import helper.utils.IndexNameValidator
 
 class IndexNameValidatorSpec extends Specification {
 
