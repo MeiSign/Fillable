@@ -6,12 +6,12 @@ var settings, FillableWidget = {
         }
     },
 
-    init: function(inputFieldId, fblHost, fblIndex) {
+    init: function(options) {
         settings = this.settings;
-        settings.inputField = document.getElementById(inputFieldId);
+        settings.inputField = document.getElementById(options.fblInputFieldId);
         settings.form = this.getFormFrom();
-        settings.host = fblHost;
-        settings.index = fblIndex;
+        settings.host = options.fblHost;
+        settings.index = options.fblIndex;
         this.createUi();
         this.bindUiActions();
     },

@@ -13,6 +13,13 @@
     <input type="submit" value="Send">
 </form>
 
-<script>FillableWidget.init("testField", "http://localhost:9000", "fbl_vw_modelle");</script>
+<script>
+    var settings = {
+        fblInputFieldId: "testField",
+        fblHost: "http://localhost:9000",
+        fblIndex: "fbl_vw_modelle"
+    };
+    FillableWidget.init(settings);
+</script>
 </body>
 </html>

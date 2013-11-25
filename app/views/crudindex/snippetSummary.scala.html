@@ -23,7 +23,16 @@
             ...
         &lt;/form&gt;
 
-        <span class="important">&lt;script&gt;FillableWidget.init("@(indexName)AutoCompletion", "@host", "fbl_@indexName");&lt;/script&gt;</span>
+        <span class="important">
+            &lt;script&gt;
+                var settings = {
+                    fblInputFieldId: "@(indexName)AutoCompletion",
+                    fblHost: "http://localhost:9000",
+                    fblIndex: "fbl_vw_modelle",
+                    collectMode: false
+                };
+                FillableWidget.init(settings);
+            &lt;/script&gt;
     &lt;/body&gt;
 &lt;/html&gt;
   </pre>
