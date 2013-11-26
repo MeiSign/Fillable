@@ -20,7 +20,6 @@ def fromBuilder(doc: GetResponse): OptionDocument = {
   val docBuilder: XContentBuilder = jsonBuilder()
   val xContentString = doc.toXContent(docBuilder, ToXContent.EMPTY_PARAMS).string()
   val json = Json.parse(xContentString)
-  println(json)
   OptionDocument((json \ "_source" \ "fillableOptions" \ "input").as[String],
     (json \ "_source" \ "fillableOptions" \ "output").as[String],
     (json \ "_source" \ "fillableOptions" \ "weight").as[Int])

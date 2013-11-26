@@ -4,15 +4,9 @@ import org.elasticsearch.client.Client
 import scala.concurrent._
 import org.elasticsearch.action.ActionListener
 import org.elasticsearch.common.settings.ImmutableSettings
-import org.elasticsearch.action.admin.indices.settings.UpdateSettingsResponse
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse
 import org.elasticsearch.common.xcontent.XContentBuilder
 import org.elasticsearch.common.xcontent.XContentFactory._
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse
-
-
-
-
 
 case class CreateFillableIndexQuery(esClient: Client, name: String, shards: Int = 4, replicas: Int = 0) {
   lazy val p = promise[CreateIndexResponse]()
