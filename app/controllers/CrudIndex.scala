@@ -97,23 +97,17 @@ object CrudIndex extends Controller {
   }
   
   def deleteIndex(indexName: String) = AuthenticatedAction {
-    Action.async { implicit request => {
-      val deleteIndexQuery = new DeleteFillableIndexQuery(indexName)
-      EsClient.execute(deleteIndexQuery) map {
-        indexDeleted => {
-          if (indexDeleted.status == 200) {
-            Redirect(routes.ListIndices.index(Option[String](indexName))).flashing("success" -> Messages("success.indexWillBeChangedSoon"))
-          } else {
-            (indexDeleted.json \ "error") match {
-              case error if error.toString.contains("IndexMissingException") => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.indexNotFound", indexName))
-            }
+    Action.async {
+      implicit request => {
+        val crudIndexService: CrudIndexService = new CrudIndexService(ElasticsearchClient.elasticClient)
+        crudIndexService.deleteFillableIndex(ElasticsearchClient.elasticClient, indexName) map {
+          deleteStatus => deleteStatus match {
+            case 200 => Redirect(routes.ListIndices.index(Option[String](indexName))).flashing("success" -> Messages("success.indexWillBeChangedSoon"))
+            case 404 => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.indexNotFound", indexName))
+            case _ => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.unkownUpdateError", "fbl_" + indexName))
           }
         }
-      } recover {
-        case e: ConnectException => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.connectionRefused", EsClient.url(deleteIndexQuery)))
-        case e: Throwable => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.deleteIndexFailed"))
       }
     }
-  }
   }
 }

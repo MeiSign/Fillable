@@ -12,6 +12,7 @@ import org.elasticsearch.action.ActionListener
 import play.api.libs.json.JsObject
 import org.elasticsearch.common.settings.{ImmutableSettings, Settings}
 import org.elasticsearch.action.admin.indices.settings.UpdateSettingsResponse
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse
 
 case class EditFillableIndexQuery(esClient: Client, name: String, replicas: Int) {
   lazy val p = promise[UpdateSettingsResponse]()
@@ -32,13 +33,23 @@ case class EditFillableIndexQuery(esClient: Client, name: String, replicas: Int)
   def execute: Future[UpdateSettingsResponse] = p.future
 }
 
-class DeleteFillableIndexQuery(name: String) extends EsQuery {
-  val httpType: HttpType.Value = HttpType.delete
-  
-  def getUrlAddon: String = "/" + name
-  
-  def toJson: JsObject = Json.obj()
+case class DeleteFillableIndexQuery(esClient: Client, name: String) {
+  lazy val p = promise[DeleteIndexResponse]()
+  esClient
+    .admin()
+    .indices()
+    .prepareDelete(name)
+    .execute()
+    .addListener(new ActionListener[DeleteIndexResponse] {
+
+    def onFailure(e: Throwable) = p failure e
+
+    def onResponse(response: DeleteIndexResponse) = p success response
+  })
+
+  def execute: Future[DeleteIndexResponse] = p.future
 }
+
 
 class CreateFillableIndexQuery(name: String, shards: Int = 4, replicas: Int = 0) extends EsQuery {
   val index = "fbl_" + name.toLowerCase()
