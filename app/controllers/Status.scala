@@ -1,10 +1,11 @@
 package controllers
 
 import _root_.helper.services.RequirementsService
-import _root_.helper.utils.{ElasticsearchClient, AuthenticatedAction}
+import _root_.helper.utils.{AuthenticatedAction}
 import play.api.mvc.Controller
 import play.api.mvc.Action
 import views._
+import esclient.ElasticsearchClient
 
 
 object Status extends Controller {

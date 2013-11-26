@@ -5,8 +5,8 @@ import org.specs2.runner._
 import org.junit.runner._
 
 import play.api.test._
+import esclient.{HttpType}
 import esclient.queries.GetDocumentByIdQuery
-import esclient.HttpType
 
 @RunWith(classOf[JUnitRunner])
 class GetDocumentByIdQuerySpec extends Specification {

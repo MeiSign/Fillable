@@ -6,11 +6,9 @@ import org.elasticsearch.client.Client
 import scala.language.implicitConversions
 import models.OptionDocument
 import org.elasticsearch.indices.IndexMissingException
-import esclient.queries.AddOptionDocumentQuery
-import esclient.queries.GetDocumentByIdQuery
-import esclient.queries.GetOptionsQuery
 import org.elasticsearch.search.suggest.completion.CompletionSuggestion
 import scala.collection.JavaConversions._
+import esclient.queries.{GetDocumentByIdQuery, AddOptionDocumentQuery, GetOptionsQuery}
 
 class AutoCompletionService(esClient: => Client) {
 

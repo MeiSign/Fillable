@@ -4,7 +4,7 @@ import play.api.mvc._
 import play.api.Play
 import collection.JavaConversions._
 import helper.services.AutoCompletionService
-import helper.utils.ElasticsearchClient
+import esclient.ElasticsearchClient
 
 object ApplicationApi extends Controller {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global

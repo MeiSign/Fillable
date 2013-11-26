@@ -2,8 +2,8 @@ package queries
 
 import org.specs2.mutable.Specification
 import play.api.test.WithApplication
-import esclient.queries.{GetEsVersionQuery}
-import esclient.HttpType
+import esclient.{HttpType}
+import esclient.queries.GetEsVersionQuery
 
 class GetEsVersionQuerySpec extends Specification {
 

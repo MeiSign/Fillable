@@ -1,11 +1,11 @@
 package helper.services
 
 import scala.concurrent.Future
-import esclient.queries.GetEsVersionQuery
 import org.elasticsearch.Version
 import scala.collection.JavaConversions._
 import org.elasticsearch.client.Client
 import play.api.Play
+import esclient.queries.GetEsVersionQuery
 
 class RequirementsService(esClient: Client) {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global

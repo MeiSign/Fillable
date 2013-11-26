@@ -2,8 +2,8 @@ package helper.services
 
 import org.elasticsearch.client.Client
 import scala.concurrent.Future
-import esclient.queries.{CreateFillableIndexQuery, DeleteFillableIndexQuery, EditFillableIndexQuery}
 import org.elasticsearch.indices.{IndexAlreadyExistsException, IndexMissingException}
+import esclient.queries.{EditFillableIndexQuery, DeleteFillableIndexQuery, CreateFillableIndexQuery}
 
 class CrudIndexService(esClient: Client) {
 

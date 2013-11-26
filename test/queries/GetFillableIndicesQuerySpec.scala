@@ -3,8 +3,8 @@ package queries
 import org.specs2.mutable._
 
 import play.api.test.WithApplication
-import esclient.queries.{GetFillableIndicesQuery, GetFillableIndexQuery}
-import esclient.HttpType
+import esclient.{HttpType}
+import esclient.queries.{GetFillableIndexQuery, GetFillableIndicesQuery}
 
 class GetFillableIndicesQuerySpec extends Specification {
 

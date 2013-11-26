@@ -1,4 +1,4 @@
-import helper.utils.ElasticsearchClient
+import esclient.ElasticsearchClient
 import play.api._
 
 object Global extends GlobalSettings {

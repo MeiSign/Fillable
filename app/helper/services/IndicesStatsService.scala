@@ -1,11 +1,10 @@
 package helper.services
 
 import scala.concurrent.Future
-import esclient.queries.{GetFillableIndexQuery, GetFillableIndicesQuery}
-import esclient.EsClient
 import models.{Index, IndexListEntry}
 import org.elasticsearch.client.Client
 import scala.collection.JavaConversions._
+import esclient.queries.{GetFillableIndicesQuery, GetFillableIndexQuery}
 
 class IndicesStatsService(esClient: Client) {
 

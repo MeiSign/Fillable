@@ -1,7 +1,7 @@
 package controllers
 
 import _root_.helper.services.{CrudIndexService, IndicesStatsService}
-import _root_.helper.utils.{ElasticsearchClient, AuthenticatedAction, IndexNameValidator}
+import _root_.helper.utils.{AuthenticatedAction, IndexNameValidator}
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
@@ -10,6 +10,7 @@ import models._
 import views._
 import scala.concurrent._
 import scala.Some
+import esclient.ElasticsearchClient
 
 object CrudIndex extends Controller {
 

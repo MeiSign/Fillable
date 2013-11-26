@@ -1,6 +1,5 @@
 package esclient.queries
 
-import esclient.{HttpType, EsQuery}
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import scala.concurrent._
