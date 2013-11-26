@@ -3,7 +3,7 @@ package queries
 import org.specs2.mutable.Specification
 import play.api.test.WithApplication
 import esclient.HttpType
-import esclient.queries.{IndexExistsQuery, GetOptionsQuery}
+import esclient.queries.{GetOptionsQuery}
 
 class IndexExistsQuerySpec extends Specification {
 

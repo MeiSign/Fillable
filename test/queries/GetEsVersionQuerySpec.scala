@@ -2,7 +2,7 @@ package queries
 
 import org.specs2.mutable.Specification
 import play.api.test.WithApplication
-import esclient.queries.{GetEsVersionQuery, IndexExistsQuery}
+import esclient.queries.{GetEsVersionQuery}
 import esclient.HttpType
 
 class GetEsVersionQuerySpec extends Specification {

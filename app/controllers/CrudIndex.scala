@@ -9,11 +9,6 @@ import play.api.i18n.Messages
 import models._
 import views._
 import scala.concurrent._
-import esclient.EsClient
-import esclient.queries._
-import java.net.ConnectException
-import scala.Some
-import play.api.libs.json._
 import scala.Some
 
 object CrudIndex extends Controller {

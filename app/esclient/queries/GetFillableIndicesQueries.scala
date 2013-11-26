@@ -1,6 +1,5 @@
 package esclient.queries
 
-import esclient.EsQuery
 import org.elasticsearch.client.Client
 import scala.concurrent._
 import org.elasticsearch.action.ActionListener
