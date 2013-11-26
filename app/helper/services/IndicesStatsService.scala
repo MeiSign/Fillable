@@ -4,7 +4,6 @@ import scala.concurrent.Future
 import esclient.queries.{GetFillableIndexQuery, GetFillableIndicesQuery}
 import esclient.EsClient
 import models.{Index, IndexListEntry}
-import play.api.libs.json.JsObject
 import org.elasticsearch.client.Client
 import scala.collection.JavaConversions._
 
@@ -13,9 +12,7 @@ class IndicesStatsService(esClient: Client) {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   def getIndexList: Future[List[IndexListEntry]] = {
-    val getAllIndicesQuery = GetFillableIndicesQuery(esClient).execute
-
-    getAllIndicesQuery map {
+    GetFillableIndicesQuery(esClient).execute map {
       allIndices => {
         val indexList = allIndices.getIndices.toMap.filterKeys {
           case key => key.startsWith("fbl_")
@@ -35,20 +32,14 @@ class IndicesStatsService(esClient: Client) {
   }
 
   def getIndexSettings(indexName: String): Future[Option[Index]] = {
-    val query = new GetFillableIndexQuery(indexName)
-    EsClient.execute(query) map {
+    GetFillableIndexQuery(esClient, indexName).execute map {
       index => {
-        if (index.status == 200) {
-          val shards = (index.json \\ "index.number_of_shards").head.as[String].toInt
-          val replica = (index.json \\ "index.number_of_replicas").head.as[String].toInt
-          val indexModel = Index(indexName, shards, replica)
-          Option(indexModel)
-        } else {
-          None
-        }
+        val numberOfReplicas = index.getState.getMetaData.getIndices.get(indexName).getNumberOfReplicas
+        val numberOfShards = index.getState.getMetaData.getIndices.get(indexName).getNumberOfShards
+        Option(Index(indexName, numberOfShards, numberOfReplicas))
       }
     } recover {
-      case _ =>  None
+      case _ => None
     }
   }
 }

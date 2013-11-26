@@ -8,6 +8,8 @@ import scala.concurrent._
 import org.elasticsearch.action.ActionListener
 import play.api.libs.json.JsObject
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse
+import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse
+import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse
 
 case class GetFillableIndicesQuery(esClient: Client) {
   lazy val p = promise[IndicesStatsResponse]()
@@ -29,8 +31,24 @@ case class GetFillableIndicesQuery(esClient: Client) {
   def execute: Future[IndicesStatsResponse] = p.future
 }
 
-case class GetFillableIndexQuery(index: String) extends EsQuery {
-  
+case class GetFillableIndexQuery(esClient: Client, index: String) extends EsQuery {
+  lazy val p = promise[ClusterStateResponse]()
+  esClient
+    .admin()
+    .cluster()
+    .prepareState()
+    .execute()
+    .addListener(new ActionListener[ClusterStateResponse] {
+
+    def onFailure(e: Throwable) = p failure e
+
+    def onResponse(response: ClusterStateResponse) = p success response
+  })
+
+  def execute: Future[ClusterStateResponse] = p.future
+
+
+
   val httpType: HttpType.Value = HttpType.get
 
   def getUrlAddon: String = "/" + index + "/_settings"
