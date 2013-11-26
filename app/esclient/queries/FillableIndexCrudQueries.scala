@@ -1,39 +1,51 @@
 package esclient.queries
 
-import esclient.EsQuery
-import esclient.HttpType
-import play.api.libs.json.JsObject
-import play.api.libs.json.Json
+import org.elasticsearch.client.Client
+import scala.concurrent._
+import org.elasticsearch.action.ActionListener
+import org.elasticsearch.common.settings.ImmutableSettings
+import org.elasticsearch.action.admin.indices.settings.UpdateSettingsResponse
+import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse
+import org.elasticsearch.common.xcontent.XContentBuilder
+import org.elasticsearch.common.xcontent.XContentFactory._
+import org.elasticsearch.action.admin.indices.create.CreateIndexResponse
 
-class EditFillableIndexQuery(name: String, replicas: Int) extends EsQuery {
-  val httpType: HttpType.Value = HttpType.put
-  
-  def getUrlAddon: String = "/" + name + "/_settings"
-  
-  def toJson: JsObject = Json.obj("index" -> Json.obj("number_of_replicas" -> replicas))
-}
 
-class DeleteFillableIndexQuery(name: String) extends EsQuery {
-  val httpType: HttpType.Value = HttpType.delete
-  
-  def getUrlAddon: String = "/" + name
-  
-  def toJson: JsObject = Json.obj()
-}
 
-class CreateFillableIndexQuery(name: String, shards: Int = 4, replicas: Int = 0) extends EsQuery {
-  val index = "fbl_" + name.toLowerCase()
 
-  val httpType: HttpType.Value = HttpType.post
-  
-  def getUrlAddon: String = "/" + index
-  
-  def toJson: JsObject = Json.obj(
-        "settings" -> Json.obj("number_of_shards" -> shards, "number_of_replicas" -> replicas),
-        "mappings" -> Json.obj(
-            index -> Json.obj(
-                "properties" -> Json.obj(
-                    "fillableOptions" -> Json.obj(
-                        "type" -> "completion")
-                        ))))
+
+case class CreateFillableIndexQuery(esClient: Client, name: String, shards: Int = 4, replicas: Int = 0) {
+  lazy val p = promise[CreateIndexResponse]()
+
+  val mapping: XContentBuilder = jsonBuilder()
+    .startObject()
+    .startObject("fbl_" + name)
+    .startObject("properties")
+    .startObject("fillableOptions")
+    .field("type", "completion")
+    .endObject()
+    .endObject()
+    .endObject()
+    .endObject()
+
+  val settings = ImmutableSettings.settingsBuilder()
+    .put("number_of_shards", shards)
+    .put("number_of_replicas", replicas)
+    .build()
+
+  esClient
+    .admin()
+    .indices()
+    .prepareCreate("fbl_" + name)
+    .addMapping("fbl_" + name, mapping)
+    .setSettings(settings)
+    .execute()
+    .addListener(new ActionListener[CreateIndexResponse] {
+
+    def onFailure(e: Throwable) = p failure e
+
+    def onResponse(response: CreateIndexResponse) = p success response
+  })
+
+  def execute: Future[CreateIndexResponse] = p.future
 }

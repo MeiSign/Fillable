@@ -1,17 +1,22 @@
-package helper
+package helper.services
 
-import play.api.libs.json.{Json, JsValue, JsArray}
+import play.api.libs.json.{Json, JsValue}
+import scala.concurrent._
+import org.elasticsearch.client.Client
+import scala.language.implicitConversions
 import models.OptionDocument
-import esclient.EsClient
-import esclient.queries.{GetOptionsQuery, AddOptionDocumentQuery, GetDocumentByIdQuery}
-import scala.concurrent.Future
+import org.elasticsearch.indices.IndexMissingException
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion
+import scala.collection.JavaConversions._
+import esclient.queries.{GetDocumentByIdQuery, AddOptionDocumentQuery, GetOptionsQuery}
 
-class AutoCompletionService {
+class AutoCompletionService(esClient: => Client) {
 
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   def getJsonResponse(statusCode: Int): JsValue = {
     statusCode match {
+      case 404 => Json.obj("status" -> "index is missing")
       case 400 => Json.obj("status" -> "error")
       case 200 => Json.obj("status" -> "added new option")
       case 202 => Json.obj("status" -> "extended option")
@@ -36,39 +41,48 @@ class AutoCompletionService {
   }
 
   def addOptionToEs(indexName: String, docIdString: String, typed: String): Future[Int] = {
-    EsClient.execute(new GetDocumentByIdQuery(indexName, docIdString.hashCode.toString)) flatMap {
+    val queryFuture = GetDocumentByIdQuery(esClient, indexName, indexName, docIdString.hashCode.toString).execute
+
+    queryFuture flatMap {
       document => {
-        val doc: OptionDocument = parseDocument(document.json)
-        if (doc.isEmpty) {
-          EsClient.execute(new AddOptionDocumentQuery(indexName, docIdString, OptionDocument(List(typed), typed, 0))) map {
+        if (!document.isExists) {
+          val doc = OptionDocument(typed, typed, 0).toJsonBuilder
+          val addQuery = AddOptionDocumentQuery(esClient, indexName, docIdString, doc.string())
+          addQuery.execute map {
             result => 200
           }
         } else {
-          val input: List[String] = if(doc.input.contains(typed)) doc.input else (typed :: doc.input)
-          EsClient.execute(new AddOptionDocumentQuery(indexName, docIdString, OptionDocument(input, doc.output, doc.weight + 1))) map {
+          val doc = OptionDocument().fromBuilder(document)
+          val addQuery = AddOptionDocumentQuery(esClient, indexName, docIdString, doc.extendOption().toJsonBuilder.string())
+          addQuery.execute map {
             result => 202
           }
         }
       }
+    } recover {
+      case document: IndexMissingException => 404
     }
   }
 
-  def getOptions(indexName: String, toBeCompleted: String): Future[JsArray] = {
+  def getOptions(indexName: String, toBeCompleted: String): Future[JsValue] = {
     if (indexName.isEmpty || toBeCompleted.isEmpty) {
       Future.successful(Json.arr())
     } else {
-      EsClient.execute(new GetOptionsQuery(indexName, toBeCompleted)) map {
+      GetOptionsQuery(esClient, indexName, toBeCompleted).execute map {
         options => {
-          ((options.json \ indexName).asInstanceOf[JsArray](0) \ "options").asInstanceOf[JsArray]
+          val completion: CompletionSuggestion = options.getSuggest.getSuggestion(indexName)
+          val entries = completion.getEntries.get(0).getOptions.iterator().toList
+
+          val scalaOptions: List[String] = entries map {
+            entry => entry.getText.string()
+          }
+
+          Json.toJson(scalaOptions)
         }
       } recover {
         case _ => Json.arr()
       }
     }
-  }
-
-  def parseDocument(json: JsValue): OptionDocument = {
-    json.validate[OptionDocument].getOrElse(OptionDocument(List[String](), "", 0))
   }
 
   def getDocumentId(typed: String, chosen: Option[String]): String = {

@@ -5,9 +5,9 @@ import org.specs2.runner._
 import org.junit.runner._
 
 import play.api.test._
-import esclient.queries.AddOptionDocumentQuery
 import models.OptionDocument
-import esclient.HttpType
+import esclient.{HttpType}
+import esclient.queries.AddOptionDocumentQuery
 
 @RunWith(classOf[JUnitRunner])
 class AddOptionDocumentQuerySpec extends Specification {

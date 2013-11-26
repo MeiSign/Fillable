@@ -6,8 +6,8 @@ import org.specs2.runner._
 import org.junit.runner._
 
 import play.api.test._
-import esclient.queries.{EditFillableIndexQuery, DeleteFillableIndexQuery, CreateFillableIndexQuery}
-import esclient.HttpType
+import esclient.{HttpType}
+import esclient.queries.{CreateFillableIndexQuery, DeleteFillableIndexQuery, EditFillableIndexQuery}
 
 @RunWith(classOf[JUnitRunner])
 class FillableIndexCrudQueriesSpec extends Specification {

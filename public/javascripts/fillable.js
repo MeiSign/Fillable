@@ -93,7 +93,7 @@ var settings, FillableWidget = {
                         for (var i = 0; i < options.length; i++) {
                             var newLi = document.createElement("li");
                             newLi.className = "fblOption"
-                            var text = options[i].text.replace(settings.inputField.value, "<span class=\"fblBold\">" + settings.inputField.value + "</span>");
+                            var text = options[i].replace(settings.inputField.value, "<span class=\"fblBold\">" + settings.inputField.value + "</span>");
                             newLi.innerHTML = text;
                             settings.optionBox.appendChild(newLi)
                         }

@@ -1,22 +1,23 @@
 package esclient.queries
 
-import models.OptionDocument
-import esclient.{HttpType, EsQuery}
-import play.api.libs.json.JsObject
-import play.api.libs.json.Json
+import scala.concurrent._
+import org.elasticsearch.action.ActionListener
+import org.elasticsearch.client.Client
+import org.elasticsearch.action.index.IndexResponse
 
-class AddOptionDocumentQuery(indexName: String, docIdString: String, doc: OptionDocument) extends EsQuery {
-  val httpType: HttpType.Value = HttpType.put
-  val docId = docIdString.hashCode
+case class AddOptionDocumentQuery(esClient: Client, indexName: String, docIdString: String, doc: String) {
+  lazy val p = promise[IndexResponse]()
+  esClient
+    .prepareIndex(indexName, indexName, docIdString.hashCode.toString)
+    .setSource(doc)
+    .execute()
+    .addListener(new ActionListener[IndexResponse] {
 
-  def toJson: JsObject = Json.obj(
-    "fillableOptions" -> Json.obj(
-      "input" -> doc.input,
-      "output" -> doc.output,
-      "weight" -> (doc.weight)
-    )
-  )
+    def onFailure(e: Throwable) = p failure e
 
-  def getUrlAddon: String = "/" + indexName + "/" + indexName + "/" + docId
+    def onResponse(response: IndexResponse) = p success response
+  })
+
+  def execute: Future[IndexResponse] = p.future
 }
 

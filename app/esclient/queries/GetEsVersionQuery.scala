@@ -1,19 +1,27 @@
 package esclient.queries
 
-import play.api.libs.json.JsObject
-import esclient.EsQuery
-import esclient.HttpType
-import play.api.libs.json.Json
-import play.api.libs.json.JsValue
-import org.joda.time.format.DateTimeFormatter
-import org.joda.time.format.DateTimeFormat
-import play.api.i18n.Messages
-import play.api.libs.ws.Response
+import org.elasticsearch.client.Client
+import scala.concurrent._
+import org.elasticsearch.action.ActionListener
+import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse
 
-class GetEsVersionQuery extends EsQuery {
- val httpType = HttpType.get
-  
-  def getUrlAddon: String = "/"
-  
-  def toJson: JsObject = Json.obj()
+case class GetEsVersionQuery(esClient: Client) {
+  lazy val p = promise[NodesInfoResponse]()
+
+  esClient
+    .admin()
+    .cluster()
+    .prepareNodesInfo()
+    .all()
+    .execute()
+    .addListener(new ActionListener[NodesInfoResponse] {
+
+    def onFailure(e: Throwable) = {
+      p failure e
+    }
+
+    def onResponse(response: NodesInfoResponse) = p success response
+  })
+
+  def execute: Future[NodesInfoResponse] = p.future
 }

@@ -4,7 +4,7 @@ import org.specs2.mutable._
 
 import play.api.test._
 import esclient.queries._
-import esclient.HttpType
+import esclient.{HttpType}
 
 class GetOptionsQuerySpec extends Specification {
 

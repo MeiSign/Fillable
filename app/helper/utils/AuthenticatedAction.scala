@@ -1,4 +1,4 @@
-package helper
+package helper.utils
 
 import play.api.mvc.Action
 import play.api.mvc.Request

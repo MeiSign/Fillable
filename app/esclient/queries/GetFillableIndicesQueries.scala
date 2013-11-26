@@ -1,24 +1,26 @@
 package esclient.queries
 
-import esclient.EsQuery
-import esclient.HttpType
-import play.api.libs.json.JsObject
-import play.api.libs.json.Json
+import org.elasticsearch.client.Client
+import scala.concurrent._
+import org.elasticsearch.action.ActionListener
+import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse
+import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse
 
-class GetFillableIndicesQuery extends EsQuery {
-  
-  val httpType: HttpType.Value = HttpType.get
 
-  def getUrlAddon: String = "/_stats"
 
-  def toJson: JsObject = Json.obj()
-}
+case class GetFillableIndexQuery(esClient: Client, index: String) {
+  lazy val p = promise[ClusterStateResponse]()
+  esClient
+    .admin()
+    .cluster()
+    .prepareState()
+    .execute()
+    .addListener(new ActionListener[ClusterStateResponse] {
 
-class GetFillableIndexQuery(index: String) extends EsQuery {
-  
-  val httpType: HttpType.Value = HttpType.get
+    def onFailure(e: Throwable) = p failure e
 
-  def getUrlAddon: String = "/" + index + "/_settings"
+    def onResponse(response: ClusterStateResponse) = p success response
+  })
 
-  def toJson: JsObject = Json.obj()
+  def execute: Future[ClusterStateResponse] = p.future
 }

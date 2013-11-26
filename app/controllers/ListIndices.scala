@@ -1,13 +1,10 @@
 package controllers
 
-import _root_.helper.{IndicesStatsService, AuthenticatedAction}
+import _root_.helper.services.IndicesStatsService
+import _root_.helper.utils.AuthenticatedAction
 import play.api.mvc._
-import esclient.EsClient
-import esclient.queries.GetFillableIndicesQuery
-import java.net.ConnectException
-import models._
+import esclient.ElasticsearchClient
 import views._
-import play.api.i18n.Messages
 
 object ListIndices extends Controller {
 
@@ -17,7 +14,7 @@ object ListIndices extends Controller {
     AuthenticatedAction {
       Action.async {
         implicit request => {
-          val indicesStatsService = new IndicesStatsService
+          val indicesStatsService = new IndicesStatsService(ElasticsearchClient.elasticClient)
           indicesStatsService.getIndexList map {
             list => Ok(html.listindices.indexList(list))
           }
