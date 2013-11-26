@@ -1,6 +1,6 @@
 package controllers
 
-import _root_.helper.services.IndicesStatsService
+import _root_.helper.services.{CrudIndexService, IndicesStatsService}
 import _root_.helper.utils.{ElasticsearchClient, AuthenticatedAction, IndexNameValidator}
 import play.api.mvc._
 import play.api.data._
@@ -84,20 +84,12 @@ object CrudIndex extends Controller {
       indexForm.bindFromRequest.fold(
         errors => Future.successful(Ok(html.crudindex.form(errors))),
         index => {
-          val editQuery = new EditFillableIndexQuery(index.name, index.replicas)
-          EsClient.execute(editQuery) map {
-            indexUpdated => {
-              if (indexUpdated.status == 200) {
-                Redirect(routes.ListIndices.index(Option[String](index.name))).flashing("success" -> Messages("success.indexWillBeChangedSoon"))
-              } else {
-                (indexUpdated.json \ "error") match {
-                  case error => Redirect(routes.ListIndices.index(Option[String](index.name))).flashing("error" -> Messages("error.unkownUpdateError", "fbl_" + index.name))
-                }
-              }
+          val crudIndexService: CrudIndexService = new CrudIndexService(ElasticsearchClient.elasticClient)
+          crudIndexService.editFillableIndex(index.name, index.replicas) map {
+            editStatus => editStatus match {
+              case 200 => Redirect(routes.ListIndices.index(Option[String](index.name))).flashing("success" -> Messages("success.indexWillBeChangedSoon"))
+              case _ => Redirect(routes.ListIndices.index(Option[String](index.name))).flashing("error" -> Messages("error.unkownUpdateError", "fbl_" + index.name))
             }
-          } recover {
-            case e: ConnectException => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.connectionRefused", EsClient.url(editQuery)))
-            case e: Throwable => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.unableToUpdateIndex"))
           }
         }
       )

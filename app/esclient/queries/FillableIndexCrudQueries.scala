@@ -4,13 +4,32 @@ import esclient.EsQuery
 import esclient.HttpType
 import play.api.libs.json.JsObject
 import play.api.libs.json.Json
+import org.elasticsearch.client.Client
+import scala.concurrent._
+import play.api.libs.json.JsObject
+import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse
+import org.elasticsearch.action.ActionListener
+import play.api.libs.json.JsObject
+import org.elasticsearch.common.settings.{ImmutableSettings, Settings}
+import org.elasticsearch.action.admin.indices.settings.UpdateSettingsResponse
 
-class EditFillableIndexQuery(name: String, replicas: Int) extends EsQuery {
-  val httpType: HttpType.Value = HttpType.put
-  
-  def getUrlAddon: String = "/" + name + "/_settings"
-  
-  def toJson: JsObject = Json.obj("index" -> Json.obj("number_of_replicas" -> replicas))
+case class EditFillableIndexQuery(esClient: Client, name: String, replicas: Int) {
+  lazy val p = promise[UpdateSettingsResponse]()
+  esClient
+    .admin()
+    .indices()
+    .prepareUpdateSettings()
+    .setIndices(name)
+    .setSettings(ImmutableSettings.settingsBuilder().put("number_of_replicas", replicas).build())
+    .execute()
+    .addListener(new ActionListener[UpdateSettingsResponse] {
+
+    def onFailure(e: Throwable) = p failure e
+
+    def onResponse(response: UpdateSettingsResponse) = p success response
+  })
+
+  def execute: Future[UpdateSettingsResponse] = p.future
 }
 
 class DeleteFillableIndexQuery(name: String) extends EsQuery {
