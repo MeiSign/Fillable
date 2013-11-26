@@ -8,7 +8,6 @@ import models.OptionDocument
 import org.elasticsearch.indices.IndexMissingException
 import esclient.queries.AddOptionDocumentQuery
 import esclient.queries.GetDocumentByIdQuery
-import play.api.libs.json.JsArray
 import esclient.queries.GetOptionsQuery
 import org.elasticsearch.search.suggest.completion.CompletionSuggestion
 import scala.collection.JavaConversions._

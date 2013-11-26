@@ -1,7 +1,7 @@
 package controllers
 
 import _root_.helper.services.IndicesStatsService
-import _root_.helper.utils.{AuthenticatedAction, IndexNameValidator}
+import _root_.helper.utils.{ElasticsearchClient, AuthenticatedAction, IndexNameValidator}
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
@@ -27,7 +27,7 @@ object CrudIndex extends Controller {
       "replicas" -> number(min = 0, max = 10)) {
         (indexname, shards, replicas) => Index(indexname, shards, replicas)
       } {
-        (index => Some(index.name, index.shards, index.replicas))
+        index => Some(index.name, index.shards, index.replicas)
       })
 
   def createForm = AuthenticatedAction { Action { implicit request => Ok(html.crudindex.form(indexForm, false)) }}
@@ -36,7 +36,7 @@ object CrudIndex extends Controller {
     AuthenticatedAction {
       Action.async {
         implicit request => {
-          val indicesStatsService = new IndicesStatsService
+          val indicesStatsService = new IndicesStatsService(ElasticsearchClient.elasticClient)
           indicesStatsService.getIndexSettings(indexName) map {
             case index if index.isEmpty => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.indexNotFound", indexName))
             case index => Ok(html.crudindex.form(indexForm.fill(index.getOrElse(Index("", 0, 0))), false, true))

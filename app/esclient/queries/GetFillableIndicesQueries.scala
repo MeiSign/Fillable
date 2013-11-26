@@ -2,19 +2,34 @@ package esclient.queries
 
 import esclient.EsQuery
 import esclient.HttpType
-import play.api.libs.json.JsObject
 import play.api.libs.json.Json
+import org.elasticsearch.client.Client
+import scala.concurrent._
+import org.elasticsearch.action.ActionListener
+import play.api.libs.json.JsObject
+import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse
 
-class GetFillableIndicesQuery extends EsQuery {
-  
-  val httpType: HttpType.Value = HttpType.get
+case class GetFillableIndicesQuery(esClient: Client) {
+  lazy val p = promise[IndicesStatsResponse]()
+  esClient
+    .admin()
+    .indices()
+    .prepareStats()
+    .clear()
+    .all()
+    .setStore(true)
+    .execute()
+    .addListener(new ActionListener[IndicesStatsResponse] {
 
-  def getUrlAddon: String = "/_stats"
+    def onFailure(e: Throwable) = p failure e
 
-  def toJson: JsObject = Json.obj()
+    def onResponse(response: IndicesStatsResponse) = p success response
+  })
+
+  def execute: Future[IndicesStatsResponse] = p.future
 }
 
-class GetFillableIndexQuery(index: String) extends EsQuery {
+case class GetFillableIndexQuery(index: String) extends EsQuery {
   
   val httpType: HttpType.Value = HttpType.get
 

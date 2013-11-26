@@ -5,22 +5,26 @@ import esclient.queries.{GetFillableIndexQuery, GetFillableIndicesQuery}
 import esclient.EsClient
 import models.{Index, IndexListEntry}
 import play.api.libs.json.JsObject
+import org.elasticsearch.client.Client
+import scala.collection.JavaConversions._
 
-class IndicesStatsService {
+class IndicesStatsService(esClient: Client) {
 
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   def getIndexList: Future[List[IndexListEntry]] = {
-    EsClient.execute(new GetFillableIndicesQuery) map {
-      indices => {
-        val indexListAsJson = (indices.json \ "indices").asInstanceOf[JsObject].fields filter {
-          case (key, value) => key.startsWith("fbl_")
+    val getAllIndicesQuery = GetFillableIndicesQuery(esClient).execute
+
+    getAllIndicesQuery map {
+      allIndices => {
+        val indexList = allIndices.getIndices.toMap.filterKeys {
+          case key => key.startsWith("fbl_")
         }
 
         val result = for {
-          (name, stats) <- indexListAsJson
+          (name, stats) <- indexList
         } yield {
-          IndexListEntry(name, (stats \ "total" \ "docs" \ "count").as[Int], (stats \ "total" \ "store" \ "size").as[String])
+          IndexListEntry(name, stats.getTotal.getDocs.getCount, stats.getTotal.getStore.getSize.getMb)
         }
 
         result.toList
