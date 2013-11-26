@@ -11,6 +11,7 @@ import esclient.queries.GetDocumentByIdQuery
 import play.api.libs.json.JsArray
 import esclient.queries.GetOptionsQuery
 import org.elasticsearch.search.suggest.completion.CompletionSuggestion
+import scala.collection.JavaConversions._
 
 class AutoCompletionService(esClient: => Client) {
 
@@ -66,19 +67,20 @@ class AutoCompletionService(esClient: => Client) {
     }
   }
 
-  def getOptions(indexName: String, toBeCompleted: String): Future[JsArray] = {
+  def getOptions(indexName: String, toBeCompleted: String): Future[JsValue] = {
     if (indexName.isEmpty || toBeCompleted.isEmpty) {
       Future.successful(Json.arr())
     } else {
       GetOptionsQuery(esClient, indexName, toBeCompleted).execute map {
         options => {
-          val completion: CompletionSuggestion = options.getSuggest().getSuggestion(indexName)
-          val entries = completion.getEntries().get(0).getOptions()
+          val completion: CompletionSuggestion = options.getSuggest.getSuggestion(indexName)
+          val entries = completion.getEntries.get(0).getOptions.iterator().toList
 
-          Json.arr(entries.get(0).getText.string(),
-            entries.get(1).getText.string(),
-            entries.get(2).getText.string(),
-            entries.get(3).getText.string())
+          val scalaOptions: List[String] = entries map {
+            entry => entry.getText.string()
+          }
+
+          Json.toJson(scalaOptions)
         }
       } recover {
         case _ => Json.arr()
