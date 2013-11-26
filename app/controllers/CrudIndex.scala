@@ -51,21 +51,13 @@ object CrudIndex extends Controller {
       indexForm.bindFromRequest.fold(
         errors => Future.successful(Ok(html.crudindex.form(errors))),
         index => {
-          val query = new CreateFillableIndexQuery(index.name, index.shards, index.replicas)
-          EsClient.execute(query) map {
-            indexCreated => {
-                if (indexCreated.status == 200) {
-                  Redirect(routes.CrudIndex.showSummary(index.name)).flashing("success" -> Messages("success.indexCreated"))
-                } else {
-                  (indexCreated.json \ "error") match {
-                    case error if error.toString.contains("IndexAlreadyExistsException") => Redirect(routes.CrudIndex.createForm()).flashing("error" -> Messages("error.indexAlreadyExists", "fbl_" + index.name))
-                    case _ => Redirect(routes.CrudIndex.createForm).flashing("error" -> Messages("error.unableToCreateIndex"))
-                  }
-                }
-              }
-          } recover {
-            case e: ConnectException => Redirect(routes.CrudIndex.createForm()).flashing("error" -> Messages("error.connectionRefused", EsClient.url(query)))
-            case e: Throwable => Redirect(routes.CrudIndex.createForm()).flashing("error" -> Messages("error.unableToCreateIndex"))
+          val crudIndexService = new CrudIndexService(ElasticsearchClient.elasticClient)
+          crudIndexService.createFillablendex(index.name, index.shards, index.replicas) map {
+            indexCreated => indexCreated match {
+              case 200 => Redirect(routes.CrudIndex.showSummary(index.name)).flashing("success" -> Messages("success.indexCreated"))
+              case 400 => Redirect(routes.CrudIndex.createForm()).flashing("error" -> Messages("error.indexAlreadyExists", "fbl_" + index.name))
+              case _ => Redirect(routes.CrudIndex.createForm).flashing("error" -> Messages("error.unableToCreateIndex"))
+            }
           }
         })
     }

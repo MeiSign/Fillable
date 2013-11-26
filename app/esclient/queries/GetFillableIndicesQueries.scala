@@ -1,14 +1,10 @@
 package esclient.queries
 
 import esclient.EsQuery
-import esclient.HttpType
-import play.api.libs.json.Json
 import org.elasticsearch.client.Client
 import scala.concurrent._
 import org.elasticsearch.action.ActionListener
-import play.api.libs.json.JsObject
 import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse
-import org.elasticsearch.action.admin.indices.status.IndicesStatusResponse
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse
 
 case class GetFillableIndicesQuery(esClient: Client) {
@@ -31,7 +27,7 @@ case class GetFillableIndicesQuery(esClient: Client) {
   def execute: Future[IndicesStatsResponse] = p.future
 }
 
-case class GetFillableIndexQuery(esClient: Client, index: String) extends EsQuery {
+case class GetFillableIndexQuery(esClient: Client, index: String) {
   lazy val p = promise[ClusterStateResponse]()
   esClient
     .admin()
@@ -46,12 +42,4 @@ case class GetFillableIndexQuery(esClient: Client, index: String) extends EsQuer
   })
 
   def execute: Future[ClusterStateResponse] = p.future
-
-
-
-  val httpType: HttpType.Value = HttpType.get
-
-  def getUrlAddon: String = "/" + index + "/_settings"
-
-  def toJson: JsObject = Json.obj()
 }

@@ -2,8 +2,8 @@ package helper.services
 
 import org.elasticsearch.client.Client
 import scala.concurrent.Future
-import esclient.queries.{DeleteFillableIndexQuery, EditFillableIndexQuery}
-import org.elasticsearch.indices.IndexMissingException
+import esclient.queries.{CreateFillableIndexQuery, DeleteFillableIndexQuery, EditFillableIndexQuery}
+import org.elasticsearch.indices.{IndexAlreadyExistsException, IndexMissingException}
 
 class CrudIndexService(esClient: Client) {
 
@@ -14,6 +14,7 @@ class CrudIndexService(esClient: Client) {
       editResponse => if (editResponse.isAcknowledged) 200 else 400
     } recover {
       case e: IndexMissingException => 404
+      case _ => 400
     }
   }
 
@@ -24,7 +25,17 @@ class CrudIndexService(esClient: Client) {
         deleteResponse => if (deleteResponse.isAcknowledged) 200 else 400
       } recover {
         case e: IndexMissingException => 404
+        case _ => 400
       }
+    }
+  }
+
+  def createFillablendex(index: String, shards: Int, replicas: Int): Future[Int] = {
+    CreateFillableIndexQuery(esClient, index, shards, replicas).execute map {
+      createResponse => if (createResponse.isAcknowledged) 200 else 404
+    } recover {
+      case e: IndexAlreadyExistsException => 400
+      case _ => 404
     }
   }
 }
