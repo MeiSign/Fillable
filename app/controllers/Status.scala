@@ -1,7 +1,7 @@
 package controllers
 
-import _root_.helper.services.RequirementsService
-import _root_.helper.utils.{AuthenticatedAction}
+import helper.services.RequirementsService
+import helper.utils.{AuthenticatedAction}
 import play.api.mvc.Controller
 import play.api.mvc.Action
 import views._

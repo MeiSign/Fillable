@@ -5,7 +5,6 @@ import helper.utils.AuthenticatedAction
 import esclient.ElasticsearchClient
 import views.html
 import helper.services.{LogIndexService, LogStatsService}
-import play.api.i18n.Messages
 
 object Logs extends Controller {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global

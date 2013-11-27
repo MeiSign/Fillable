@@ -1,7 +1,7 @@
 package controllers
 
-import _root_.helper.services.IndicesStatsService
-import _root_.helper.utils.AuthenticatedAction
+import helper.services.IndicesStatsService
+import helper.utils.AuthenticatedAction
 import play.api.mvc._
 import esclient.ElasticsearchClient
 import views._

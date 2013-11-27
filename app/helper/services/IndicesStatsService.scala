@@ -4,7 +4,7 @@ import scala.concurrent.Future
 import models.{Index, IndexListEntry}
 import org.elasticsearch.client.Client
 import scala.collection.JavaConversions._
-import esclient.queries.{GetFillableIndicesQuery, GetFillableIndexQuery}
+import esclient.queries.{GetFillableIndexQuery, GetFillableIndicesQuery}
 
 class IndicesStatsService(esClient: Client) {
 
@@ -31,7 +31,7 @@ class IndicesStatsService(esClient: Client) {
   }
 
   def getIndexSettings(indexName: String): Future[Option[Index]] = {
-    GetFillableIndexQuery(esClient, indexName).execute map {
+    GetFillableIndexQuery(esClient).execute map {
       index => {
         val numberOfReplicas = index.getState.getMetaData.getIndices.get(indexName).getNumberOfReplicas
         val numberOfShards = index.getState.getMetaData.getIndices.get(indexName).getNumberOfShards

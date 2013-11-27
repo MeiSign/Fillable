@@ -1,9 +1,6 @@
 package esclient.queries
 
-import play.api.libs.json.JsObject
-import play.api.libs.json.Json
 import scala.concurrent._
-import play.api.libs.json.JsObject
 import org.elasticsearch.action.get.GetResponse
 import org.elasticsearch.action.ActionListener
 import org.elasticsearch.client.Client

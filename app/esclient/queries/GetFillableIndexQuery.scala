@@ -3,12 +3,11 @@ package esclient.queries
 import org.elasticsearch.client.Client
 import scala.concurrent._
 import org.elasticsearch.action.ActionListener
-import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse
 
 
 
-case class GetFillableIndexQuery(esClient: Client, index: String) {
+case class GetFillableIndexQuery(esClient: Client) {
   lazy val p = promise[ClusterStateResponse]()
   esClient
     .admin()
