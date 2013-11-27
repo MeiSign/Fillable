@@ -1,4 +1,4 @@
-@(createIndexForm: Form[Index], disableForm: Boolean = false, editForm: Boolean = false)(implicit request: Request[Any], flash: Flash)
+@(createIndexForm: Form[Index], editForm: Boolean = false)(implicit request: Request[Any], flash: Flash)
 
 @import helper._ 
 @implicitField = @{ FieldConstructor(formInput.f) } 
@@ -8,46 +8,53 @@
   @notice(flash)
   
   @helper.form(action = if(editForm) {routes.CrudIndex.submitEditIndex} else {routes.CrudIndex.submitNewIndex}, 'class -> "form-horizontal") {
-		<fieldset @if(disableForm) {disabled}>
-		<fieldset @if(editForm) {disabled}>
-			@inputText(
-			  createIndexForm("indexname"), 
-			  '_label -> "Index name",
-			  'placeholder -> "Name (a-z, 0-9)", 
-			  '_error -> createIndexForm.globalError,
-			  'class -> "form-control")
-			@inputText(
-        createIndexForm("shards"), 
-        '_label -> "Shards",
-        'placeholder -> "Number of shards", 
-        '_error -> createIndexForm.globalError,
-        'class -> "form-control")
-    </fieldset>
-      @if(editForm) {
-        <div class="hidden">
-	      @inputText(
-	        createIndexForm("indexname"), 
-	        '_error -> createIndexForm.globalError,
-	        'id -> "indexname1")
-	      @inputText(
-	        createIndexForm("shards"),
-	        'id -> "shards1",
-	        '_error -> createIndexForm.globalError)
+    <fieldset>
+        <fieldset @if(editForm) {disabled}>
+            @inputText(
+                createIndexForm("indexname"),
+                '_label -> "Index name",
+                'placeholder -> "Name (a-z, 0-9)",
+                '_error -> createIndexForm.globalError,
+                'class -> "form-control")
+            @inputText(
+                createIndexForm("shards"),
+                '_label -> "Shards",
+                'placeholder -> "Number of shards",
+                '_error -> createIndexForm.globalError,
+                'class -> "form-control")
+        </fieldset>
+        @inputText(
+            createIndexForm("replicas"),
+            '_label -> "Replicas",
+            'placeholder -> "Number of replicas",
+            '_error -> createIndexForm.globalError,
+            'class -> "form-control")
+
+        @if(editForm) {
+            <div class="hidden">
+	            @inputText(
+	                createIndexForm("indexname"),
+                    '_error -> createIndexForm.globalError,
+                    'id -> "indexname1")
+                @inputText(
+                    createIndexForm("shards"),
+                    'id -> "shards1",
+                    '_error -> createIndexForm.globalError)
 	      </div>
-      }
-    
-      @inputText(
-        createIndexForm("replicas"), 
-        '_label -> "Replicas",
-        'placeholder -> "Number of replicas", 
-        '_error -> createIndexForm.globalError,
-        'class -> "form-control")
-			<div class="form-group">
-				<div class="col-lg-offset-4 col-lg-2">
-					<a href="/" class="btn">Cancel</a>
-					<button type="submit" class="btn btn-default">@if(editForm) {Save} else {Create}</button>
-				</div>
+        } else {
+            @checkbox(
+                createIndexForm("logging"),
+                '_label -> "Logging",
+                '_error -> createIndexForm.globalError,
+                'class -> "form-control")
+        }
+
+        <div class="form-group">
+		    <div class="col-lg-offset-4 col-lg-2">
+			    <a href="/" class="btn">Cancel</a>
+				<button type="submit" class="btn btn-default">@if(editForm) {Save} else {Create}</button>
 			</div>
+		</div>
 	 </fieldset>
   } 
 }

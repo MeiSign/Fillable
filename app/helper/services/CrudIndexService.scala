@@ -18,7 +18,7 @@ class CrudIndexService(esClient: Client) {
     }
   }
 
-  def deleteFillableIndex(esClient: Client, index: String): Future[Int] = {
+  def deleteFillableIndex(index: String): Future[Int] = {
     if (!index.startsWith("fbl_")) Future.successful(404)
     else {
       DeleteFillableIndexQuery(esClient, index).execute map {
@@ -30,7 +30,21 @@ class CrudIndexService(esClient: Client) {
     }
   }
 
-  def createFillablendex(index: String, shards: Int, replicas: Int): Future[Int] = {
+  def createFillableIndex(index: String, shards: Int, replicas: Int, logging: Boolean): Future[Int] = {
+    val indexName =  "fbl_" + index
+    val logIndexService = new LogIndexService(esClient)
+    for {
+      indexCreated: Int <- createEsIndex(indexName, shards, replicas)
+      logIndexCreated: Int <- logIndexService.createLogIndex(indexName + "_log", shards, replicas, logging)
+    } yield {
+      (indexCreated, logIndexCreated) match {
+        case (200, 200) => 200
+        case _ => 400
+      }
+    }
+  }
+
+  def createEsIndex(index: String, shards: Int, replicas: Int): Future[Int] = {
     CreateFillableIndexQuery(esClient, index, shards, replicas).execute map {
       createResponse => if (createResponse.isAcknowledged) 200 else 404
     } recover {

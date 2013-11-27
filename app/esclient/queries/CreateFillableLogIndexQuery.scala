@@ -8,15 +8,21 @@ import org.elasticsearch.common.xcontent.XContentBuilder
 import org.elasticsearch.common.xcontent.XContentFactory._
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse
 
-case class CreateFillableIndexQuery(esClient: Client, name: String, shards: Int = 4, replicas: Int = 0) {
+case class CreateFillableLogIndexQuery(esClient: Client, name: String, shards: Int = 4, replicas: Int = 0) {
   lazy val p = promise[CreateIndexResponse]()
 
   val mapping: XContentBuilder = jsonBuilder()
     .startObject()
     .startObject(name)
     .startObject("properties")
-    .startObject("fillableOptions")
-    .field("type", "completion")
+    .startObject("timestamp")
+      .field("type", "long")
+    .endObject()
+    .startObject("typed")
+      .field("type", "string")
+    .endObject()
+    .startObject("chosen")
+      .field("type", "string")
     .endObject()
     .endObject()
     .endObject()

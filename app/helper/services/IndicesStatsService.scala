@@ -14,7 +14,7 @@ class IndicesStatsService(esClient: Client) {
     GetFillableIndicesQuery(esClient).execute map {
       allIndices => {
         val indexList = allIndices.getIndices.toMap.filterKeys {
-          case key => key.startsWith("fbl_")
+          case key => key.startsWith("fbl_") && !key.endsWith("_log")
         }
 
         val result = for {
