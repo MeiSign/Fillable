@@ -2,7 +2,7 @@
 
 @import helper._ 
 @implicitField = @{ FieldConstructor(formInput.f) } 
-@title = { @Messages(if(editForm){"titel.editIndex"} else {"titel.createNewIndex"}) }
+@title = { @Messages(if(editForm){"title.editIndex"} else {"title.createNewIndex"}) }
 
 @main(title, nav = if(editForm) {""} else {"createIndex"}) { 
   @notice(flash)

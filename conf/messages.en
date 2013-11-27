@@ -28,11 +28,12 @@ success.indexWillBeChangedSoon=Ok! Your requested change is queued and will be p
 text.snippetSummary=Include the black parts of this snippet on any page with a form where you want to use your new Fillable Autocompletion Index.
 text.confirmDelete= Are you sure that you want to delete the Index and all its data?
 
-# Titel messages
+# Title messages
 # ~~~~~
-titel.indexCreated=Index created
-titel.createNewIndex=Create a new Fillable Index
-titel.editIndex=Edit Fillable Index
-titel.login=Login
-titel.indexList=All your Fillable Indices
-titel.status=Fillable System Status
+title.indexCreated=Index created
+title.createNewIndex=Create a new Fillable Index
+title.editIndex=Edit Fillable Index
+title.login=Login
+title.indexList=All your Fillable Indices
+title.status=Fillable System Status
+title.logList=Fillable Field Logs

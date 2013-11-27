@@ -10,13 +10,16 @@ POST  /addCompletion/:indexName     controllers.ApplicationApi.addOption(indexNa
 GET  /                  controllers.ListIndices.index(highlightIndex: Option[String])
 GET  /status            controllers.Status.index()
 
+# Logs
+GET /logs   controllers.Logs.index
+
 # Crud Index
 GET  /createIndex               controllers.CrudIndex.createForm
 POST /createIndex               controllers.CrudIndex.submitNewIndex
 GET  /editIndex/:indexName      controllers.CrudIndex.editForm(indexName: String)
 POST /editIndex                 controllers.CrudIndex.submitEditIndex
-GET /deleteIndex/:indexName     controllers.CrudIndex.deleteIndex(indexName: String)
-GET /snippetSummary/:indexName  controllers.CrudIndex.showSummary(indexName: String)
+GET  /deleteIndex/:indexName    controllers.CrudIndex.deleteIndex(indexName: String)
+GET  /snippetSummary/:indexName controllers.CrudIndex.showSummary(indexName: String)
 
 # Login
 GET  /login             controllers.Login.login
