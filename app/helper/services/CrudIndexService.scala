@@ -37,6 +37,8 @@ class CrudIndexService(esClient: Client) {
     } yield {
       (indexDeleted, logIndexDeleted) match {
         case (200, 200) => 200
+        case (200, 404) => 200
+        case (404, 404) => 200
         case _ => 400
       }
     }
@@ -46,13 +48,19 @@ class CrudIndexService(esClient: Client) {
   def createFillableIndex(index: String, shards: Int, replicas: Int, logging: Boolean): Future[Int] = {
     val indexName =  "fbl_" + index
     val logIndexService = new LogIndexService(esClient)
-    for {
-      indexCreated: Int <- createEsIndex(indexName, shards, replicas)
-      logIndexCreated: Int <- logIndexService.createLogIndex(indexName + "_log", shards, replicas, logging)
-    } yield {
-      (indexCreated, logIndexCreated) match {
-        case (200, 200) => 200
-        case _ => 400
+    createEsIndex(indexName, shards, replicas) flatMap {
+      indexCreated => {
+        logging match  {
+          case true => {
+            logIndexService.createLogIndex(indexName + "_log", shards, replicas) map {
+              logCreated => (logCreated, indexCreated) match {
+                case (200, 200) => 200
+                case _ => 404
+              }
+            }
+          }
+          case false => Future.successful(indexCreated)
+        }
       }
     }
   }

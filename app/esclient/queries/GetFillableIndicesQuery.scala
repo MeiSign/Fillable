@@ -14,6 +14,7 @@ case class GetFillableIndicesQuery(esClient: Client) {
     .clear()
     .all()
     .setStore(true)
+    .setGet(true)
     .execute()
     .addListener(new ActionListener[IndicesStatsResponse] {
 

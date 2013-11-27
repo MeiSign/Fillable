@@ -11,7 +11,9 @@ GET  /                  controllers.ListIndices.index(highlightIndex: Option[Str
 GET  /status            controllers.Status.index()
 
 # Logs
-GET /logs   controllers.Logs.index
+GET /logs                           controllers.Logs.index
+GET  /activateLogging/:indexName    controllers.Logs.activateLogging(indexName: String)
+GET  /deactivateLogging/:indexName  controllers.Logs.deactivateLogging(indexName: String)
 
 # Crud Index
 GET  /createIndex               controllers.CrudIndex.createForm
