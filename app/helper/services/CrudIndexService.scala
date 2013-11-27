@@ -18,7 +18,7 @@ class CrudIndexService(esClient: Client) {
     }
   }
 
-  def deleteFillableIndex(index: String): Future[Int] = {
+  def deleteEsIndex(index: String): Future[Int] = {
     if (!index.startsWith("fbl_")) Future.successful(404)
     else {
       DeleteFillableIndexQuery(esClient, index).execute map {
@@ -29,6 +29,19 @@ class CrudIndexService(esClient: Client) {
       }
     }
   }
+
+  def deleteFillableIndex(index: String): Future[Int] = {
+    for {
+      indexDeleted: Int <- deleteEsIndex(index)
+      logIndexDeleted: Int <- deleteEsIndex(index + "_log")
+    } yield {
+      (indexDeleted, logIndexDeleted) match {
+        case (200, 200) => 200
+        case _ => 400
+      }
+    }
+  }
+
 
   def createFillableIndex(index: String, shards: Int, replicas: Int, logging: Boolean): Future[Int] = {
     val indexName =  "fbl_" + index

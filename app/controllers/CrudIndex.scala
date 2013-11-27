@@ -53,7 +53,7 @@ object CrudIndex extends Controller {
         errors => Future.successful(Ok(html.crudindex.form(errors))),
         index => {
           val crudIndexService = new CrudIndexService(ElasticsearchClient.elasticClient)
-          crudIndexService.createFillableIndex(index.name, index.shards, index.replicas, true) map {
+          crudIndexService.createFillableIndex(index.name, index.shards, index.replicas, index.logging) map {
             indexCreated => indexCreated match {
               case 200 => Redirect(routes.CrudIndex.showSummary(index.name)).flashing("success" -> Messages("success.indexCreated"))
               case 400 => Redirect(routes.CrudIndex.createForm()).flashing("error" -> Messages("error.unableToCreateIndex"))
