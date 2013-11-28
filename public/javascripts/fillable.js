@@ -22,8 +22,6 @@ var settings, FillableWidget = {
     },
 
     bindUiActions: function() {
-        settings.form.setAttribute("onsubmit", "FillableWidget.submitForm()");
-
         settings.inputField.onkeyup = function(event) {
             FillableWidget.changeInput();
         }
@@ -72,10 +70,6 @@ var settings, FillableWidget = {
             FillableHelper.removeClass(settings.optionBox, "fblHidden");
             this.getOptions();
         }
-    },
-
-    submitForm: function() {
-        FillableWidget.addOption();
     },
 
     getOptions: function() {

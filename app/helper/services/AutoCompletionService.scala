@@ -26,14 +26,19 @@ class AutoCompletionService(esClient: => Client) {
   }
 
   def addOption(indexNameParam: String, typed: Option[String], chosen: Option[String]): Future[Int] = {
+    val logIndexService = new LogIndexService(esClient)
     indexNameParam match {
-      case emptyName if (emptyName.isEmpty) => Future.successful(400)
+      case emptyName if emptyName.isEmpty => Future.successful(400)
       case indexName => {
         typed.getOrElse("") match {
-          case emptyTypedString if (emptyTypedString.isEmpty) => Future.successful(204)
+          case emptyTypedString if emptyTypedString.isEmpty => Future.successful(204)
           case typedString => {
             val documentId = getDocumentId(typedString, chosen)
-            addOptionToEs(indexName, documentId, typedString)
+            val result = for {
+              optionAdded <- addOptionToEs(indexName, documentId, typedString)
+              optionLogged <- logIndexService.addLogEntry(indexName + "_log", typedString, chosen.getOrElse(""))
+            } yield optionAdded
+            result
           }
         }
       }
@@ -87,7 +92,7 @@ class AutoCompletionService(esClient: => Client) {
 
   def getDocumentId(typed: String, chosen: Option[String]): String = {
     chosen.getOrElse("") match {
-      case emptyChosenString if (emptyChosenString.isEmpty) => typed
+      case emptyChosenString if emptyChosenString.isEmpty => typed
       case nonEmptyChosenString => nonEmptyChosenString
     }
   }
