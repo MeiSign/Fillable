@@ -1,0 +1,71 @@
+@(logs: Map[String, List[LogListEntry]])(implicit request: Request[Any], flash: Flash)
+
+@import helper._
+@implicitField = @{ FieldConstructor(formInput.f) }
+@title = { @Messages("title.logList") }
+
+@main(title, nav = "logList") {
+@notice(flash)
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Logged Inputs</h2>
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th class="text-right">Log Entries</th>
+                <th class="text-right">Size</th>
+                <th><div class="text-center">Actions</div></th>
+            </tr>
+            </thead>
+            <tbody>
+            @for((log, number) <- logs.apply("activated").reverse.zipWithIndex) {
+            <tr>
+            <td>@{number + 1}</td>
+            <td>@log.name</td>
+            <td class="text-right">@log.logEntries</td>
+            <td class="text-right">@log.size MB</td>
+            <td>
+                <div class="text-center">
+                    <div class="btn-group btn-group-xs text-right">
+                        <a href="" class="btn btn-default"><span class="glyphicon glyphicon-link"></span> Find Synonyms</a>
+                        <a href="@{routes.Logs.deactivateLogging(log.name)}" class="btn btn-default" onclick="return confirm('@Messages("text.confirmDelete")')"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+                    </div>
+                </div>
+            </td>
+            </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <h2>Unlogged Inputs</h2>
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th><div class="text-center">Actions</div></th>
+            </tr>
+            </thead>
+            <tbody>
+            @for((log, number) <- logs.apply("deactivated").reverse.zipWithIndex) {
+            <tr>
+                <td>@{number + 1}</td>
+                <td>@log.name</td>
+                <td>
+                    <div class="text-center">
+                        <div class="btn-group btn-group-xs text-right">
+                            <a href="@{routes.Logs.activateLogging(log.name)}" class="btn btn-default"><span class="glyphicon glyphicon-floppy-save"></span> Activate Logging</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+}

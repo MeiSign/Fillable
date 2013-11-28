@@ -10,11 +10,11 @@
   <table class="table table-striped table-bordered">
     <thead>
        <tr>
-         <th class="col-sm-1">#</th>
-         <th class="col-sm-6">Name</th>
-         <th class="text-center">Completions Count</th>
-         <th class="text-center">Size</th>
-         <th><div class="text-center">Actions</div></th>
+         <th>#</th>
+         <th>Name</th>
+         <th class="text-right col-sm-2">Completions Count</th>
+         <th class="text-right">Size</th>
+         <th class="text-center col-sm-3">Actions</th>
        </tr>
      </thead>
      <tbody>
@@ -22,14 +22,14 @@
         <tr class="@("warning".when(index.name.equals(highlightName)))">
       <td>@{number + 1}</td>
       <td>@index.name</td>
-      <td class="text-center">@index.documents</td>
-      <td class="text-center">@index.size MB</td>
+      <td class="text-right">@index.documents</td>
+      <td class="text-right">@index.size MB</td>
       <td>
           <div class="text-center">
              <div class="btn-group btn-group-xs text-right">
-              <a href="@routes.CrudIndex.showSummary(index.name)" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></a>
-              <a href="@routes.CrudIndex.editForm(index.name)" class="btn btn-default"><span class="glyphicon glyphicon-wrench"></span></a>
-              <a href="@routes.CrudIndex.deleteIndex(index.name)" class="btn btn-default" onclick="return confirm('@Messages("text.confirmDelete")')"><span class="glyphicon glyphicon-trash"></span></a>
+              <a href="@routes.CrudIndex.showSummary(index.name)" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> Snippet</a>
+              <a href="@routes.CrudIndex.editForm(index.name)" class="btn btn-default"><span class="glyphicon glyphicon-wrench"></span> Edit</a>
+              <a href="@routes.CrudIndex.deleteIndex(index.name)" class="btn btn-default" onclick="return confirm('@Messages("text.confirmDelete")')"><span class="glyphicon glyphicon-trash"></span> Delete</a>
             </div>
           </div>
       </td>

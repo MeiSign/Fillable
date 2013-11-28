@@ -58,6 +58,7 @@ var settings, FillableWidget = {
     },
 
     selectOption: function(option) {
+        console.log("option selected");
         settings.values.chosen = option;
         settings.inputField.value = option;
         settings.inputField.focus();
@@ -66,6 +67,7 @@ var settings, FillableWidget = {
 
     changeInput: function() {
         if (settings.values.typed != settings.inputField.value) {
+            settings.values.chosen = "";
             settings.values.typed = settings.inputField.value;
             FillableHelper.removeClass(settings.optionBox, "fblHidden");
             this.getOptions();
