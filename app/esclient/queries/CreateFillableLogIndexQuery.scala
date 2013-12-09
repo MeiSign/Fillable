@@ -23,6 +23,7 @@ case class CreateFillableLogIndexQuery(esClient: Client, name: String, shards: I
     .endObject()
     .startObject("chosen")
       .field("type", "string")
+    .field("index", "not_analyzed")
     .endObject()
     .endObject()
     .endObject()

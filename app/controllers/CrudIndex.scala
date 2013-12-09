@@ -60,7 +60,8 @@ object CrudIndex extends Controller {
               case _ => Redirect(routes.CrudIndex.createForm).flashing("error" -> Messages("error.unableToCreateIndex"))
             }
           }
-        })
+        }
+      )
     }
   }
 

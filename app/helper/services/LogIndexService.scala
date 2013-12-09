@@ -35,11 +35,9 @@ class LogIndexService(esClient: Client) {
         if (index.getState.getMetaData.getIndices.containsKey(indexName)) {
           val doc = jsonBuilder()
             .startObject()
-            .startObject("fillableOptions")
             .field("timestamp", System.currentTimeMillis())
             .field("typed", typed)
             .field("chosen", chosen)
-            .endObject()
             .endObject().string()
 
           IndexDocumentQuery(esClient, indexName, doc).execute map {

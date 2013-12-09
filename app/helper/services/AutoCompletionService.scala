@@ -96,4 +96,5 @@ class AutoCompletionService(esClient: => Client) {
       case nonEmptyChosenString => nonEmptyChosenString
     }
   }
+
 }

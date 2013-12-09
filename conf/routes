@@ -15,6 +15,10 @@ GET /logs                           controllers.Logs.index
 GET  /activateLogging/:indexName    controllers.Logs.activateLogging(indexName: String)
 GET  /deactivateLogging/:indexName  controllers.Logs.deactivateLogging(indexName: String)
 
+# Synonyms
+GET /synonyms/:indexName        controllers.Synonym.editor(indexName: String)
+POST /submitSynonyms/:indexName        controllers.Synonym.submitSynonyms(indexName: String)
+
 # Crud Index
 GET  /createIndex               controllers.CrudIndex.createForm
 POST /createIndex               controllers.CrudIndex.submitNewIndex

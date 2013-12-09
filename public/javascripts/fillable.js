@@ -1,8 +1,7 @@
 var settings, FillableWidget = {
     settings: {
         values: {
-            typed: "",
-            chosen: ""
+            typed: ""
         }
     },
 
@@ -58,8 +57,6 @@ var settings, FillableWidget = {
     },
 
     selectOption: function(option) {
-        console.log("option selected");
-        settings.values.chosen = option;
         settings.inputField.value = option;
         settings.inputField.focus();
         FillableHelper.addClass(settings.optionBox, "fblHidden")
@@ -67,7 +64,6 @@ var settings, FillableWidget = {
 
     changeInput: function() {
         if (settings.values.typed != settings.inputField.value) {
-            settings.values.chosen = "";
             settings.values.typed = settings.inputField.value;
             FillableHelper.removeClass(settings.optionBox, "fblHidden");
             this.getOptions();
@@ -114,7 +110,7 @@ var settings, FillableWidget = {
         if (http != null) {
             http.open("POST", addOptionsUrl(), true);
             http.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-            http.send("typed=" + encodeURIComponent(settings.values.typed) + "&chosen=" + encodeURIComponent(settings.values.chosen));
+            http.send("typed=" + encodeURIComponent(settings.values.typed) + "&chosen=" + encodeURIComponent(settings.inputField.value));
         }
 
         function addOptionsUrl() {

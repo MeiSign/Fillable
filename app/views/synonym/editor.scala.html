@@ -1,0 +1,58 @@
+@(indexName: String, synonymForm: Form[Synonyms], inputValues: List[String])(implicit request: Request[Any], flash: Flash)
+
+@import helper._
+@implicitField = @{ FieldConstructor(textareaInput.f) }
+@title = { @Messages("title.synonymeditor") }
+
+@main(title, nav = "") {
+@notice(flash)
+
+    <p>@Messages("text.SynonymEditorInfo")</p>
+
+    <div class="col-lg-7">
+        <h3>Syntax</h3>
+        <p>
+            @Messages("text.SynonymEditorSyntaxInfo0")<br>
+            @Messages("text.SynonymEditorSyntaxInfo1") / @Messages("text.SynonymEditorSyntaxInfo2")
+        </p>
+        @helper.form(action = routes.Synonym.submitSynonyms(indexName)) {
+            @textarea(synonymForm("synonyms"),
+                        '_label -> "Synonyms",
+                        '_error -> synonymForm.globalError,
+                        'class -> "expanding form-control")
+
+            <div class="col-lg-offset-9">
+                <a href="/" class="btn">Cancel</a>
+                <button type="submit" class="btn btn-default">Save</button>
+            </div>
+        }
+    </div>
+    <div class="col-lg-5">
+        <h3>Top 10 Inputs without any Synonyms</h3>
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Inputvalue</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+                @for((inputValue, number) <- inputValues.zipWithIndex) {
+                <tr>
+                    <td>@{number + 1}</td>
+                    <td>@inputValue</td>
+                    <td>
+                        <div class="text-center">
+                            <div class="btn-group btn-group-xs text-right">
+                                <a href="http://babelnet.org/search.jsp?word=@inputValue&lang=EN" class="btn btn-default" target="_blank"><span class="glyphicon glyphicon-search"></span> Lookup</a>
+                            </div>
+                        </div>
+                    </td>
+
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

@@ -70,6 +70,10 @@ class CrudIndexService(esClient: Client) {
       createResponse => if (createResponse.isAcknowledged) 200 else 404
     } recover {
       case e: IndexAlreadyExistsException => 400
+      case e: Throwable => {
+        e.printStackTrace()
+        404
+      }
       case _ => 404
     }
   }

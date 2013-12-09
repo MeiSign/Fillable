@@ -1,19 +1,20 @@
 package esclient.queries
 
 import org.elasticsearch.client.Client
-import org.elasticsearch.action.admin.indices.settings.UpdateSettingsResponse
-import org.elasticsearch.common.settings.ImmutableSettings
-import org.elasticsearch.action.ActionListener
 import scala.concurrent._
+import org.elasticsearch.action.admin.indices.settings.UpdateSettingsResponse
+import org.elasticsearch.action.ActionListener
+import play.api.libs.json.Json
 
-case class EditFillableIndexQuery(esClient: Client, name: String, replicas: Int) {
+case class EditFillableIndexSynonymsQuery(esClient: Client, indexName: String, synonyms: List[String]) {
   lazy val p = promise[UpdateSettingsResponse]()
+
   esClient
     .admin()
     .indices()
     .prepareUpdateSettings()
-    .setIndices(name)
-    .setSettings(ImmutableSettings.settingsBuilder().put("number_of_replicas", replicas).build())
+    .setIndices(indexName)
+    .setSettings(generateSettings())
     .execute()
     .addListener(new ActionListener[UpdateSettingsResponse] {
 
@@ -23,4 +24,19 @@ case class EditFillableIndexQuery(esClient: Client, name: String, replicas: Int)
   })
 
   def execute: Future[UpdateSettingsResponse] = p.future
+
+  def generateSettings() = {
+    val settings = Json.obj(
+      "analysis" -> Json.obj(
+        "filter" -> Json.obj(
+          indexName + "_filter" -> Json.obj(
+            "type" -> "synonym",
+            "synonyms" -> synonyms.toSeq
+          )
+        )
+      )
+    )
+
+    Json.stringify(settings)
+  }
 }

@@ -14,7 +14,6 @@ object ElasticsearchClient {
   val embeddedElasticsearch = Play.current.configuration.getBoolean("esclient.embeddedElasticsearch").getOrElse(true)
   val elasticClient: Client = buildClient(embeddedElasticsearch)
 
-
   def buildClient(embedded: Boolean): Client = {
     if (embeddedElasticsearch) {
       buildNodeClient()
