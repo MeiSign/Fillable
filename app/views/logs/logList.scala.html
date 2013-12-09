@@ -1,4 +1,4 @@
-@(logs: Map[String, List[LogListEntry]])(implicit request: Request[Any], flash: Flash)
+@(logs: LogListResult)(implicit request: Request[Any], flash: Flash)
 
 @import helper._
 @implicitField = @{ FieldConstructor(formInput.f) }
@@ -21,7 +21,7 @@
             </tr>
             </thead>
             <tbody>
-            @for((log, number) <- logs.apply("activated").reverse.zipWithIndex) {
+            @for((log, number) <- logs.activatedLogs.reverse.zipWithIndex) {
             <tr>
             <td>@{number + 1}</td>
             <td>@log.name</td>
@@ -51,7 +51,7 @@
             </tr>
             </thead>
             <tbody>
-            @for((log, number) <- logs.apply("deactivated").reverse.zipWithIndex) {
+            @for((log, number) <- logs.deactivatedLogs.reverse.zipWithIndex) {
             <tr>
                 <td>@{number + 1}</td>
                 <td>@log.name</td>

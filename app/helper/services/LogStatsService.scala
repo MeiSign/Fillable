@@ -1,7 +1,7 @@
 package helper.services
 
 import scala.concurrent.Future
-import models.LogListEntry
+import models.{LogListResult, LogListEntry}
 import org.elasticsearch.client.Client
 import scala.collection.JavaConversions._
 import esclient.queries.GetFillableIndicesQuery
@@ -10,7 +10,7 @@ class LogStatsService(esClient: Client) {
 
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
-  def getLogLists: Future[Map[String, List[LogListEntry]]] = {
+  def getLogLists: Future[LogListResult] = {
     GetFillableIndicesQuery(esClient).execute map {
       allIndices => {
         val logMap = allIndices.getIndices.toMap.filterKeys { case key => key.startsWith("fbl_") && key.endsWith("_log") }
@@ -28,10 +28,10 @@ class LogStatsService(esClient: Client) {
           LogListEntry(name + "_log", 0, 0)
         }
 
-        Map("activated" -> activatedLogs.toList, "deactivated" -> deactivatedLogs.toList)
+        LogListResult(activatedLogs.toList, deactivatedLogs.toList)
       }
     } recover {
-      case _ => Map("activated" -> List.empty[LogListEntry], "deactivated" -> List.empty[LogListEntry])
+      case _ => LogListResult(List.empty[LogListEntry], List.empty[LogListEntry])
     }
   }
 }

@@ -35,8 +35,8 @@ class AutoCompletionService(esClient: => Client) {
           case typedString => {
             val documentId = getDocumentId(typedString, chosen)
             val result = for {
-              optionAdded <- addOptionToEs(indexName, documentId, typedString)
-              optionLogged <- logIndexService.addLogEntry(indexName + "_log", typedString, chosen.getOrElse(""))
+              optionAdded <- addOptionToEs(indexName, documentId, typedString.toLowerCase)
+              optionLogged <- logIndexService.addLogEntry(indexName + "_log", typedString, chosen.getOrElse("").toLowerCase)
             } yield optionAdded
             result
           }
@@ -73,7 +73,7 @@ class AutoCompletionService(esClient: => Client) {
     if (indexName.isEmpty || toBeCompleted.isEmpty) {
       Future.successful(Json.arr())
     } else {
-      GetOptionsQuery(esClient, indexName, toBeCompleted).execute map {
+      GetOptionsQuery(esClient, indexName, toBeCompleted.toLowerCase).execute map {
         options => {
           val completion: CompletionSuggestion = options.getSuggest.getSuggestion(indexName)
           val entries = completion.getEntries.get(0).getOptions.iterator().toList
@@ -92,8 +92,8 @@ class AutoCompletionService(esClient: => Client) {
 
   def getDocumentId(typed: String, chosen: Option[String]): String = {
     chosen.getOrElse("") match {
-      case emptyChosenString if emptyChosenString.isEmpty => typed
-      case nonEmptyChosenString => nonEmptyChosenString
+      case emptyChosenString if emptyChosenString.isEmpty => typed.toLowerCase
+      case nonEmptyChosenString => nonEmptyChosenString.toLowerCase
     }
   }
 
