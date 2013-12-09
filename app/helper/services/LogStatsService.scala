@@ -14,7 +14,7 @@ class LogStatsService(esClient: Client) {
     GetFillableIndicesQuery(esClient).execute map {
       allIndices => {
         val logMap = allIndices.getIndices.toMap.filterKeys { case key => key.startsWith("fbl_") && key.endsWith("_log") }
-        val deactivatedLogsMap = allIndices.getIndices.toMap.filterKeys { case key => !key.endsWith("_log") && !allIndices.getIndices.toMap.contains(key + "_log") }
+        val deactivatedLogsMap = allIndices.getIndices.toMap.filterKeys { case key => key.startsWith("fbl_") && !key.endsWith("_log") && !allIndices.getIndices.toMap.contains(key + "_log") }
 
         val activatedLogs = for {
           (name, stats) <- logMap
