@@ -8,7 +8,7 @@ import play.api.data.Form
 import models.Synonyms
 import play.api.data.Forms._
 import scala.Some
-import helper.services.{CrudIndexService, SynonymService}
+import helper.services.SynonymService
 import esclient.ElasticsearchClient
 import play.api.i18n.Messages
 
@@ -55,10 +55,8 @@ object Synonym extends Controller {
             synonym => {
               val synonymService = new SynonymService(ElasticsearchClient.elasticClient)
               synonymService.editSynonyms(indexName, synonym.text) map {
-                editSynonymsResponse => editSynonymsResponse match {
-                  case 200 => Redirect(routes.Synonym.editor(indexName)).flashing("success" -> Messages("success.synonymsAdded"))
-                  case _ => Redirect(routes.Synonym.editor(indexName)).flashing("error" -> Messages("error.unknownErrorSynonymEdit"))
-                }
+                case 200 => Redirect(routes.Synonym.editor(indexName)).flashing("success" -> Messages("success.synonymsAdded"))
+                case _ => Redirect(routes.Synonym.editor(indexName)).flashing("error" -> Messages("error.unknownErrorSynonymEdit"))
               }
             }
           )
