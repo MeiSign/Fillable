@@ -35,7 +35,7 @@ class IndicesStatsService(esClient: Client) {
       index => {
         val numberOfReplicas = index.getState.getMetaData.getIndices.get(indexName).getNumberOfReplicas
         val numberOfShards = index.getState.getMetaData.getIndices.get(indexName).getNumberOfShards
-        val synonymEntries = index.getState.getMetaData.getIndices.get(indexName).getSettings.getAsArray("index.analysis.filter." + indexName + "_filter.synonyms")
+        val synonymEntries = index.getState.getMetaData.getIndices.get(indexName).getSettings.getAsArray("index.analysis.filter." + indexName + "_filter.synonyms").distinct
         Option(Index(indexName, numberOfShards, numberOfReplicas, logging = true, synonymEntries.toList))
       }
     } recover {

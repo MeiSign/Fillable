@@ -41,31 +41,50 @@ class SynonymService(esClient: Client) {
   }
 
   def editSynonyms(indexName: String, synonymGroupString: String) : Future[Int] = {
-    val synonymGroups: List[String] = convertSynonymGroupStringToList(synonymGroupString)
-    CloseIndexQuery(esClient, indexName).execute flatMap {
-      closeIndexResponse => EditFillableIndexSynonymsQuery(esClient, indexName, synonymGroups).execute flatMap {
-        editFillableIndexSynonymsResponse => OpenIndexQuery(esClient, indexName).execute map {
-          openIndexResponse => if (openIndexResponse.isAcknowledged) 200 else 403
+    convertSynonymGroupStringToList(indexName, synonymGroupString) flatMap {
+      synonymGroups => CloseIndexQuery(esClient, indexName).execute flatMap {
+        closeIndexResponse => EditFillableIndexSynonymsQuery(esClient, indexName, synonymGroups).execute flatMap {
+          editFillableIndexSynonymsResponse => OpenIndexQuery(esClient, indexName).execute map {
+            openIndexResponse => if (openIndexResponse.isAcknowledged) 200 else 403
+          } recover {
+            case e: Throwable => 401
+          }
         } recover {
-          case e: Throwable => 401
+          case e: Throwable => 402
         }
       } recover {
-        case e: Throwable => 402
+        case e: Throwable => 400
       }
     } recover {
-      case e: Throwable => 400
+      case e: Throwable => 403
     }
   }
 
-  def convertSynonymGroupStringToList(synonymGroupString: String): List[String] = {
-    stringToListRegex.split(synonymGroupString).toList
+  def getCurrentSynonymFilterSize(indexName: String): Future[Int] = {
+    getSynonymsAndTopInputValues(indexName) map {
+      result => result.synonymGroups.length
+    } recover {
+      case e: Throwable => 0
+    }
+  }
+
+  def convertSynonymGroupStringToList(indexName: String, synonymGroupString: String): Future[List[String]] = {
+    val synonymInput = stringToListRegex.split(synonymGroupString).toList
+
+    getCurrentSynonymFilterSize(indexName) map {
+      filterSize => {
+        if (synonymInput.length >= filterSize) synonymInput
+        else synonymInput ::: List.fill(filterSize - synonymInput.length)(" ")
+      }
+    } recover {
+      case e: Throwable => List.empty[String]
+    }
   }
 }
 
 case class SynonymResult(topTenInputValues: List[String] = List.empty[String],
                          synonymGroups: List[String] = List.empty[String],
                          error: String = "") {
-  def hasError : Boolean = {
-    return !error.isEmpty
-  }
+
+  def hasError : Boolean = !error.isEmpty
 }
