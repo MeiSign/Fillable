@@ -12,14 +12,12 @@ import collection.JavaConversions._
 
 object ElasticsearchClient {
   val embeddedElasticsearch = Play.current.configuration.getBoolean("esclient.embeddedElasticsearch").getOrElse(true)
+  val node: Option[Node] = buildNode()
   val elasticClient: Client = buildClient(embeddedElasticsearch)
 
   def buildClient(embedded: Boolean): Client = {
-    if (embeddedElasticsearch) {
-      buildNodeClient()
-    } else {
-      buildTransportClient()
-    }
+    if (embeddedElasticsearch) buildNodeClient(node)
+    else buildTransportClient()
   }
 
   def buildTransportClient(): Client = {
@@ -34,20 +32,24 @@ object ElasticsearchClient {
     clients.reverse.head
   }
 
-  def buildNodeClient(): Client = {
-    val settings = ImmutableSettings.settingsBuilder()
-      .put("path.data", "data")
-      .put("http.enabled", false)
-    val node: Node = nodeBuilder().settings(settings).clusterName("fbl_cluster").data(true).node()
+  def buildNode(): Option[Node] = {
+    if (embeddedElasticsearch) {
+      val settings = ImmutableSettings.settingsBuilder()
+        .put("path.data", "data")
+        .put("http.enabled", false)
+      Option(nodeBuilder().settings(settings).clusterName("fbl_cluster").data(true).node())
+    } else {
+      None
+    }
+  }
 
-    node.client()
+  def buildNodeClient(node: Option[Node]): Client = {
+    if (node.isDefined) node.get.client()
+    else buildTransportClient()
   }
 
   def shutdown: Unit = {
-    //node.close()
-  }
-
-  def warmer: Unit = {
-
+    if (embeddedElasticsearch) node.get.close()
+    else elasticClient.close()
   }
 }

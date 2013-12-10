@@ -8,11 +8,6 @@ import views.html
 import collection.JavaConversions._
 
 object Global extends GlobalSettings {
-
-  override def onStart(app: Application) {
-    ElasticsearchClient.warmer
-  }
-
   override def onStop(app: Application) {
     ElasticsearchClient.shutdown
   }
