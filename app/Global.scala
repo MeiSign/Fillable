@@ -19,6 +19,7 @@ object Global extends GlobalSettings {
           val transportUrls: List[String] = Play.current.configuration.getStringList("esclient.transportClientUrls").map(_.toList).getOrElse(List())
           Future.successful(Ok(html.status.noEsConnection(embedded.getOrElse(""), "[" + transportUrls.mkString(", ") + "]")))
         }
+        case _ => super.onError(request, ex)
       }
   }
 }

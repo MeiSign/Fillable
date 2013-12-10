@@ -36,9 +36,7 @@ object Synonym extends Controller {
               else Ok(html.synonym.editor(indexName, synonymForm.fill(Synonyms(result.synonymGroups.mkString("\n"))), result.topTenInputValues))
             }
           } recover {
-            case e: Throwable => {
-              Redirect(routes.ListIndices.index(Option.empty[String]))
-            }
+            case e: Throwable => Redirect(routes.ListIndices.index(Option.empty[String]))
           }
         }
       }
