@@ -1,4 +1,4 @@
-@(indexName: String, synonymForm: Form[Synonyms], inputValues: List[String])(implicit request: Request[Any], flash: Flash)
+@(indexName: String, synonymForm: Form[Synonyms], inputValues: List[TopTenEntry])(implicit request: Request[Any], flash: Flash)
 
 @import helper._
 @implicitField = @{ FieldConstructor(textareaInput.f) }
@@ -34,6 +34,7 @@
             <tr>
                 <th>#</th>
                 <th>Inputvalue</th>
+                <th>Count</th>
                 <th></th>
             </tr>
             </thead>
@@ -41,7 +42,8 @@
                 @for((inputValue, number) <- inputValues.zipWithIndex) {
                 <tr>
                     <td>@{number + 1}</td>
-                    <td>@inputValue</td>
+                    <td>@inputValue.name</td>
+                    <td>@inputValue.count</td>
                     <td>
                         <div class="text-center">
                             <div class="btn-group btn-group-xs text-right">

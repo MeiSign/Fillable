@@ -6,7 +6,7 @@ import esclient.queries._
 import org.elasticsearch.search.facet.terms.TermsFacet
 import scala.collection.JavaConversions._
 import play.api.i18n.Messages
-import models.Index
+import models.{InputTopListEntry, Index}
 import esclient.queries.CloseIndexQuery
 import esclient.queries.GetTopInputValuesQuery
 
@@ -27,16 +27,16 @@ class SynonymService(esClient: Client) {
         GetTopInputValuesQuery(esClient, indexName + "_log", synonyms).execute map {
           facetResponse => {
             val f: TermsFacet = facetResponse.getFacets.facetsAsMap.get("topTen").asInstanceOf[TermsFacet]
-            val topTen: List[String] = f.getEntries.iterator.toList map { entry => entry.getTerm.string }
+            val topTen: List[InputTopListEntry] = f.getEntries.iterator.toList map { entry => InputTopListEntry(entry.getTerm.string, entry.getCount) }
 
             SynonymResult(topTen, indexOption.getOrElse(Index("")).synonymEntries)
           }
         } recover {
-          case e: Throwable => SynonymResult(List.empty[String], List.empty[String], Messages("error.cantGetTopTenInputValues"))
+          case e: Throwable => SynonymResult(List.empty[InputTopListEntry], List.empty[String], Messages("error.cantGetTopTenInputValues"))
         }
       }
     } recover {
-      case e: Throwable => SynonymResult(List.empty[String], List.empty[String], Messages("error.cantGetSynonymgroups"))
+      case e: Throwable => SynonymResult(List.empty[InputTopListEntry], List.empty[String], Messages("error.cantGetSynonymgroups"))
     }
   }
 
@@ -82,7 +82,7 @@ class SynonymService(esClient: Client) {
   }
 }
 
-case class SynonymResult(topTenInputValues: List[String] = List.empty[String],
+case class SynonymResult(topTenInputValues: List[InputTopListEntry] = List.empty[InputTopListEntry],
                          synonymGroups: List[String] = List.empty[String],
                          error: String = "") {
 

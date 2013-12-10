@@ -5,7 +5,7 @@ import views.html
 import helper.utils.AuthenticatedAction
 import scala.concurrent.Future
 import play.api.data.Form
-import models.Synonyms
+import models.{InputTopListEntry, Synonyms}
 import play.api.data.Forms._
 import scala.Some
 import helper.services.SynonymService
@@ -51,7 +51,7 @@ object Synonym extends Controller {
         implicit request =>
         {
           synonymForm.bindFromRequest.fold(
-            errors => Future.successful(Ok(html.synonym.editor(indexName, errors, List.empty[String]))),
+            errors => Future.successful(Ok(html.synonym.editor(indexName, errors, List.empty[InputTopListEntry]))),
             synonym => {
               val synonymService = new SynonymService(ElasticsearchClient.elasticClient)
               synonymService.editSynonyms(indexName, synonym.text) map {
