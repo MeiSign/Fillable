@@ -1,4 +1,4 @@
-@(indexName: String, synonymForm: Form[Synonyms], inputValues: List[TopTenEntry])(implicit request: Request[Any], flash: Flash)
+@(indexName: String, synonymForm: Form[Synonyms], inputValues: List[InputTopListEntry])(implicit request: Request[Any], flash: Flash)
 
 @import helper._
 @implicitField = @{ FieldConstructor(textareaInput.f) }

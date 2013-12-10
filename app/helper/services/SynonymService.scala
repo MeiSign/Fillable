@@ -15,6 +15,16 @@ class SynonymService(esClient: Client) {
   val stringToListRegex = "\r\n".r
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
+  def getTopInputValues(indexName:String): Future[List[InputTopListEntry]] = {
+    GetTopInputValuesQuery(esClient, indexName + "_log", List.empty[String]).execute map {
+      facetResponse => {
+        val f: TermsFacet = facetResponse.getFacets.facetsAsMap.get("topTen").asInstanceOf[TermsFacet]
+        f.getEntries.iterator.toList map { entry => InputTopListEntry(entry.getTerm.string, entry.getCount) }
+      }
+    } recover {
+      case e: Throwable => List.empty[InputTopListEntry]
+    }
+  }
 
   def getSynonymsAndTopInputValues(indexName: String) : Future[SynonymResult] = {
     val indicesStatsService = new IndicesStatsService(esClient)

@@ -16,6 +16,7 @@ error.unableToCreateIndex=Unknown error happened during Index creation.
 error.unableToUpdateIndex=Unknown error happened during Index update.
 error.deleteIndexFailed=Unknown error happened during Index deletion.
 error.unknownErrorSynonymEdit=Unknown error happened during Synonym update.
+error.wrongSyntaxInLine=Wrong syntax in Line {0}: {1}
 
 # Success messages
 # ~~~~~
