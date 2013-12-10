@@ -23,11 +23,8 @@ object Synonym extends Controller {
         case syntaxError if SynonymSyntaxValidator.isWrongSyntax(plainText) => Seq(ValidationError(Messages("error.wrongSyntaxInLine", SynonymSyntaxValidator.getIncorrectSyntaxLineNo(plainText), SynonymSyntaxValidator.getIncorrectSyntaxLine(plainText))))
         case _ => Nil
       }
-      if (errors.isEmpty) {
-        Valid
-      } else {
-        Invalid(errors)
-      }
+      if (errors.isEmpty) Valid
+      else Invalid(errors)
   })
 
   val synonymForm: Form[Synonyms] = Form(
