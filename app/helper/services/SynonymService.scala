@@ -22,7 +22,7 @@ class SynonymService(esClient: Client) {
     indicesStatsService.getIndexSettings(indexName) flatMap {
       indexOption => {
         val synonyms: List[String] = indexOption.getOrElse(Index("")).synonymEntries flatMap {
-          entry => termSplitRegex.split(entry)
+          entry => termSplitRegex.split(entry).map(str => str.trim)
         }
         GetTopInputValuesQuery(esClient, indexName + "_log", synonyms).execute map {
           facetResponse => {
