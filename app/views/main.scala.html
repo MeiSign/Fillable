@@ -16,7 +16,8 @@
     <![endif]-->
   </head>
   <body>
-  
+    <div id="wrap">
+
 	  <nav class="navbar navbar-default" role="navigation">
 		  <div class="navbar-header">
 		    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
@@ -56,14 +57,24 @@
 		  </div><!-- /.navbar-collapse -->
 	  </nav>
 
-    <div class="container">
+      <div class="container">
         <div class="content">
             <div class="page-header">
                 <h1>@title</h1>
             </div>
             @content
         </div>
+      </div>
     </div>
+
+    <footer id="footer">
+        <div class="container">
+            <p class="text-muted">
+                Initally created by <a href="mailto:st.meiwald@@gmail.com" alt="Mail">Stefan Meiwald</a> in cooperation with <a href="http://www.scout24.com" target="_blank" alt="Scout24">Scout24</a> as practical part of his bachelor thesis.<br>
+                Now available on <a href="https://github.com/MeiSign/Fillable" target="_blanc" alt="GitHub Repo">GitHub</a> as opensource project. Feel free to contribute!
+            </p>
+        </div>
+    </footer>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="//code.jquery.com/jquery.js"></script>
