@@ -30,7 +30,7 @@
             <td>
                 <div class="text-center">
                     <div class="btn-group btn-group-xs text-right">
-                        <a href="" class="btn btn-default"><span class="glyphicon glyphicon-link"></span> Synonyms</a>
+                        <a href="@routes.Synonym.editor(log.indexName)" class="btn btn-default"><span class="glyphicon glyphicon-link"></span> Synonyms</a>
                         <a href="@{routes.Logs.deactivateLogging(log.name)}" class="btn btn-default" onclick="return confirm('@Messages("text.confirmDelete")')"><span class="glyphicon glyphicon-trash"></span> Delete</a>
                     </div>
                 </div>
