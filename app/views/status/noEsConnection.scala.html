@@ -1,0 +1,62 @@
+@(embeddedNode: String, transportUrls: String)
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fillable Autocompletion Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="@routes.Assets.at("stylesheets/bootstrap.css")" rel="stylesheet" media="screen">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="../../assets/js/html5shiv.js"></script>
+    <script src="../../assets/js/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+
+<nav class="navbar navbar-default" role="navigation">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">Fillable Autocompletion</a>
+    </div>
+
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+
+    </div><!-- /.navbar-collapse -->
+</nav>
+
+<div class="container">
+    <div class="content">
+        <div class="page-header">
+            <h1>@Messages("title.noEsConnection")</h1>
+        </div>
+        <p>@Html(Messages("text.noEsConnection"))</p>
+        <p>Current Elasticsearch Configuration:</p>
+<pre class="col-lg-12">
+<span class="important"># ~~~~~
+# ElasticSearch Settings
+# ~~~~~
+# This option determines if you use an external elasticsearch cluster or embedded elasticsearch node
+esclient.embeddedElasticsearch=@embeddedNode
+# If you deactivate the embedded Elasticsearch node add the cluster urls which shall be used by
+# the elasticsearch transport client
+esclient.transportClientUrls=@transportUrls</span>
+</pre>
+
+    </div>
+</div>
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="//code.jquery.com/jquery.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="@routes.Assets.at("javascripts/bootstrap.min.js")"></script>
+</body>
+</html>

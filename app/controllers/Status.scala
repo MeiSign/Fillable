@@ -7,7 +7,6 @@ import play.api.mvc.Action
 import views._
 import esclient.ElasticsearchClient
 
-
 object Status extends Controller {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 

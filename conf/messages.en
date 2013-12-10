@@ -32,6 +32,7 @@ text.SynonymEditorInfo=The textarea shows you the synonyms which are applied on 
 text.SynonymEditorSyntaxInfo0=Each line represents one synonymgroup.
 text.SynonymEditorSyntaxInfo1=Synonyms: big, large, supersized, grande
 text.SynonymEditorSyntaxInfo2=Hyponyms: color => yellow, blue, green
+text.noEsConnection=The connection to elasticsearch according to your configuration failed. Please check the configuration settings in <i>conf/fillable.conf</i>
 
 # Title messages
 # ~~~~~
@@ -43,3 +44,4 @@ title.indexList=All your Fillable Indices
 title.status=Fillable System Status
 title.logList=Fillable Field Logs
 title.synonymeditor=Synonym Editor
+title.noEsConnection=Connection to Elasticsearch refused
