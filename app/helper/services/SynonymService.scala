@@ -69,7 +69,7 @@ class SynonymService(esClient: Client) {
   }
 
   def convertSynonymGroupStringToList(indexName: String, synonymGroupString: String): Future[List[String]] = {
-    val synonymInput = stringToListRegex.split(synonymGroupString).toList
+    val synonymInput = stringToListRegex.split(synonymGroupString.toLowerCase).toList
 
     getCurrentSynonymFilterSize(indexName) map {
       filterSize => {
