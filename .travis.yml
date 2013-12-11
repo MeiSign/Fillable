@@ -7,5 +7,3 @@ before_script:
 script: play-${PLAY_VERSION}/play test
 notifications:
   email: false
-
-  git@github.com:playframework/playframework.git
