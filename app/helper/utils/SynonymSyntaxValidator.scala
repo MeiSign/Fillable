@@ -9,7 +9,11 @@ object SynonymSyntaxValidator {
 
   def getIncorrectSyntaxLine(text: String) : String = {
     val lines = text.split("\r\n")
-    lines(lines.indexWhere(line => !isCorrectLine(line)))
+    lines.indexWhere(line => !isCorrectLine(line)) match {
+      case -1 => ""
+      case i: Int => lines(i)
+      case _ => ""
+    }
   }
 
   def isWrongSyntax(text: String) : Boolean = {

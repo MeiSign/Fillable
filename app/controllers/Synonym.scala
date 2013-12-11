@@ -3,7 +3,6 @@ package controllers
 import play.api.mvc._
 import views.html
 import helper.utils.{SynonymSyntaxValidator, AuthenticatedAction}
-import scala.concurrent.Future
 import play.api.data.Form
 import models.{InputTopListEntry, Synonyms}
 import play.api.data.Forms._

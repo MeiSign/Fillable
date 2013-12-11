@@ -9,7 +9,7 @@ import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse
 
 case class GetFillableIndexQuery(esClient: Client) {
   lazy val p = promise[ClusterStateResponse]()
-  esClient
+  val statement = esClient
     .admin()
     .cluster()
     .prepareState()
