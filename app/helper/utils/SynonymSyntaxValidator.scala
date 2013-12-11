@@ -11,8 +11,7 @@ object SynonymSyntaxValidator {
     val lines = text.split("\r\n")
     lines.indexWhere(line => !isCorrectLine(line)) match {
       case -1 => ""
-      case i: Int => lines(i)
-      case _ => ""
+      case index: Int => lines(index)
     }
   }
 
