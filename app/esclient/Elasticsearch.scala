@@ -7,8 +7,8 @@ import org.elasticsearch.client.transport.TransportClient
 import org.elasticsearch.common.transport.InetSocketTransportAddress
 import collection.JavaConversions._
 
-class Elasticsearch(overrideEmbeddedConfig: Boolean = false) {
-  val embeddedElasticsearch = Play.current.configuration.getBoolean("esclient.embeddedElasticsearch").getOrElse(true) || overrideEmbeddedConfig
+class Elasticsearch {
+  val embeddedElasticsearch = Play.current.configuration.getBoolean("esclient.embeddedElasticsearch").getOrElse(true)
   val client: Client = buildClient(embeddedElasticsearch)
 
   def buildClient(embedded: Boolean): Client = {
