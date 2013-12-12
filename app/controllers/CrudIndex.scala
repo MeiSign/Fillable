@@ -10,7 +10,7 @@ import models._
 import views._
 import scala.concurrent._
 import scala.Some
-import esclient.ElasticsearchClient
+import esclient.Elasticsearch
 
 object CrudIndex extends Controller {
 
@@ -37,10 +37,16 @@ object CrudIndex extends Controller {
     AuthenticatedAction {
       Action.async {
         implicit request => {
-          val indicesStatsService = new IndicesStatsService(ElasticsearchClient.elasticClient)
+          val indicesStatsService = new IndicesStatsService(new Elasticsearch)
           indicesStatsService.getIndexSettings(indexName) map {
-            case index if index.isEmpty => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.indexNotFound", indexName))
-            case index => Ok(html.crudindex.form(indexForm.fill(index.getOrElse(Index("", 0, 0))), true))
+            case index if index.isEmpty => {
+              indicesStatsService.esClient.close()
+              Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.indexNotFound", indexName))
+            }
+            case index => {
+              indicesStatsService.esClient.close()
+              Ok(html.crudindex.form(indexForm.fill(index.getOrElse(Index("", 0, 0))), true))
+            }
           }
         }
       }
@@ -52,12 +58,21 @@ object CrudIndex extends Controller {
       indexForm.bindFromRequest.fold(
         errors => Future.successful(Ok(html.crudindex.form(errors))),
         index => {
-          val crudIndexService = new CrudIndexService(ElasticsearchClient.elasticClient)
+          val crudIndexService = new CrudIndexService(new Elasticsearch)
           crudIndexService.createFillableIndex(index.name, index.shards, index.replicas, index.logging) map {
             indexCreated => indexCreated match {
-              case 200 => Redirect(routes.CrudIndex.showSummary(index.name)).flashing("success" -> Messages("success.indexCreated"))
-              case 400 => Redirect(routes.CrudIndex.createForm()).flashing("error" -> Messages("error.unableToCreateIndex"))
-              case _ => Redirect(routes.CrudIndex.createForm).flashing("error" -> Messages("error.unableToCreateIndex"))
+              case 200 => {
+                crudIndexService.esClient.close()
+                Redirect(routes.CrudIndex.showSummary(index.name)).flashing("success" -> Messages("success.indexCreated"))
+              }
+              case 400 => {
+                crudIndexService.esClient.close()
+                Redirect(routes.CrudIndex.createForm()).flashing("error" -> Messages("error.unableToCreateIndex"))
+              }
+              case _ => {
+                crudIndexService.esClient.close()
+                Redirect(routes.CrudIndex.createForm).flashing("error" -> Messages("error.unableToCreateIndex"))
+              }
             }
           }
         }
@@ -78,27 +93,38 @@ object CrudIndex extends Controller {
       indexForm.bindFromRequest.fold(
         errors => Future.successful(Ok(html.crudindex.form(errors))),
         index => {
-          val crudIndexService: CrudIndexService = new CrudIndexService(ElasticsearchClient.elasticClient)
+          val crudIndexService: CrudIndexService = new CrudIndexService(new Elasticsearch)
           crudIndexService.editFillableIndex(index.name, index.replicas) map {
-            editStatus => editStatus match {
-              case 200 => Redirect(routes.ListIndices.index(Option[String](index.name))).flashing("success" -> Messages("success.indexWillBeChangedSoon"))
-              case _ => Redirect(routes.ListIndices.index(Option[String](index.name))).flashing("error" -> Messages("error.unkownUpdateError", "fbl_" + index.name))
+            case 200 => {
+              crudIndexService.esClient.close()
+              Redirect(routes.ListIndices.index(Option[String](index.name))).flashing("success" -> Messages("success.indexWillBeChangedSoon"))
+            }
+            case _ => {
+              crudIndexService.esClient.close()
+              Redirect(routes.ListIndices.index(Option[String](index.name))).flashing("error" -> Messages("error.unkownUpdateError", "fbl_" + index.name))
             }
           }
         }
       )
     }
   }
-  
+
   def deleteIndex(indexName: String) = AuthenticatedAction {
     Action.async {
       implicit request => {
-        val crudIndexService: CrudIndexService = new CrudIndexService(ElasticsearchClient.elasticClient)
+        val crudIndexService: CrudIndexService = new CrudIndexService(new Elasticsearch)
         crudIndexService.deleteFillableIndex(indexName) map {
-          deleteStatus => deleteStatus match {
-            case 200 => Redirect(routes.ListIndices.index(Option[String](indexName))).flashing("success" -> Messages("success.indexWillBeChangedSoon"))
-            case 404 => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.indexNotFound", indexName))
-            case _ => Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.unkownUpdateError", "fbl_" + indexName))
+          case 200 => {
+            crudIndexService.esClient.close()
+            Redirect(routes.ListIndices.index(Option[String](indexName))).flashing("success" -> Messages("success.indexWillBeChangedSoon"))
+          }
+          case 404 => {
+            crudIndexService.esClient.close()
+            Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.indexNotFound", indexName))
+          }
+          case _ => {
+            crudIndexService.esClient.close()
+            Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.unkownUpdateError", "fbl_" + indexName))
           }
         }
       }

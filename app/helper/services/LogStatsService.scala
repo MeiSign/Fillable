@@ -2,19 +2,21 @@ package helper.services
 
 import scala.concurrent.Future
 import models.{LogListResult, LogListEntry}
-import org.elasticsearch.client.Client
 import scala.collection.JavaConversions._
 import esclient.queries.GetFillableIndicesQuery
+import esclient.Elasticsearch
+import org.elasticsearch.action.admin.indices.stats.IndexStats
 
-class LogStatsService(esClient: Client) {
-
+class LogStatsService(es: Elasticsearch) {
+  val esClient = es.client
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   def getLogLists: Future[LogListResult] = {
     GetFillableIndicesQuery(esClient).execute map {
       allIndices => {
-        val logMap = allIndices.getIndices.toMap.filterKeys { case key => key.startsWith("fbl_") && key.endsWith("_log") }
-        val deactivatedLogsMap = allIndices.getIndices.toMap.filterKeys { case key => key.startsWith("fbl_") && !key.endsWith("_log") && !allIndices.getIndices.toMap.contains(key + "_log") }
+        val allIndicesList = allIndices.getIndices.toMap
+        val logMap = allIndicesList.filterKeys { case name => indexIsLogIndex(name) }
+        val deactivatedLogsMap = allIndicesList.filterKeys { case name => indexHasNoLogIndex(name, allIndicesList) }
 
         val activatedLogs = for {
           (name, stats) <- logMap
@@ -34,4 +36,8 @@ class LogStatsService(esClient: Client) {
       case _ => LogListResult(List.empty[LogListEntry], List.empty[LogListEntry])
     }
   }
+
+  def indexIsLogIndex(name: String): Boolean = name.startsWith("fbl_") && name.endsWith("_log")
+  def indexHasNoLogIndex(name: String, allIndicesList: Map[String, IndexStats]): Boolean = name.startsWith("fbl_") && !name.endsWith("_log") && !allIndicesList.contains(name + "_log")
+
 }

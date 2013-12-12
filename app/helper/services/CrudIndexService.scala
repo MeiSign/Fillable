@@ -1,12 +1,12 @@
 package helper.services
 
-import org.elasticsearch.client.Client
 import scala.concurrent.Future
 import org.elasticsearch.indices.{IndexAlreadyExistsException, IndexMissingException}
 import esclient.queries.{EditFillableIndexQuery, DeleteFillableIndexQuery, CreateFillableIndexQuery}
+import esclient.Elasticsearch
 
-class CrudIndexService(esClient: Client) {
-
+class CrudIndexService(es: Elasticsearch) {
+  val esClient = es.client
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   def editFillableIndex(index: String, replicas: Int): Future[Int] = {
@@ -47,17 +47,15 @@ class CrudIndexService(esClient: Client) {
 
   def createFillableIndex(index: String, shards: Int, replicas: Int, logging: Boolean): Future[Int] = {
     val indexName =  "fbl_" + index
-    val logIndexService = new LogIndexService(esClient)
+    val logIndexService = new LogIndexService(es)
     createEsIndex(indexName, shards, replicas) flatMap {
       indexCreated => {
         logging match  {
-          case true => {
-            logIndexService.createLogIndex(indexName + "_log", shards, replicas) map {
+          case true => logIndexService.createLogIndex(indexName + "_log", shards, replicas) map {
               logCreated => (logCreated, indexCreated) match {
                 case (200, 200) => 200
                 case _ => 404
               }
-            }
           }
           case false => Future.successful(indexCreated)
         }

@@ -8,7 +8,7 @@ import models.{InputTopListEntry, Synonyms}
 import play.api.data.Forms._
 import scala.Some
 import helper.services.SynonymService
-import esclient.ElasticsearchClient
+import esclient.Elasticsearch
 import play.api.i18n.Messages
 import play.api.data.validation.{Invalid, Valid, ValidationError, Constraint}
 
@@ -38,14 +38,23 @@ object Synonym extends Controller {
       Action.async {
         implicit request =>
         {
-          val synonymService = new SynonymService(ElasticsearchClient.elasticClient)
+          val synonymService = new SynonymService(new Elasticsearch)
           synonymService.getSynonymsAndTopInputValues(indexName) map {
             result => {
-              if (result.hasError) Redirect(routes.ListIndices.index(Option.empty[String]))
-              else Ok(html.synonym.editor(indexName, synonymForm.fill(Synonyms(result.synonymGroups.mkString("\n"))), result.topTenInputValues))
+              if (result.hasError) {
+                synonymService.esClient.close()
+                Redirect(routes.ListIndices.index(Option.empty[String]))
+              }
+              else {
+                synonymService.esClient.close()
+                Ok(html.synonym.editor(indexName, synonymForm.fill(Synonyms(result.synonymGroups.mkString("\n"))), result.topTenInputValues))
+              }
             }
           } recover {
-            case e: Throwable => Redirect(routes.ListIndices.index(Option.empty[String]))
+            case e: Throwable => {
+              synonymService.esClient.close()
+              Redirect(routes.ListIndices.index(Option.empty[String]))
+            }
           }
         }
       }
@@ -57,20 +66,32 @@ object Synonym extends Controller {
       Action.async {
         implicit request =>
         {
-          val synonymService = new SynonymService(ElasticsearchClient.elasticClient)
+          val synonymService = new SynonymService(new Elasticsearch)
           synonymForm.bindFromRequest.fold(
             errors => {
               synonymService.getTopInputValues(indexName) map {
-                result => Ok(html.synonym.editor(indexName, errors, result))
+                result => {
+                  synonymService.esClient.close()
+                  Ok(html.synonym.editor(indexName, errors, result))
+                }
               } recover {
-                case _ => Ok(html.synonym.editor(indexName, errors, List.empty[InputTopListEntry]))
+                case _ => {
+                  synonymService.esClient.close()
+                  Ok(html.synonym.editor(indexName, errors, List.empty[InputTopListEntry]))
+                }
               }
 
             },
             synonym => {
               synonymService.editSynonyms(indexName, synonym.text) map {
-                case 200 => Redirect(routes.Synonym.editor(indexName)).flashing("success" -> Messages("success.synonymsAdded"))
-                case _ => Redirect(routes.Synonym.editor(indexName)).flashing("error" -> Messages("error.unknownErrorSynonymEdit"))
+                case 200 => {
+                  synonymService.esClient.close()
+                  Redirect(routes.Synonym.editor(indexName)).flashing("success" -> Messages("success.synonymsAdded"))
+                }
+                case _ => {
+                  synonymService.esClient.close()
+                  Redirect(routes.Synonym.editor(indexName)).flashing("error" -> Messages("error.unknownErrorSynonymEdit"))
+                }
               }
             }
           )

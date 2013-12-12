@@ -1,21 +1,20 @@
 package helper.services
 
-import org.elasticsearch.client.Client
 import scala.concurrent.Future
 import org.elasticsearch.indices.IndexAlreadyExistsException
 import org.elasticsearch.common.xcontent.XContentFactory._
 import esclient.queries.{GetFillableIndexQuery, CreateFillableLogIndexQuery, DeleteFillableIndexQuery, IndexDocumentQuery}
+import esclient.Elasticsearch
 
-class LogIndexService(esClient: Client) {
+class LogIndexService(es: Elasticsearch) {
+  val esClient = es.client
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   def deleteLogIndex(index: String): Future[Int] = {
     DeleteFillableIndexQuery(esClient, index).execute map {
       closeResponse => if (closeResponse.isAcknowledged) 200 else 404
     } recover {
-      case e: Throwable => {
-        404
-      }
+      case e: Throwable => 404
       case _ => 404
     }
   }

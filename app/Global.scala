@@ -1,4 +1,4 @@
-import esclient.ElasticsearchClient
+import java.io.File
 import org.elasticsearch.client.transport.NoNodeAvailableException
 import play.api._
 import play.api.mvc.RequestHeader
@@ -6,10 +6,18 @@ import play.api.mvc.Results._
 import scala.concurrent.Future
 import views.html
 import collection.JavaConversions._
+import esclient.NodeHolder
 
 object Global extends GlobalSettings {
+
+  override def onStart(app: Application) {
+    val embeddedElasticsearch = app.configuration.getBoolean("esclient.embeddedElasticsearch").getOrElse(true)
+    if (embeddedElasticsearch) NodeHolder.buildNode
+  }
+
   override def onStop(app: Application) {
-    ElasticsearchClient.shutdown
+    val embeddedElasticsearch = app.configuration.getBoolean("esclient.embeddedElasticsearch").getOrElse(true)
+    if (embeddedElasticsearch) NodeHolder.shutDownNodes()
   }
 
   override def onError(request: RequestHeader, ex: Throwable) = {

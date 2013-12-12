@@ -1,6 +1,5 @@
 package helper.services
 
-import org.elasticsearch.client.Client
 import scala.concurrent.Future
 import esclient.queries._
 import org.elasticsearch.search.facet.terms.TermsFacet
@@ -9,8 +8,10 @@ import play.api.i18n.Messages
 import models.{InputTopListEntry, Index}
 import esclient.queries.CloseIndexQuery
 import esclient.queries.GetTopInputValuesQuery
+import esclient.Elasticsearch
 
-class SynonymService(esClient: Client) {
+class SynonymService(es: Elasticsearch) {
+  val esClient = es.client
   val termSplitRegex = List("=>", ",").mkString("|").r
   val stringToListRegex = "\r\n".r
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
@@ -27,7 +28,7 @@ class SynonymService(esClient: Client) {
   }
 
   def getSynonymsAndTopInputValues(indexName: String) : Future[SynonymResult] = {
-    val indicesStatsService = new IndicesStatsService(esClient)
+    val indicesStatsService = new IndicesStatsService(es)
 
     indicesStatsService.getIndexSettings(indexName) flatMap {
       indexOption => {

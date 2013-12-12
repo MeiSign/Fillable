@@ -2,7 +2,7 @@ package controllers
 
 import play.api.mvc._
 import helper.utils.AuthenticatedAction
-import esclient.ElasticsearchClient
+import esclient.Elasticsearch
 import views.html
 import helper.services.{LogIndexService, LogStatsService}
 
@@ -13,9 +13,12 @@ object Logs extends Controller {
     AuthenticatedAction {
       Action.async {
         implicit request => {
-          val logStatsService = new LogStatsService(ElasticsearchClient.elasticClient)
+          val logStatsService = new LogStatsService(new Elasticsearch)
           logStatsService.getLogLists map {
-            lists => Ok(html.logs.logList(lists))
+            lists => {
+              logStatsService.esClient.close()
+              Ok(html.logs.logList(lists))
+            }
           }
         }
       }
@@ -26,9 +29,12 @@ object Logs extends Controller {
     AuthenticatedAction {
       Action.async {
         implicit request => {
-          val logIndexService = new LogIndexService(ElasticsearchClient.elasticClient)
+          val logIndexService = new LogIndexService(new Elasticsearch)
           logIndexService.createLogIndex(name, 4, 0) map {
-            lists => Redirect(routes.Logs.index)
+            lists => {
+              logIndexService.esClient.close()
+              Redirect(routes.Logs.index)
+            }
           }
         }
       }
@@ -39,9 +45,12 @@ object Logs extends Controller {
     AuthenticatedAction {
       Action.async {
         implicit request => {
-          val logIndexService = new LogIndexService(ElasticsearchClient.elasticClient)
+          val logIndexService = new LogIndexService(new Elasticsearch)
           logIndexService.deleteLogIndex(name) map {
-            lists => Redirect(routes.Logs.index)
+            lists => {
+              logIndexService.esClient.close()
+              Redirect(routes.Logs.index)
+            }
           }
         }
       }

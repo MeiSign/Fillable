@@ -9,9 +9,10 @@ import org.elasticsearch.indices.IndexMissingException
 import org.elasticsearch.search.suggest.completion.CompletionSuggestion
 import scala.collection.JavaConversions._
 import esclient.queries.{GetDocumentByIdQuery, AddOptionDocumentQuery, GetOptionsQuery}
+import esclient.Elasticsearch
 
-class AutoCompletionService(esClient: => Client) {
-
+class AutoCompletionService(es: Elasticsearch) {
+  val esClient = es.client
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   def getJsonResponse(statusCode: Int): JsValue = {
@@ -26,7 +27,7 @@ class AutoCompletionService(esClient: => Client) {
   }
 
   def addOption(indexNameParam: String, typed: Option[String], chosen: Option[String]): Future[Int] = {
-    val logIndexService = new LogIndexService(esClient)
+    val logIndexService = new LogIndexService(es)
     indexNameParam match {
       case emptyName if emptyName.isEmpty => Future.successful(400)
       case indexName => {

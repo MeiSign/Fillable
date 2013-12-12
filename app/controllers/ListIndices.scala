@@ -3,7 +3,7 @@ package controllers
 import helper.services.IndicesStatsService
 import helper.utils.AuthenticatedAction
 import play.api.mvc._
-import esclient.ElasticsearchClient
+import esclient.Elasticsearch
 import views._
 
 object ListIndices extends Controller {
@@ -14,9 +14,12 @@ object ListIndices extends Controller {
     AuthenticatedAction {
       Action.async {
         implicit request => {
-          val indicesStatsService = new IndicesStatsService(ElasticsearchClient.elasticClient)
+          val indicesStatsService = new IndicesStatsService(new Elasticsearch)
           indicesStatsService.getIndexList map {
-            list => Ok(html.listindices.indexList(list))
+            list => {
+              indicesStatsService.esClient.close()
+              Ok(html.listindices.indexList(list))
+            }
           }
         }
       }

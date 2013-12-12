@@ -2,12 +2,12 @@ package helper.services
 
 import scala.concurrent.Future
 import models.{Index, IndexListEntry}
-import org.elasticsearch.client.Client
 import scala.collection.JavaConversions._
 import esclient.queries.{GetFillableIndexQuery, GetFillableIndicesQuery}
+import esclient.Elasticsearch
 
-class IndicesStatsService(esClient: Client) {
-
+class IndicesStatsService(es: Elasticsearch) {
+  val esClient = es.client
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   def getIndexList: Future[List[IndexListEntry]] = {

@@ -4,7 +4,7 @@ import play.api.mvc._
 import play.api.Play
 import collection.JavaConversions._
 import helper.services.AutoCompletionService
-import esclient.ElasticsearchClient
+import esclient.Elasticsearch
 
 object ApplicationApi extends Controller {
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
@@ -14,9 +14,12 @@ object ApplicationApi extends Controller {
   def getOptions(indexName: String, toBeCompleted: String) = Action.async {
     implicit request => {
       val respHeader = if (allowAllOrigins || originWhitelist.contains(request.host)) (ACCESS_CONTROL_ALLOW_ORIGIN -> "*") else ("" -> "")
-      val autoCompletionService: AutoCompletionService = new AutoCompletionService(ElasticsearchClient.elasticClient)
+      val autoCompletionService: AutoCompletionService = new AutoCompletionService(new Elasticsearch)
       autoCompletionService.getOptions(indexName, toBeCompleted) map {
-        json => Ok(json).withHeaders(respHeader)
+        json => {
+          autoCompletionService.esClient.close()
+          Ok(json).withHeaders(respHeader)
+        }
       }
     }
   }
@@ -24,13 +27,16 @@ object ApplicationApi extends Controller {
   def addOption(indexName: String) = Action.async {
     implicit request => {
       val respHeader = if (allowAllOrigins || originWhitelist.contains(request.host)) (ACCESS_CONTROL_ALLOW_ORIGIN -> "*") else ("" -> "")
-      val autoCompletionService: AutoCompletionService = new AutoCompletionService(ElasticsearchClient.elasticClient)
+      val autoCompletionService: AutoCompletionService = new AutoCompletionService(new Elasticsearch)
 
       val map : Map[String,Seq[String]] = request.body.asFormUrlEncoded.getOrElse(Map())
       val typed: Option[String] = map.getOrElse("typed", List()).headOption
       val chosen: Option[String] = map.getOrElse("chosen", List()).headOption
       autoCompletionService.addOption(indexName, typed, chosen) map {
-        statusCode => Ok(autoCompletionService.getJsonResponse(statusCode)).withHeaders(respHeader)
+        statusCode => {
+          autoCompletionService.esClient.close()
+          Ok(autoCompletionService.getJsonResponse(statusCode)).withHeaders(respHeader)
+        }
       }
     }
   }

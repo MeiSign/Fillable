@@ -6,8 +6,10 @@ import scala.collection.JavaConversions._
 import org.elasticsearch.client.Client
 import play.api.Play
 import esclient.queries.GetEsVersionQuery
+import esclient.Elasticsearch
 
-class RequirementsService(esClient: Client) {
+class RequirementsService(es: Elasticsearch) {
+  val esClient = es.client
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   def runTests: Future[List[Boolean]] = {
