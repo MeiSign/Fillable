@@ -51,12 +51,15 @@ class SynonymService(es: Elasticsearch) {
     }
   }
 
-  def editSynonyms(indexName: String, synonymGroupString: String) : Future[Int] = {
-    convertSynonymGroupStringToList(indexName, synonymGroupString) flatMap {
-      synonymGroups => CloseIndexQuery(esClient, indexName).execute flatMap {
-        closeIndexResponse => EditFillableIndexSynonymsQuery(esClient, indexName, synonymGroups).execute flatMap {
+  def editSynonyms(indexName: String, synonymGroupsString: String) : Future[Int] = {
+    convertSynonymGroupStringToList(indexName, synonymGroupsString) flatMap {
+      synonymGroupList => CloseIndexQuery(esClient, indexName).execute flatMap {
+        closeIndexResponse => EditFillableIndexSynonymsQuery(esClient, indexName, synonymGroupList).execute flatMap {
           editFillableIndexSynonymsResponse => OpenIndexQuery(esClient, indexName).execute map {
-            openIndexResponse => if (openIndexResponse.isAcknowledged) 200 else 403
+            openIndexResponse => if (openIndexResponse.isAcknowledged) {
+              reindexNewSynonyms(synonymGroupsString, indexName)
+              200
+            } else 403
           } recover {
             case e: Throwable => 401
           }
@@ -68,6 +71,12 @@ class SynonymService(es: Elasticsearch) {
       }
     } recover {
       case e: Throwable => 403
+    }
+  }
+
+  def reindexNewSynonyms(synonymText: String, indexname: String): Unit = {
+    termSplitRegex.split(synonymText) map {
+      term => ReindexDocumentQuery(esClient, indexname, indexname, term.trim.hashCode.toString).execute
     }
   }
 
