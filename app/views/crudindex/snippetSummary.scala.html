@@ -28,7 +28,7 @@
                 var settings = {
                     fblInputFieldId: "@(indexName)AutoCompletion",
                     fblHost: "http://localhost:9000",
-                    fblIndex: "fbl_@(indexName)",
+                    fblIndex: "@(indexName)",
                     collectMode: false
                 };
                 FillableWidget.init(settings);

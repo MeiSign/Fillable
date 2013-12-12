@@ -60,19 +60,17 @@ object CrudIndex extends Controller {
         index => {
           val crudIndexService = new CrudIndexService(new Elasticsearch)
           crudIndexService.createFillableIndex(index.name, index.shards, index.replicas, index.logging) map {
-            indexCreated => indexCreated match {
-              case 200 => {
-                crudIndexService.esClient.close()
-                Redirect(routes.CrudIndex.showSummary(index.name)).flashing("success" -> Messages("success.indexCreated"))
-              }
-              case 400 => {
-                crudIndexService.esClient.close()
-                Redirect(routes.CrudIndex.createForm()).flashing("error" -> Messages("error.unableToCreateIndex"))
-              }
-              case _ => {
-                crudIndexService.esClient.close()
-                Redirect(routes.CrudIndex.createForm).flashing("error" -> Messages("error.unableToCreateIndex"))
-              }
+            case 200 => {
+              crudIndexService.esClient.close()
+              Redirect(routes.CrudIndex.showSummary("fbl_" + index.name)).flashing("success" -> Messages("success.indexCreated"))
+            }
+            case 400 => {
+              crudIndexService.esClient.close()
+              Redirect(routes.CrudIndex.createForm()).flashing("error" -> Messages("error.unableToCreateIndex"))
+            }
+            case _ => {
+              crudIndexService.esClient.close()
+              Redirect(routes.CrudIndex.createForm).flashing("error" -> Messages("error.unableToCreateIndex"))
             }
           }
         }
