@@ -14,7 +14,7 @@ class IndicesStatsService(es: Elasticsearch) {
     GetFillableIndicesQuery(esClient).execute map {
       allIndices => {
         val indexList = allIndices.getIndices.toMap.filterKeys {
-          case key => key.startsWith("fbl_") && !key.endsWith("_log")
+          case name => isFillableIndex(name)
         }
 
         val result = for {
@@ -42,4 +42,6 @@ class IndicesStatsService(es: Elasticsearch) {
       case _ => None
     }
   }
+
+  def isFillableIndex(name: String): Boolean = name.startsWith("fbl_") && !name.endsWith("_log")
 }
