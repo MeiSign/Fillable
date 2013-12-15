@@ -19,4 +19,3 @@ dist
 .DS_Store?
 .settings
 !app/views/logs
-conf/fillable.conf
