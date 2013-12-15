@@ -1,4 +1,3 @@
-import java.io.File
 import org.elasticsearch.client.transport.NoNodeAvailableException
 import play.api._
 import play.api.mvc.RequestHeader
