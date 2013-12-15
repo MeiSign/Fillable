@@ -13,9 +13,12 @@ import play.api.test.Helpers._
 @RunWith(classOf[JUnitRunner])
 class ApplicationSpec extends Specification {
 
+
+  val fakeApp = new FakeApplication(additionalConfiguration = Map("esclient.embeddedElasticsearch" -> false))
+
   "Application" should {
 
-    "send 404 on a bad request" in new WithApplication{
+    "send 404 on a bad request" in new WithApplication(fakeApp) {
       route(FakeRequest(GET, "/boum")) must beNone
     }
 

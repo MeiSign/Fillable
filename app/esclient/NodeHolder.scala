@@ -4,25 +4,33 @@ import scala.collection.mutable
 import org.elasticsearch.node.Node
 import org.elasticsearch.common.settings.ImmutableSettings
 import org.elasticsearch.node.NodeBuilder._
-import play.api.Play
+import play.api.{Configuration, Play}
 
 object NodeHolder {
   val nodes: mutable.ListBuffer[Node] = new mutable.ListBuffer[Node]()
 
   def buildNode = {
     val conf = Play.current.configuration
-    val nodeSettings = ImmutableSettings.settingsBuilder()
+    val settings = buildSettings(conf)
+    nodes += nodeBuilder().settings(settings).node()
+  }
+
+  def buildSettings(conf: Configuration) = {
+    ImmutableSettings.settingsBuilder()
       .put("path.data", conf.getString("esnode.settings.data").getOrElse("data"))
       .put("http.enabled", conf.getBoolean("esnode.settings.httpEnabled").getOrElse(false))
       .put("local", conf.getBoolean("esnode.settings.local").getOrElse(true))
-    nodes += nodeBuilder()
-      .settings(nodeSettings)
-      .clusterName(conf.getString("esclient.clustername").getOrElse("fbl_cluster"))
-      .node()
+      .put("client", conf.getBoolean("esnode.settings.testnode").getOrElse(false))
+      .put("cluster.name", conf.getString("esclient.clustername").getOrElse("fillable_es"))
   }
 
-  def buildNode(settings: ImmutableSettings.Builder) = {
-    nodes += nodeBuilder().settings(settings).clusterName(settings.get("cluster.name")).node()
+  def buildNodeWithSettings(settings: ImmutableSettings.Builder) = {
+    nodes += nodeBuilder()
+      .settings(settings)
+      .clusterName(settings.get("cluster.name"))
+      .client(settings.get("client").toBoolean)
+      .data(!settings.get("client").toBoolean)
+      .node()
   }
 
   def shutDownNodes() = nodes map(node => node.close())

@@ -9,15 +9,15 @@ import org.elasticsearch.common.xcontent.XContentFactory._
 
 class OptionDocumentTestSpec extends Specification with Mockito {
 
-  "toJsonBuilder should return a correct json object" in new WithApplication {
+  "toJsonBuilder should return a correct json object" in {
     OptionDocument("input", "output", 5).toJsonBuilder.string() must beEqualTo("""{"fillableOptions":{"input":"input","output":"output","weight":5}}""")
   }
 
-  "extendOption should return a new OptionDocument with increased weight" in new WithApplication {
+  "extendOption should return a new OptionDocument with increased weight" in {
     OptionDocument("input", "output", 5).extendOption().weight must beEqualTo(6)
   }
 
-  "fromBuilder must parse a GetResponse correctly" in new WithApplication {
+  "fromBuilder must parse a GetResponse correctly" in {
     val xContentDoc = jsonBuilder()
       .startObject()
       .startObject("_source")
