@@ -17,7 +17,6 @@ object ListIndices extends Controller {
           val indicesStatsService = new IndicesStatsService(new Elasticsearch)
           indicesStatsService.getIndexList map {
             list => {
-              indicesStatsService.esClient.close()
               Ok(html.listindices.indexList(list))
             }
           }

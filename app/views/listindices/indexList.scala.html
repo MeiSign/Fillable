@@ -14,7 +14,7 @@
          <th>Name</th>
          <th class="text-right col-sm-2">Completions Count</th>
          <th class="text-right">Size</th>
-         <th class="text-center col-sm-3">Actions</th>
+         <th class="text-center col-sm-4">Actions</th>
        </tr>
      </thead>
      <tbody>
@@ -27,8 +27,9 @@
       <td>
           <div class="text-center">
              <div class="btn-group btn-group-xs text-right">
-              <a href="@routes.Synonym.editor(index.name)" class="btn btn-default"><span class="glyphicon glyphicon-link"></span> Synonyms</a>
               <a href="@routes.CrudIndex.showSummary(index.name)" class="btn btn-default"><span class="glyphicon glyphicon-search"></span> Snippet</a>
+              <a href="@routes.Synonym.editor(index.name)" class="btn btn-default"><span class="glyphicon glyphicon-link"></span> Synonyms</a>
+              <a href="@routes.CrudIndex.importCompletionsForm(index.name)" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> Completions</a>
               <a href="@routes.CrudIndex.editForm(index.name)" class="btn btn-default"><span class="glyphicon glyphicon-wrench"></span> Edit</a>
               <a href="@routes.CrudIndex.deleteIndex(index.name)" class="btn btn-default" onclick="return confirm('@Messages("text.confirmDelete")')"><span class="glyphicon glyphicon-trash"></span> Delete</a>
             </div>

@@ -6,7 +6,10 @@ import esclient.Elasticsearch
 
 class IndicesStatsServiceSpec extends Specification {
 
-  val fakeApp = new FakeApplication(additionalConfiguration = Map("esclient.embeddedElasticsearch" -> false))
+  val fakeApp = new FakeApplication(additionalConfiguration = Map(
+    "esclient.embeddedElasticsearch" -> false,
+    "esclient.clustername" -> "testcluster123"
+  ))
 
   "IndicesStatsServiceSpec" should {
     "isFillableIndex should return true for indexname" in new WithApplication(fakeApp){

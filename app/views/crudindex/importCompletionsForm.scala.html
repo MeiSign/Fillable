@@ -1,0 +1,42 @@
+@(indexName: String, importCompletionsForm: Form[Completions])(implicit request: Request[Any], flash: Flash)
+
+@import helper._
+@implicitField = @{ FieldConstructor(textareaInput.f) }
+@title = { @Messages("title.importCompletions") }
+
+@main(title, nav = "") {
+@notice(flash)
+    <p>
+        @Messages("text.importCompletionsInfo")<br>
+        @Messages("text.importCompletionsSyntax")
+    </p>
+
+    <div class="col-lg-10">
+        <h2>Textual import</h2>
+        @helper.form(action = routes.CrudIndex.importCompletionsSubmit(indexName)) {
+            @textarea(importCompletionsForm("completions"),
+            '_label -> "Completions",
+            '_error -> importCompletionsForm.globalError,
+            'class -> "expanding form-control")
+
+        <div class="col-lg-offset-10">
+            <a href="/" class="btn">Cancel</a>
+            <button type="submit" class="btn btn-default">Import</button>
+        </div>
+        }
+
+        <h2>Upload Import</h2>
+        @helper.form(action = routes.CrudIndex.uploadCompletionsFile(indexName), 'enctype -> "multipart/form-data") {
+
+        <p>
+            <input type="file" name="completionsFile">
+        </p>
+
+        <div class="col-lg-offset-1">
+            <a href="/" class="btn">Cancel</a>
+            <button type="submit" class="btn btn-default">Upload</button>
+        </div>
+
+        }
+    </div>
+}

@@ -17,7 +17,6 @@ object ApplicationApi extends Controller {
       val autoCompletionService: AutoCompletionService = new AutoCompletionService(new Elasticsearch)
       autoCompletionService.getOptions(indexName, toBeCompleted) map {
         json => {
-          autoCompletionService.esClient.close()
           Ok(json).withHeaders(respHeader)
         }
       }
@@ -34,7 +33,6 @@ object ApplicationApi extends Controller {
       val chosen: Option[String] = map.getOrElse("chosen", List()).headOption
       autoCompletionService.addOption(indexName, typed, chosen) map {
         statusCode => {
-          autoCompletionService.esClient.close()
           Ok(autoCompletionService.getJsonResponse(statusCode)).withHeaders(respHeader)
         }
       }

@@ -16,7 +16,6 @@ object Logs extends Controller {
           val logStatsService = new LogStatsService(new Elasticsearch)
           logStatsService.getLogLists map {
             lists => {
-              logStatsService.esClient.close()
               Ok(html.logs.logList(lists))
             }
           }
@@ -32,7 +31,6 @@ object Logs extends Controller {
           val logIndexService = new LogIndexService(new Elasticsearch)
           logIndexService.createLogIndex(name, 4, 0) map {
             lists => {
-              logIndexService.esClient.close()
               Redirect(routes.Logs.index)
             }
           }
@@ -48,7 +46,6 @@ object Logs extends Controller {
           val logIndexService = new LogIndexService(new Elasticsearch)
           logIndexService.deleteLogIndex(name) map {
             lists => {
-              logIndexService.esClient.close()
               Redirect(routes.Logs.index)
             }
           }

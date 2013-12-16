@@ -20,12 +20,15 @@ GET /synonyms/:indexName        controllers.Synonym.editor(indexName: String)
 POST /submitSynonyms/:indexName        controllers.Synonym.submitSynonyms(indexName: String)
 
 # Crud Index
-GET  /createIndex               controllers.CrudIndex.createForm
-POST /createIndex               controllers.CrudIndex.submitNewIndex
-GET  /editIndex/:indexName      controllers.CrudIndex.editForm(indexName: String)
-POST /editIndex                 controllers.CrudIndex.submitEditIndex
-GET  /deleteIndex/:indexName    controllers.CrudIndex.deleteIndex(indexName: String)
-GET  /snippetSummary/:indexName controllers.CrudIndex.showSummary(indexName: String)
+GET  /createIndex                   controllers.CrudIndex.createForm
+POST /createIndex                   controllers.CrudIndex.submitNewIndex
+GET  /editIndex/:indexName          controllers.CrudIndex.editForm(indexName: String)
+POST /editIndex                     controllers.CrudIndex.submitEditIndex
+GET  /deleteIndex/:indexName        controllers.CrudIndex.deleteIndex(indexName: String)
+GET  /snippetSummary/:indexName     controllers.CrudIndex.showSummary(indexName: String)
+GET  /importCompletions/:indexName  controllers.CrudIndex.importCompletionsForm(indexName: String)
+POST /importCompletions/:indexName  controllers.CrudIndex.importCompletionsSubmit(indexName: String)
+POST /uploadCompletions/:indexName  controllers.CrudIndex.uploadCompletionsFile(indexName: String)
 
 # Login
 GET  /login             controllers.Login.login

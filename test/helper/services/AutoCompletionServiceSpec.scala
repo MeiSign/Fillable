@@ -6,12 +6,19 @@ import play.api.libs.json.Json
 import esclient.Elasticsearch
 import play.api.test.WithApplication
 import play.api.test.FakeApplication
+import java.io.File
+import sys.process._
+import play.api.libs.Files.TemporaryFile
+
 
 class AutoCompletionServiceSpec extends Specification with Mockito  {
 
   "AutoCompletionService" should {
 
-    val fakeApp = new FakeApplication(additionalConfiguration = Map("esclient.embeddedElasticsearch" -> false))
+    val fakeApp = new FakeApplication(additionalConfiguration = Map(
+      "esclient.embeddedElasticsearch" -> false,
+      "esclient.clustername" -> "testcluster123"
+    ))
 
     "getDocumentId should return chosen String for nonempty typed and nonempty chosen string" in new WithApplication(fakeApp) {
       val autoCompletionService: AutoCompletionService = new AutoCompletionService(new Elasticsearch)
@@ -81,6 +88,21 @@ class AutoCompletionServiceSpec extends Specification with Mockito  {
     "getJsonResponse should return index missing for 404" in new WithApplication(fakeApp) {
       val autoCompletionService: AutoCompletionService = new AutoCompletionService(new Elasticsearch)
       autoCompletionService.getJsonResponse(404).toString() must beEqualTo("""{"status":"index is missing"}""")
+    }
+
+    "getCompletionsListFromString should return the correct completion terms" in new WithApplication(fakeApp) {
+      val autoCompletionService: AutoCompletionService = new AutoCompletionService(new Elasticsearch)
+      autoCompletionService.getCompletionsListFromString("test1, test2, test3")
+        .must(beEqualTo(Array("test1", "test2", "test3")))
+    }
+
+    "getCompletionsListFromFile should return the correct completion terms" in new WithApplication(fakeApp) {
+      val autoCompletionService: AutoCompletionService = new AutoCompletionService(new Elasticsearch)
+
+      "echo hello world, test3" #> new File("data/example.txt") !
+
+      autoCompletionService.getCompletionsListFromFile(new TemporaryFile(new File("data/example.txt")))
+        .must(beEqualTo(Array("hello world", "test3")))
     }
   }
 }

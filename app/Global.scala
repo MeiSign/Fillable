@@ -5,18 +5,20 @@ import play.api.mvc.Results._
 import scala.concurrent.Future
 import views.html
 import collection.JavaConversions._
-import esclient.NodeHolder
+import esclient.{TransportClientHolder, NodeHolder}
 
 object Global extends GlobalSettings {
 
   override def onStart(app: Application) {
     val embeddedElasticsearch = app.configuration.getBoolean("esclient.embeddedElasticsearch").getOrElse(true)
     if (embeddedElasticsearch) NodeHolder.buildNode
+    else TransportClientHolder.buildTransportClient()
   }
 
   override def onStop(app: Application) {
     val embeddedElasticsearch = app.configuration.getBoolean("esclient.embeddedElasticsearch").getOrElse(true)
     if (embeddedElasticsearch) NodeHolder.shutDownNodes()
+    else TransportClientHolder.shutdownTransportClient()
   }
 
   override def onError(request: RequestHeader, ex: Throwable) = {

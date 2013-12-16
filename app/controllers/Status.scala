@@ -20,12 +20,10 @@ object Status extends Controller {
           val requirementsService = new RequirementsService(new Elasticsearch)
           requirementsService.runTests map {
             result => {
-              requirementsService.esClient.close()
               Ok(html.status.status(true :: result, result.count(value => value), result.count(value => !value) + 1))
             }
           } recover {
             case _ => {
-              requirementsService.esClient.close()
               Ok(html.status.status(List(false,false,false), 3, 0))
             }
           }

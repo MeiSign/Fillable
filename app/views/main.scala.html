@@ -32,17 +32,17 @@
 		  <div class="collapse navbar-collapse navbar-ex1-collapse">
 		    <ul class="nav navbar-nav">
 		      <li class="@("active".when(nav == "indexList"))">
-		        <a href="/">Indices</a>
+                <a class="glyphicon glyphicon-list" href="/"> Indices</a>
 		      </li>
               <li class="@("active".when(nav == "logList"))">
-                <a href="/logs">Logs</a>
+                <a class="glyphicon glyphicon-file" href="/logs"> Logs</a>
               </li>
 		      <li class="@("active".when(nav == "createIndex"))">
-		        <a href="@routes.CrudIndex.createForm">Create Index</a>
+		        <a class="glyphicon glyphicon-plus" href="@routes.CrudIndex.createForm"> Create Index</a>
 		      </li>
               </li>
                 <li class="@("active".when(nav == "status"))">
-                <a href="@routes.Status.index">Status</a>
+                <a class ="glyphicon glyphicon-signal" href="@routes.Status.index"> Status</a>
               </li>
 		    </ul>
 		    <ul class="nav navbar-nav navbar-right">

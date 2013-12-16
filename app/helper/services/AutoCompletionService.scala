@@ -2,14 +2,18 @@ package helper.services
 
 import play.api.libs.json.{Json, JsValue}
 import scala.concurrent._
-import org.elasticsearch.client.Client
 import scala.language.implicitConversions
 import models.OptionDocument
 import org.elasticsearch.indices.IndexMissingException
 import org.elasticsearch.search.suggest.completion.CompletionSuggestion
 import scala.collection.JavaConversions._
-import esclient.queries.{GetDocumentByIdQuery, AddOptionDocumentQuery, GetOptionsQuery}
+import esclient.queries.{AddOptionDocumentsBulkQuery, GetDocumentByIdQuery, AddOptionDocumentQuery, GetOptionsQuery}
 import esclient.Elasticsearch
+import models.results.BulkImportResult
+import java.io.File
+import scalax.io.support.FileUtils
+import scala.io.Source
+import play.api.libs.Files.TemporaryFile
 
 class AutoCompletionService(es: Elasticsearch) {
   val esClient = es.client
@@ -55,13 +59,18 @@ class AutoCompletionService(es: Elasticsearch) {
           val doc = OptionDocument(typed, typed, 0).toJsonBuilder
           val addQuery = AddOptionDocumentQuery(esClient, indexName, docIdString, doc.string())
           addQuery.execute map {
-            result => 200
+            result => {
+              200
+            }
           }
         } else {
+          println("already there")
           val doc = OptionDocument().fromBuilder(document)
           val addQuery = AddOptionDocumentQuery(esClient, indexName, docIdString, doc.extendOption().toJsonBuilder.string())
           addQuery.execute map {
-            result => 202
+            result => {
+              202
+            }
           }
         }
       }
@@ -98,4 +107,27 @@ class AutoCompletionService(es: Elasticsearch) {
     }
   }
 
+  def importCompletions(indexName: String, completions: String): Future[BulkImportResult] = {
+    bulkImportOptions(indexName, getCompletionsListFromString(completions))
+  }
+
+  def getCompletionsListFromString(completions: String) = completions.split(",") map(entry => entry.trim)
+  def getCompletionsListFromFile(completions: TemporaryFile) = {
+    val source = Source.fromFile(completions.file)
+    val result = source.mkString.split(",") map(entry => entry.trim)
+    source.close()
+    result
+  }
+
+  def importCompletionsFromFile(indexName: String, completions: TemporaryFile) = {
+    bulkImportOptions(indexName, getCompletionsListFromFile(completions))
+  }
+
+  def bulkImportOptions(indexName: String, list: Array[String]): Future[BulkImportResult] = {
+    val docs: Array[(String, OptionDocument)] = list map (docEntry => (docEntry.toLowerCase(), OptionDocument(docEntry, docEntry, 0)))
+    val bulkQuery = AddOptionDocumentsBulkQuery(esClient, indexName, docs.toMap[String, OptionDocument])
+    bulkQuery.execute map {
+      result => BulkImportResult(result.hasFailures, result.getItems.count(request => request.isFailed), result.getItems.length)
+    }
+  }
 }

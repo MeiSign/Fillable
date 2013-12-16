@@ -42,17 +42,14 @@ object Synonym extends Controller {
           synonymService.getSynonymsAndTopInputValues(indexName) map {
             result => {
               if (result.hasError) {
-                synonymService.esClient.close()
                 Redirect(routes.ListIndices.index(Option.empty[String]))
               }
               else {
-                synonymService.esClient.close()
                 Ok(html.synonym.editor(indexName, synonymForm.fill(Synonyms(result.synonymGroups.mkString("\n"))), result.topTenInputValues))
               }
             }
           } recover {
             case e: Throwable => {
-              synonymService.esClient.close()
               Redirect(routes.ListIndices.index(Option.empty[String]))
             }
           }
@@ -71,12 +68,10 @@ object Synonym extends Controller {
             errors => {
               synonymService.getTopInputValues(indexName) map {
                 result => {
-                  synonymService.esClient.close()
                   Ok(html.synonym.editor(indexName, errors, result))
                 }
               } recover {
                 case _ => {
-                  synonymService.esClient.close()
                   Ok(html.synonym.editor(indexName, errors, List.empty[InputTopListEntry]))
                 }
               }
@@ -85,11 +80,9 @@ object Synonym extends Controller {
             synonym => {
               synonymService.editSynonyms(indexName, synonym.text) map {
                 case 200 => {
-                  synonymService.esClient.close()
                   Redirect(routes.Synonym.editor(indexName)).flashing("success" -> Messages("success.synonymsAdded"))
                 }
                 case _ => {
-                  synonymService.esClient.close()
                   Redirect(routes.Synonym.editor(indexName)).flashing("error" -> Messages("error.unknownErrorSynonymEdit"))
                 }
               }

@@ -17,6 +17,7 @@ error.unableToUpdateIndex=Unknown error happened during Index update.
 error.deleteIndexFailed=Unknown error happened during Index deletion.
 error.unknownErrorSynonymEdit=Unknown error happened during Synonym update.
 error.wrongSyntaxInLine=Wrong syntax in Line {0}: {1}
+error.bulkItemsFailed=Indexing of {0} Completions failed.
 
 # Success messages
 # ~~~~~
@@ -24,6 +25,7 @@ success.setupComplete=Congratulations! You are creating your first Fillable Inde
 success.indexCreated=New Fillable Index was successfully created!
 success.indexWillBeChangedSoon=Ok! Your requested change is queued and will be processed soon. <a href="/">Refresh</a>
 success.synonymsAdded=Synonyms were successfully added.
+success.completionsAdded= {0} completions are queued up and will be added to your Fillable Index.
 
 # General text messages
 # ~~~~~
@@ -34,6 +36,8 @@ text.SynonymEditorSyntaxInfo0=Each line represents one synonymgroup.
 text.SynonymEditorSyntaxInfo1=Synonyms: big, large, supersized, grande
 text.SynonymEditorSyntaxInfo2=Hyponyms: color => yellow, blue, green
 text.noEsConnection=The connection to elasticsearch according to your configuration failed. Please check the configuration settings in <i>conf/fillable.conf</i>
+text.importCompletionsInfo=Use this form to import completions. This can help to offer a set of initial completions before the system is driven by userinput.
+text.importCompletionsSyntax=Syntax: "Completion1, Completion2, Completion3" (Comma seperated completions list. Alternatively you can upload a textfile in that format)
 
 # Title messages
 # ~~~~~
@@ -46,3 +50,4 @@ title.status=Fillable System Status
 title.logList=Fillable Field Logs
 title.synonymeditor=Synonym Editor
 title.noEsConnection=Connection to Elasticsearch refused
+title.importCompletions=Import Completions

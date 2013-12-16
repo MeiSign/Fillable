@@ -20,4 +20,3 @@ case class AddOptionDocumentQuery(esClient: Client, indexName: String, docIdStri
 
   def execute: Future[IndexResponse] = p.future
 }
-

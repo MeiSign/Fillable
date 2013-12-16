@@ -8,8 +8,10 @@ class LogStatsServiceSpec extends Specification {
 
   "LogStatsService" should {
 
-    val fakeApp = new FakeApplication(additionalConfiguration = Map("esclient.embeddedElasticsearch" -> false))
-
+    val fakeApp = new FakeApplication(additionalConfiguration = Map(
+      "esclient.embeddedElasticsearch" -> false,
+      "esclient.clustername" -> "testcluster123"
+    ))
     "indexIsLogIndex should return true if indexname is from a logindex" in new WithApplication(fakeApp) {
       val logStatsService: LogStatsService = new LogStatsService(new Elasticsearch)
       logStatsService.indexIsLogIndex("fbl_bla_log") must beTrue

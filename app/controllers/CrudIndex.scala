@@ -1,7 +1,7 @@
 package controllers
 
-import helper.services.{CrudIndexService, IndicesStatsService}
-import helper.utils.{AuthenticatedAction, IndexNameValidator}
+import _root_.helper.services.{AutoCompletionService, CrudIndexService, IndicesStatsService}
+import _root_.helper.utils.{SynonymSyntaxValidator, AuthenticatedAction, IndexNameValidator}
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
@@ -11,6 +11,8 @@ import views._
 import scala.concurrent._
 import scala.Some
 import esclient.Elasticsearch
+import play.api.data.validation.{Invalid, Valid, ValidationError, Constraint}
+import models.results.BulkImportResult
 
 object CrudIndex extends Controller {
 
@@ -40,11 +42,9 @@ object CrudIndex extends Controller {
           val indicesStatsService = new IndicesStatsService(new Elasticsearch)
           indicesStatsService.getIndexSettings(indexName) map {
             case index if index.isEmpty => {
-              indicesStatsService.esClient.close()
               Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.indexNotFound", indexName))
             }
             case index => {
-              indicesStatsService.esClient.close()
               Ok(html.crudindex.form(indexForm.fill(index.getOrElse(Index("", 0, 0))), true))
             }
           }
@@ -61,15 +61,12 @@ object CrudIndex extends Controller {
           val crudIndexService = new CrudIndexService(new Elasticsearch)
           crudIndexService.createFillableIndex(index.name, index.shards, index.replicas, index.logging) map {
             case 200 => {
-              crudIndexService.esClient.close()
               Redirect(routes.CrudIndex.showSummary("fbl_" + index.name)).flashing("success" -> Messages("success.indexCreated"))
             }
             case 400 => {
-              crudIndexService.esClient.close()
               Redirect(routes.CrudIndex.createForm()).flashing("error" -> Messages("error.unableToCreateIndex"))
             }
             case _ => {
-              crudIndexService.esClient.close()
               Redirect(routes.CrudIndex.createForm).flashing("error" -> Messages("error.unableToCreateIndex"))
             }
           }
@@ -94,11 +91,9 @@ object CrudIndex extends Controller {
           val crudIndexService: CrudIndexService = new CrudIndexService(new Elasticsearch)
           crudIndexService.editFillableIndex(index.name, index.replicas) map {
             case 200 => {
-              crudIndexService.esClient.close()
               Redirect(routes.ListIndices.index(Option[String](index.name))).flashing("success" -> Messages("success.indexWillBeChangedSoon"))
             }
             case _ => {
-              crudIndexService.esClient.close()
               Redirect(routes.ListIndices.index(Option[String](index.name))).flashing("error" -> Messages("error.unkownUpdateError", "fbl_" + index.name))
             }
           }
@@ -113,18 +108,66 @@ object CrudIndex extends Controller {
         val crudIndexService: CrudIndexService = new CrudIndexService(new Elasticsearch)
         crudIndexService.deleteFillableIndex(indexName) map {
           case 200 => {
-            crudIndexService.esClient.close()
             Redirect(routes.ListIndices.index(Option[String](indexName))).flashing("success" -> Messages("success.indexWillBeChangedSoon"))
           }
           case 404 => {
-            crudIndexService.esClient.close()
             Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.indexNotFound", indexName))
           }
           case _ => {
-            crudIndexService.esClient.close()
             Redirect(routes.ListIndices.index(Option[String](""))).flashing("error" -> Messages("error.unkownUpdateError", "fbl_" + indexName))
           }
         }
+      }
+    }
+  }
+
+  val completionsForm: Form[Completions] = Form(
+    mapping("completions" -> nonEmptyText()) {
+      (completions) => Completions(completions)
+    } {
+      completions => Some(completions.text)
+    })
+
+  def importCompletionsForm(indexName: String) = AuthenticatedAction {
+    Action {
+      implicit request => {
+        Ok(html.crudindex.importCompletionsForm(indexName, completionsForm.fill(Completions(""))))
+      }
+    }
+  }
+
+  def importCompletionsSubmit(indexName: String)  = AuthenticatedAction {
+    Action.async {
+      implicit request => {
+        completionsForm.bindFromRequest().fold(
+          errors => Future.successful(Ok(html.crudindex.importCompletionsForm(indexName, errors))),
+          completions => {
+            val autoCompletionService = new AutoCompletionService(new Elasticsearch)
+            autoCompletionService.importCompletions(indexName, completions.text) map {
+              result: BulkImportResult =>
+                if (result.error) Redirect(routes.ListIndices.index(Option.empty[String])).flashing("error" -> Messages("error.bulkItemsFailed", result.failures))
+                else Redirect(routes.ListIndices.index(Option.empty[String])).flashing("success" -> Messages("success.completionsAdded", result.requests))
+            }
+          }
+        )
+      }
+    }
+  }
+
+  def uploadCompletionsFile(indexName: String) = AuthenticatedAction {
+    Action.async(parse.multipartFormData) {
+      request => {
+        request.body.file("completionsFile").map {
+          completions => {
+            import java.io.File
+            val autoCompletionService = new AutoCompletionService(new Elasticsearch)
+            autoCompletionService.importCompletionsFromFile(indexName, completions.ref) map {
+              result: BulkImportResult =>
+              if (result.error) Redirect(routes.ListIndices.index(Option.empty[String])).flashing("error" -> Messages("error.bulkItemsFailed", result.failures))
+              else Redirect(routes.ListIndices.index(Option.empty[String])).flashing("success" -> Messages("success.completionsAdded", result.requests))
+            }
+          }
+        }.getOrElse(Future.successful(Redirect(routes.ListIndices.index(Option.empty[String])).flashing("success" -> Messages("success.completionsAdded"))))
       }
     }
   }

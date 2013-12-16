@@ -15,9 +15,10 @@ class ElasticsearchSpec extends Specification {
     "esnode.settings.testnode" -> true
   )
 
-  val transportConfig: Map[String, _] = Map("esclient.embeddedElasticsearch" -> false)
-
-
+  val transportConfig: Map[String, _] = Map(
+    "esclient.embeddedElasticsearch" -> false,
+    "esclient.clustername" -> "testcluster123"
+  )
 
   "Elasticsearch" should {
 

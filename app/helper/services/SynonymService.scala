@@ -9,6 +9,7 @@ import models.{InputTopListEntry, Index}
 import esclient.queries.CloseIndexQuery
 import esclient.queries.GetTopInputValuesQuery
 import esclient.Elasticsearch
+import models.results.SynonymResult
 
 class SynonymService(es: Elasticsearch) {
   val esClient = es.client
@@ -100,11 +101,4 @@ class SynonymService(es: Elasticsearch) {
       case e: Throwable => List.empty[String]
     }
   }
-}
-
-case class SynonymResult(topTenInputValues: List[InputTopListEntry] = List.empty[InputTopListEntry],
-                         synonymGroups: List[String] = List.empty[String],
-                         error: String = "") {
-
-  def hasError : Boolean = !error.isEmpty
 }

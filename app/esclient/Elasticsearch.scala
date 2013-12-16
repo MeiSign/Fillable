@@ -10,7 +10,7 @@ class Elasticsearch {
     val embeddedElasticsearch = Play.current.configuration.getBoolean("esclient.embeddedElasticsearch").getOrElse(true)
 
     if (embeddedElasticsearch) NodeHolder.nodes.head.client()
-    else TransportClientHolder.buildTransportClient()
+    else TransportClientHolder.transportClient.head
   }
 
   def closeClient(): Unit = {
