@@ -10,8 +10,6 @@ import scala.collection.JavaConversions._
 import esclient.queries.{AddOptionDocumentsBulkQuery, GetDocumentByIdQuery, AddOptionDocumentQuery, GetOptionsQuery}
 import esclient.Elasticsearch
 import models.results.BulkImportResult
-import java.io.File
-import scalax.io.support.FileUtils
 import scala.io.Source
 import play.api.libs.Files.TemporaryFile
 
@@ -64,7 +62,6 @@ class AutoCompletionService(es: Elasticsearch) {
             }
           }
         } else {
-          println("already there")
           val doc = OptionDocument().fromBuilder(document)
           val addQuery = AddOptionDocumentQuery(esClient, indexName, docIdString, doc.extendOption().toJsonBuilder.string())
           addQuery.execute map {
@@ -124,7 +121,7 @@ class AutoCompletionService(es: Elasticsearch) {
   }
 
   def bulkImportOptions(indexName: String, list: Array[String]): Future[BulkImportResult] = {
-    val docs: Array[(String, OptionDocument)] = list map (docEntry => (docEntry.toLowerCase(), OptionDocument(docEntry, docEntry, 0)))
+    val docs: Array[(String, OptionDocument)] = list map (docEntry => (docEntry.toLowerCase, OptionDocument(docEntry, docEntry, 0)))
     val bulkQuery = AddOptionDocumentsBulkQuery(esClient, indexName, docs.toMap[String, OptionDocument])
     bulkQuery.execute map {
       result => BulkImportResult(result.hasFailures, result.getItems.count(request => request.isFailed), result.getItems.length)

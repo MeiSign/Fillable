@@ -9,12 +9,12 @@ import models.{InputTopListEntry, Index}
 import esclient.queries.CloseIndexQuery
 import esclient.queries.GetTopInputValuesQuery
 import esclient.Elasticsearch
-import models.results.SynonymResult
+import models.results.{EditSynonymsResult, ReindexResult, SynonymResult}
 
 class SynonymService(es: Elasticsearch) {
   val esClient = es.client
-  val termSplitRegex = List("=>", ",").mkString("|").r
-  val stringToListRegex = "\r\n".r
+  val termSplitRegex = List("=>", ",", "\\r?\\n").mkString("|").r
+  val stringToListRegex = "\\r?\\n".r
   implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
   def getTopInputValues(indexName:String): Future[List[InputTopListEntry]] = {
@@ -44,7 +44,7 @@ class SynonymService(es: Elasticsearch) {
             SynonymResult(topTen, indexOption.getOrElse(Index("")).synonymEntries)
           }
         } recover {
-          case e: Throwable => SynonymResult(List.empty[InputTopListEntry], List.empty[String], Messages("error.cantGetTopTenInputValues"))
+          case e: Throwable => SynonymResult(List.empty[InputTopListEntry], indexOption.getOrElse(Index("")).synonymEntries)
         }
       }
     } recover {
@@ -52,32 +52,63 @@ class SynonymService(es: Elasticsearch) {
     }
   }
 
-  def editSynonyms(indexName: String, synonymGroupsString: String) : Future[Int] = {
-    convertSynonymGroupStringToList(indexName, synonymGroupsString) flatMap {
-      synonymGroupList => CloseIndexQuery(esClient, indexName).execute flatMap {
-        closeIndexResponse => EditFillableIndexSynonymsQuery(esClient, indexName, synonymGroupList).execute flatMap {
-          editFillableIndexSynonymsResponse => OpenIndexQuery(esClient, indexName).execute map {
-            openIndexResponse => if (openIndexResponse.isAcknowledged) {
-              reindexNewSynonyms(synonymGroupsString, indexName)
-              200
-            } else 403
-          } recover {
-            case e: Throwable => 401
+  def editSynonyms(indexName: String, synonymGroupsString: String): Future[EditSynonymsResult] = {
+    closeIndexForUpdate(indexName) flatMap {
+      indexClosed => {
+        if (indexClosed) {
+          buildSynonymsAndUpdateIndex(indexName, synonymGroupsString) flatMap {
+            synonymsBuilt => {
+              if (synonymsBuilt) reopenIndexAndReindexChangedSynonyms(indexName, synonymGroupsString) map { reindexResult => reindexResult }
+              else Future.successful(EditSynonymsResult(Messages("error.cantUpdateSynonyms", indexName)))
+            }
           }
-        } recover {
-          case e: Throwable => 402
-        }
-      } recover {
-        case e: Throwable => 400
+        } else Future.successful(EditSynonymsResult(Messages("error.cantCloseIndex", indexName)))
       }
-    } recover {
-      case e: Throwable => 403
     }
   }
 
-  def reindexNewSynonyms(synonymText: String, indexname: String): Unit = {
-    termSplitRegex.split(synonymText) map {
-      term => ReindexDocumentQuery(esClient, indexname, indexname, term.trim.hashCode.toString).execute
+  def closeIndexForUpdate(indexName: String): Future[Boolean] = {
+    CloseIndexQuery(esClient, indexName).execute map {
+      indexClosed => indexClosed.isAcknowledged
+    } recover {
+      case e: Throwable => false
+    }
+  }
+
+  def buildSynonymsAndUpdateIndex(indexName: String, synonymGroupsString: String): Future[Boolean] = {
+    convertSynonymGroupStringToList(indexName, synonymGroupsString) flatMap {
+      list => EditFillableIndexSynonymsQuery(esClient, indexName, list).execute map {
+        queryResult => queryResult.isAcknowledged
+      } recover {
+        case e: Throwable => false
+      }
+    }
+  }
+
+  def reopenIndexAndReindexChangedSynonyms(indexName: String, synonymGroupsString: String): Future[EditSynonymsResult] = {
+    OpenIndexQuery(esClient, indexName).execute flatMap {
+      indexOpened => {
+        if (indexOpened.isAcknowledged) {
+          reindexNewSynonyms(synonymGroupsString, indexName) map {
+            reindexedSynonyms => EditSynonymsResult("", reindexedSynonyms)
+          } recover {
+            case e: Throwable => EditSynonymsResult("error.reindexFailed")
+          }
+        } else {
+          Future.successful(EditSynonymsResult(Messages("error.cantOpenIndex", indexName)))
+        }
+      }
+    } recover {
+      case e: Throwable => EditSynonymsResult(Messages("error.cantOpenIndex", indexName))
+    }
+  }
+
+  def reindexNewSynonyms(synonymText: String, indexname: String): Future[ReindexResult] = {
+    val termArray = termSplitRegex.split(synonymText).map(entry => entry.trim)
+    ReindexDocumentsBulkQuery(esClient, indexname, indexname, termArray).execute map {
+      result => {
+        ReindexResult(result.getItems.count(request => request.isFailed), result.getItems.length)
+      }
     }
   }
 
@@ -90,7 +121,7 @@ class SynonymService(es: Elasticsearch) {
   }
 
   def convertSynonymGroupStringToList(indexName: String, synonymGroupString: String): Future[List[String]] = {
-    val synonymInput = stringToListRegex.split(synonymGroupString.toLowerCase).toList
+    val synonymInput = stringToListRegex.split(synonymGroupString.toLowerCase).toList.map(entry => entry.trim())
 
     getCurrentSynonymFilterSize(indexName) map {
       filterSize => {

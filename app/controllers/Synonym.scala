@@ -11,6 +11,7 @@ import helper.services.SynonymService
 import esclient.Elasticsearch
 import play.api.i18n.Messages
 import play.api.data.validation.{Invalid, Valid, ValidationError, Constraint}
+import models.results.EditSynonymsResult
 
 object Synonym extends Controller {
 
@@ -27,7 +28,7 @@ object Synonym extends Controller {
   })
 
   val synonymForm: Form[Synonyms] = Form(
-    mapping("synonyms" -> nonEmptyText(minLength = 4).verifying(synonymSyntaxConstraint)) {
+    mapping("synonyms" -> text().verifying(synonymSyntaxConstraint)) {
       (synonyms) => Synonyms(synonyms)
     } {
       synonyms => Some(synonyms.text)
@@ -79,12 +80,9 @@ object Synonym extends Controller {
             },
             synonym => {
               synonymService.editSynonyms(indexName, synonym.text) map {
-                case 200 => {
-                  Redirect(routes.Synonym.editor(indexName)).flashing("success" -> Messages("success.synonymsAdded"))
-                }
-                case _ => {
-                  Redirect(routes.Synonym.editor(indexName)).flashing("error" -> Messages("error.unknownErrorSynonymEdit"))
-                }
+                synonymsAdded: EditSynonymsResult =>
+                  if (synonymsAdded.hasError) Redirect(routes.Synonym.editor(indexName)).flashing("error" -> synonymsAdded.error)
+                  else Redirect(routes.Synonym.editor(indexName)).flashing("success" -> Messages("success.synonymsAdded", synonymsAdded.reindexResult.succeeded))
               }
             }
           )

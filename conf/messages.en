@@ -18,13 +18,17 @@ error.deleteIndexFailed=Unknown error happened during Index deletion.
 error.unknownErrorSynonymEdit=Unknown error happened during Synonym update.
 error.wrongSyntaxInLine=Wrong syntax in Line {0}: {1}
 error.bulkItemsFailed=Indexing of {0} Completions failed.
+error.cantCloseIndex=Unable to close index {0}
+error.cantOpenIndex=Unable to open index {0}
+error.cantUpdateSynonyms=Unable to update Synonyms for index {0}
+error.reindexFailed=Reindexing of synonym completions failed.
 
 # Success messages
 # ~~~~~
 success.setupComplete=Congratulations! You are creating your first Fillable Index. The Fillable System is up and ready!
 success.indexCreated=New Fillable Index was successfully created!
 success.indexWillBeChangedSoon=Ok! Your requested change is queued and will be processed soon. <a href="/">Refresh</a>
-success.synonymsAdded=Synonyms were successfully added.
+success.synonymsAdded=Synonyms were successfully added and {0} completion(s) has been reindexed.
 success.completionsAdded= {0} completions are queued up and will be added to your Fillable Index.
 
 # General text messages
