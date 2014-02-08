@@ -32,26 +32,26 @@
 		  <div class="collapse navbar-collapse navbar-ex1-collapse">
 		    <ul class="nav navbar-nav">
 		      <li class="@("active".when(nav == "indexList"))">
-                <a class="glyphicon glyphicon-list" href="/"> Indices</a>
+                <a href="/"><span class="glyphicon glyphicon-list"></span>  Indices</a>
 		      </li>
               <li class="@("active".when(nav == "logList"))">
-                <a class="glyphicon glyphicon-file" href="/logs"> Logs</a>
+                <a href="/logs"><span class="glyphicon glyphicon-file"></span> Logs</a>
               </li>
 		      <li class="@("active".when(nav == "createIndex"))">
-		        <a class="glyphicon glyphicon-plus" href="@routes.CrudIndex.createForm"> Create Index</a>
+		        <a href="@routes.CrudIndex.createForm"><span class="glyphicon glyphicon-plus"></span> Create Index</a>
 		      </li>
               </li>
                 <li class="@("active".when(nav == "status"))">
-                <a class ="glyphicon glyphicon-signal" href="@routes.Status.index"> Status</a>
+                <a href="@routes.Status.index"><span class ="glyphicon glyphicon-signal"></span> Status</a>
               </li>
 		    </ul>
 		    <ul class="nav navbar-nav navbar-right">
 			    @if(request.session.get("user").getOrElse("").equals("")) {
 			      <li class="@("active".when(nav == "login"))">
-			       <a href="/login">Login</a>
+			       <a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a>
 			     </li>
 			    } else {
-			      <li><a href="/logout">Logout</a></li>
+			      <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
 			    }
 		    </ul>
 		  </div><!-- /.navbar-collapse -->
