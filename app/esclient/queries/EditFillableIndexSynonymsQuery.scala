@@ -2,9 +2,9 @@ package esclient.queries
 
 import org.elasticsearch.client.Client
 import scala.concurrent._
-import org.elasticsearch.action.admin.indices.settings.UpdateSettingsResponse
 import org.elasticsearch.action.ActionListener
 import play.api.libs.json.Json
+import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsResponse
 
 case class EditFillableIndexSynonymsQuery(esClient: Client, indexName: String, synonyms: List[String]) {
   lazy val p = promise[UpdateSettingsResponse]()

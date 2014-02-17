@@ -1,10 +1,10 @@
 package esclient.queries
 
 import org.elasticsearch.client.Client
-import org.elasticsearch.action.admin.indices.settings.UpdateSettingsResponse
 import org.elasticsearch.common.settings.ImmutableSettings
 import org.elasticsearch.action.ActionListener
 import scala.concurrent._
+import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsResponse
 
 case class EditFillableIndexQuery(esClient: Client, name: String, replicas: Int) {
   lazy val p = promise[UpdateSettingsResponse]()
