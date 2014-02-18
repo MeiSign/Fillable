@@ -1,3 +1,3 @@
 package models
 
-case class IndexListEntry(name: String, documents: Long, size: Long)
+case class IndexListEntry(name: String, documents: Long, size: Double)

@@ -22,6 +22,7 @@ error.cantCloseIndex=Unable to close index {0}
 error.cantOpenIndex=Unable to open index {0}
 error.cantUpdateSynonyms=Unable to update Synonyms for index {0}
 error.reindexFailed=Reindexing of synonym completions failed.
+error.maxlength=The completions entered by you exceeded the maximum  post request length. Please use the File upload Import.
 
 # Success messages
 # ~~~~~

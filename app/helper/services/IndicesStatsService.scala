@@ -20,7 +20,7 @@ class IndicesStatsService(es: Elasticsearch) {
         val result = for {
           (name, stats) <- indexList
         } yield {
-          IndexListEntry(name, stats.getTotal.getDocs.getCount, stats.getTotal.getStore.getSize.getMb)
+          IndexListEntry(name, stats.getTotal.getDocs.getCount, (math rint stats.getTotal.getStore.getSize.getMbFrac * 100) / 100)
         }
 
         result.toList

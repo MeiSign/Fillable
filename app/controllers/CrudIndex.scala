@@ -122,7 +122,7 @@ object CrudIndex extends Controller {
   }
 
   val completionsForm: Form[Completions] = Form(
-    mapping("completions" -> nonEmptyText()) {
+    mapping("completions" -> nonEmptyText(maxLength = 20000)) {
       (completions) => Completions(completions)
     } {
       completions => Some(completions.text)
@@ -137,19 +137,23 @@ object CrudIndex extends Controller {
   }
 
   def importCompletionsSubmit(indexName: String)  = AuthenticatedAction {
-    Action.async {
+    Action.async(parse.maxLength(46080 ,parse.urlFormEncoded)) {
       implicit request => {
-        completionsForm.bindFromRequest().fold(
-          errors => Future.successful(Ok(html.crudindex.importCompletionsForm(indexName, errors))),
-          completions => {
-            val autoCompletionService = new AutoCompletionService(new Elasticsearch)
-            autoCompletionService.importCompletions(indexName, completions.text) map {
-              result: BulkImportResult =>
-                if (result.error) Redirect(routes.ListIndices.index(Option.empty[String])).flashing("error" -> Messages("error.bulkItemsFailed", result.failures))
-                else Redirect(routes.ListIndices.index(Option.empty[String])).flashing("success" -> Messages("success.completionsAdded", result.requests))
-            }
-          }
-        )
+        request.body match {
+          case Left(MaxSizeExceeded(length)) => Future.successful(Redirect(routes.CrudIndex.importCompletionsForm(indexName)).flashing("error" -> Messages("error.maxlength")))
+          case Right(body) =>
+            completionsForm.bindFromRequest(body).fold(
+              errors => Future.successful(Ok(html.crudindex.importCompletionsForm(indexName, errors))),
+              completions => {
+                val autoCompletionService = new AutoCompletionService(new Elasticsearch)
+                autoCompletionService.importCompletions(indexName, completions.text) map {
+                  result: BulkImportResult =>
+                    if (result.error) Redirect(routes.ListIndices.index(Option.empty[String])).flashing("error" -> Messages("error.bulkItemsFailed", result.failures))
+                    else Redirect(routes.ListIndices.index(Option.empty[String])).flashing("success" -> Messages("success.completionsAdded", result.requests))
+                }
+              }
+            )
+        }
       }
     }
   }
@@ -159,7 +163,6 @@ object CrudIndex extends Controller {
       request => {
         request.body.file("completionsFile").map {
           completions => {
-            import java.io.File
             val autoCompletionService = new AutoCompletionService(new Elasticsearch)
             autoCompletionService.importCompletionsFromFile(indexName, completions.ref) map {
               result: BulkImportResult =>

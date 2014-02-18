@@ -109,6 +109,7 @@ class AutoCompletionService(es: Elasticsearch) {
   }
 
   def getCompletionsListFromString(completions: String) = completions.split(",") map(entry => entry.trim)
+
   def getCompletionsListFromFile(completions: TemporaryFile) = {
     val source = Source.fromFile(completions.file)
     val result = source.mkString.split(",") map(entry => entry.trim)
