@@ -27,9 +27,9 @@ You can configure Fillable to use your own external Elasticsearch Cluster or let
 ### Install as Standalone Service
 1. Download the latest Fillable Version
 2. Extract the archive to your Webserver
-3. Enter the bin directory from terminal
-4. Make the start script executable with 'chmod +x fillable'
-4. Start Fillable with the './fillable' command
+3. Enter the `bin` directory from terminal
+4. Make the start script executable with `chmod +x fillable`
+4. Start Fillable with the `./fillable` command
 
 You can access the Fillable Webbackend now with your browser on port 9000.
 
@@ -37,6 +37,6 @@ You can access the Fillable Webbackend now with your browser on port 9000.
 1. Clone this Git Repository
 2. [Download](http://downloads.typesafe.com/play/2.2.1/play-2.2.1.zip) & [Install](http://www.playframework.com/documentation/2.2.x/Installing) Play 2.2.1  
 3. Enter the Fillable Directory
-4. Run Fillable with play start
+4. Run Fillable with `play start` or `play run` for development mode
 
 You can access the Fillable Webbackend now with your browser on port 9000.
