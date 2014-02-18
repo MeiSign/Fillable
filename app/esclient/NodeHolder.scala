@@ -17,7 +17,7 @@ object NodeHolder {
 
   def buildSettings(conf: Configuration) = {
     ImmutableSettings.settingsBuilder()
-      .put("path.data", conf.getString("esnode.settings.data").getOrElse("data"))
+      .put("path.data", getDataPath(conf.getString("esnode.settings.data").getOrElse("data")))
       .put("http.enabled", conf.getBoolean("esnode.settings.httpEnabled").getOrElse(false))
       .put("local", conf.getBoolean("esnode.settings.local").getOrElse(true))
       .put("client", conf.getBoolean("esnode.settings.testnode").getOrElse(false))
@@ -34,4 +34,9 @@ object NodeHolder {
   }
 
   def shutDownNodes() = nodes map(node => node.close())
+
+  def getDataPath(pathConfig: String) = {
+    if (!pathConfig.startsWith("/")) Play.current.getFile("/") + pathConfig
+    else pathConfig
+  }
 }

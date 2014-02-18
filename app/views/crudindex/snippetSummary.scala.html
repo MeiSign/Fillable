@@ -18,22 +18,20 @@
 
     &lt;body&gt;
         &lt;form&gt;
-            ...
             <span class="important">&lt;input type="text" id="@(indexName)AutoCompletion"&gt;</span>
             &lt;input type="submit" value="Senden"&gt;
-            ...
         &lt;/form&gt;
 
         <span class="important">
-            &lt;script&gt;
-                var settings = {
-                    fblInputFieldId: "@(indexName)AutoCompletion",
-                    fblHost: "@host",
-                    fblIndex: "@(indexName)",
-                    collectMode: false
-                };
-                FillableWidget.init(settings);
-            &lt;/script&gt;
+        &lt;script&gt;
+            var settings = {
+                fblInputFieldId: "@(indexName)AutoCompletion",
+                fblHost: "@host",
+                fblIndex: "@(indexName)",
+                collectMode: false
+            };
+            FillableWidget.init(settings);
+        &lt;/script&gt;</span>
     &lt;/body&gt;
 &lt;/html&gt;
   </pre>

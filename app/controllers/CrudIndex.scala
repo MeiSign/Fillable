@@ -1,7 +1,7 @@
 package controllers
 
 import _root_.helper.services.{AutoCompletionService, CrudIndexService, IndicesStatsService}
-import _root_.helper.utils.{SynonymSyntaxValidator, AuthenticatedAction, IndexNameValidator}
+import _root_.helper.utils.{AuthenticatedAction, IndexNameValidator}
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
@@ -11,7 +11,6 @@ import views._
 import scala.concurrent._
 import scala.Some
 import esclient.Elasticsearch
-import play.api.data.validation.{Invalid, Valid, ValidationError, Constraint}
 import models.results.BulkImportResult
 
 object CrudIndex extends Controller {
@@ -28,6 +27,13 @@ object CrudIndex extends Controller {
       } {
         index => Some(index.name, index.shards, index.replicas, index.logging)
       })
+
+  val completionsForm: Form[Completions] = Form(
+    mapping("completions" -> nonEmptyText(maxLength = 20000)) {
+      (completions) => Completions(completions)
+    } {
+      completions => Some(completions.text)
+    })
 
   def createForm = AuthenticatedAction {
     Action {
@@ -120,13 +126,6 @@ object CrudIndex extends Controller {
       }
     }
   }
-
-  val completionsForm: Form[Completions] = Form(
-    mapping("completions" -> nonEmptyText(maxLength = 20000)) {
-      (completions) => Completions(completions)
-    } {
-      completions => Some(completions.text)
-    })
 
   def importCompletionsForm(indexName: String) = AuthenticatedAction {
     Action {

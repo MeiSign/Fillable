@@ -28,7 +28,8 @@ You can configure Fillable to use your own external Elasticsearch Cluster or let
 1. Download the latest Fillable Version
 2. Extract the archive to your Webserver
 3. Enter the bin directory from terminal
-4. Start Fillable with the "fillable start" command
+4. Make the start script executable with 'chmod +x fillable'
+4. Start Fillable with the './fillable' command
 
 You can access the Fillable Webbackend now with your browser on port 9000.
 
