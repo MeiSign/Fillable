@@ -32,7 +32,7 @@ Fillable uses internally one of the latest Elasticsearch Versions.
 
 You can configure Fillable to use your own external Elasticsearch Cluster or let Fillable create its own Elasticsearch Cluster.
 
-<a name"gettingStarted" />
+<a name="gettingStarted" />
 ## Getting started
 
 <a name="installation"/>
@@ -60,26 +60,27 @@ This quickstep guide is supposed to show you how easy you can create an autocomp
 embed it into your website.
 
 > A working Installation of Fillable is required too use this guide.
-> Please go back and proceed with the Installation Nodes if you haven't installed Fillable on your system yet.
+> Please go back and proceed with the installation notes if you haven't installed Fillable on your system yet.
 
 Let's say you ran a website about cars and your want an autocompletion form field that help users with brandnames
 (Hidden advertisements incoming ;-)).
 
-The first step to your wonderful autocompletion form field ist to login to your Fillable Backend. You should reach it under
-http://127.0.0.1:9000/ if you are working on the machine where Fillable is installed.
+The first step to your wonderful autocompletion form field ist to login to your Fillable Backend. You should be able to
+reach it under http://127.0.0.1:9000/ if you are working on the machine where Fillable is installed.
 
 After the login screen your are redirected to the Fillable Index List.
 An Fillable Index is the data container of your autocompletion fields. Therefore you should see an empty list now what we will change in a second.
 
-Click on Create Index button und der list or in the main navigation to create our car brand field.
-In the following form we use the default values and enter the name "car_brands". Please not the only lowercase characters are allowed in indexnames.
+Click on Create Index under the list or in the main navigation to create our car brand field.
+In the following form we use the default values and enter the name "car_brands". Please note that only lowercase characters are allowed in indexnames.
 
-Click on create and you will be redirected to a page that shows you a basic html snippet. Just copy the snippet and paste in into a new html file on your pc for now.
+Click on create and you will be redirected to a page that shows you a basic html snippet. Just copy the snippet and paste in into a new html file on your computer for now.
 
 Your new autocompletion field is ready to use now! Open the html file in your browser and enter "Audi" into the input field.
 Click on submit, empty the textfield and start typing "Audi" again. You will see that it already gets suggested while you type.
 
-These are the basics of Fillable. You can proceed with the following sections to get some additional points but your autocompletion is already working now.
+These are the basics of Fillable. You can proceed with the following sections to get some additional information but your autocompletion is already working now.
+Every userinput will be remembered and weigthed based on the frenquency of a term.
 
 <a name="externalEs"/>
 ### How to use an external Elasticsearch Cluster
