@@ -5,6 +5,12 @@
 # Fillable Autocompletion System
 Fillable provides a simple Autocompletion System for Websites. It makes it easy to add autocompletion to any formfield.
 
+- Features
+- Getting Started
+  - [Installation](#installation)
+  - [Quickstep Guide](#quickstep)
+  - [How to use an external Elasticsearch Cluster](#externalEs)
+
 ## Features
 ### Learning System
 Fillable uses the input of users to learn new autocompletion terms and weight the terms. It creates collections of terms which fit directly for your website and user demands.
@@ -25,6 +31,7 @@ You can configure Fillable to use your own external Elasticsearch Cluster or let
 
 ## Getting started
 
+<a name="installation"/>
 ### Install as Standalone Service (Windows & Unix)
 1. Download the latest Fillable Version
 2. Extract the archive to your Webserver
@@ -43,6 +50,7 @@ You can access the Fillable Webbackend now with your browser on port 9000.
 
 You can access the Fillable Webbackend now with your browser on port 9000.
 
+<a name="quickstep"/>
 ### Quickstep Guide
 This quickstep guide is supposed to show you how easy you can create an autocompletion form field with Fillable and
 embed it into your website.
@@ -67,4 +75,7 @@ Click on create and you will be redirected to a page that shows you a basic html
 Your new autocompletion field is ready to use now! Open the html file in your browser and enter "Audi" into the input field.
 Click on submit, empty the textfield and start typing "Audi" again. You will see that it already gets suggested while you type.
 
-These are the basics of Fillable. You can proceed with the Quickstep guide to get some additional points but your autocompletion is already working now.
+These are the basics of Fillable. You can proceed with the following sections to get some additional points but your autocompletion is already working now.
+
+<a name="externalEs"/>
+### How to use an external Elasticsearch Cluster
