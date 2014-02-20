@@ -5,13 +5,16 @@
 # Fillable Autocompletion System
 Fillable provides a simple Autocompletion System for Websites. It makes it easy to add autocompletion to any formfield.
 
-- Features
-- Getting Started
+- [What is Fillable?](#features)
+- [Getting Started](#gettingStarted)
   - [Installation](#installation)
   - [Quickstep Guide](#quickstep)
   - [How to use an external Elasticsearch Cluster](#externalEs)
 
-## Features
+<a name="features" />
+## What is Fillable?
+Fillable provides a simple but clever Autocompletion System for Websites. It makes it easy to add autocompletion to any inputfield in your web formular.
+
 ### Learning System
 Fillable uses the input of users to learn new autocompletion terms and weight the terms. It creates collections of terms which fit directly for your website and user demands.
 
@@ -29,6 +32,7 @@ Fillable uses internally one of the latest Elasticsearch Versions.
 
 You can configure Fillable to use your own external Elasticsearch Cluster or let Fillable create its own Elasticsearch Cluster.
 
+<a name"gettingStarted" />
 ## Getting started
 
 <a name="installation"/>
@@ -79,3 +83,27 @@ These are the basics of Fillable. You can proceed with the following sections to
 
 <a name="externalEs"/>
 ### How to use an external Elasticsearch Cluster
+Using an external Elasticsearch Cluster might be very helpful when you want to use Fillable in production. If you have a lot of data
+for your autocompletion field you must certainly want to use the great Scalability of Elasticsearch. The embedded Elasticsearch only
+runs in a Single Node Cluster.
+
+To use your own external Elasticsearch cluster you have to edit the Fillable config. You can find it inside the `conf` directory.
+
+Change `esclient.embeddedElasticsearch=true` to `false`. And add one of your node addresses to the transport client urls.
+
+`Fillable/conf/fillable.conf`
+
+    # Embedded Elasticsearch
+    # ~~~~~
+    # This option determines if you use an external elasticsearch cluster or embedded elasticsearch node
+    esclient.embeddedElasticsearch=false
+    # Nonembedded Elasticsearch
+    # ~~~~~
+    # If you deactivate the embedded Elasticsearch node add the cluster urls which shall be used by
+    # the elasticsearch transport client
+    esclient.transportClientUrls=["127.0.0.1:9300"]
+
+It is possible to add more than one node address to the config but usually not necessary. The client will sniff the other nodes.
+However if you want to add several nodes you can do it like this
+
+`esclient.transportClientUrls=["127.0.0.1:9300", "127.0.0.1:9301"]`
