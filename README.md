@@ -49,7 +49,7 @@ You can access the Fillable Webbackend now with your browser on port 9000.
 ### Build from sources (Windows & Unix)
 1. Clone this Git Repository
 2. [Download](http://downloads.typesafe.com/play/2.2.1/play-2.2.1.zip) & [Install](http://www.playframework.com/documentation/2.2.x/Installing) Play 2.2.1  
-3. Enter the Fillable Directory
+3. Enter the Fillable directory with Commandlinetool or terminal
 4. Run Fillable with `play start` or `play run` for development mode
 
 You can access the Fillable Webbackend now with your browser on port 9000.
