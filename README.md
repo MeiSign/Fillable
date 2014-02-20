@@ -16,7 +16,7 @@ Fillable provides a simple Autocompletion System for Websites. It makes it easy 
 Fillable provides a simple but clever Autocompletion System for Websites. It makes it easy to add autocompletion to any inputfield in your web formular.
 
 ### Learning System
-Fillable uses the input of users to learn new autocompletion terms and weight the terms. It creates collections of terms which fit directly for your website and user demands.
+Fillable uses the input of users to learn new autocompletion terms and weight them. It creates collections of terms which fit perfectly for your targetgroup.
 
 ### Mistake Tolerance
 The autocompletion has a tolerance for spelling mistakes. This improves user experience by helping the user to find the correct spelling of a word.
