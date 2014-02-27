@@ -1,7 +1,8 @@
 language: scala
 env:
-  - PLAY_VERSION=2.2.1
-  - secure: "HD1x0S9ad/3+G9YUkyT/uTw9lEr+tUQEV4QO+M2Ro1JFSVOzLNZiNoh6FrNb06a0TbencTkftyHYmYjp1/CCyTpF9CMCQ4ddB7TVF9hibH1y9ONVrPJIm5BCEpjGDa4fND8bkcChrpcZDQKIO0ZwArEsl2+IRocnbBT+oYqIFNo="
+  global:
+    - PLAY_VERSION=2.2.1
+    - secure: "HD1x0S9ad/3+G9YUkyT/uTw9lEr+tUQEV4QO+M2Ro1JFSVOzLNZiNoh6FrNb06a0TbencTkftyHYmYjp1/CCyTpF9CMCQ4ddB7TVF9hibH1y9ONVrPJIm5BCEpjGDa4fND8bkcChrpcZDQKIO0ZwArEsl2+IRocnbBT+oYqIFNo="
 before_script:
   - wget http://downloads.typesafe.com/play/${PLAY_VERSION}/play-${PLAY_VERSION}.zip
   - unzip -q play-${PLAY_VERSION}.zip
