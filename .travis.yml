@@ -12,7 +12,7 @@ notifications:
   email: false
 after_success: 
   - play-${PLAY_VERSION}/play dist
-  - cd /target/universal/
+  - cd target/universal/
   - 'ASSETID=$(curl -s -H "Authorization: token ${BUILD_KEY}" "https://api.github.com/repos/meisign/fillable/releases/204198/assets" | jq ".[0].id")'
   - 'curl -XDELETE -s -H "Authorization: token ${BUILD_KEY}" "https://api.github.com/repos/meisign/fillable/releases/assets/$ASSETID"'
-  - 'curl -XPOST -v -H "Authorization: token ${BUILD_KEY}" -H "Content-Type: application/zip" --data-binary @./Fillable-1.0-SNAPSHOT.zip "https://uploads.github.com/repos/meisign/fillable/releases/204198/assets?name=Fillable.zip"'
+  - 'curl -XPOST -s -H "Authorization: token ${BUILD_KEY}" -H "Content-Type: application/zip" --data-binary @./Fillable-1.0-SNAPSHOT.zip "https://uploads.github.com/repos/meisign/fillable/releases/204198/assets?name=Fillable.zip"'
