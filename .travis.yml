@@ -6,11 +6,13 @@ env:
 before_script:
   - wget http://downloads.typesafe.com/play/${PLAY_VERSION}/play-${PLAY_VERSION}.zip
   - unzip -q play-${PLAY_VERSION}.zip
+  - apt-get install jq
 script: play-${PLAY_VERSION}/play test
 notifications:
   email: false
 after_success: 
   - play-${PLAY_VERSION}/play dist
   - cd /target/universal/
-  - curl -H "Authorization: token ${BUILD_KEY}" https://api.github.com/MeiSign
-  - 'curl -XPOST "https://api.github.com/repos/MeiSign/Fillable/releases" -d \\"{"tag_name" : "automated travis build": "draft", true}\\"'
+  - 'ASSETID=$(curl -s -H "Authorization: token ${BUILD_KEY}" "https://api.github.com/repos/meisign/fillable/releases/204198/assets" | jq ".[0].id")'
+  - 'curl -XDELETE -s -H "Authorization: token ${BUILD_KEY}" "https://api.github.com/repos/meisign/fillable/releases/assets/$ASSETID"'
+  - 'curl -XPOST -v -H "Authorization: token ${BUILD_KEY}" -H "Content-Type: application/zip" --data-binary @./Fillable-1.0-SNAPSHOT.zip "https://uploads.github.com/repos/meisign/fillable/releases/204198/assets?name=Fillable.zip"'
