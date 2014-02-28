@@ -6,7 +6,7 @@ env:
 before_script:
   - wget http://downloads.typesafe.com/play/${PLAY_VERSION}/play-${PLAY_VERSION}.zip
   - unzip -q play-${PLAY_VERSION}.zip
-  - apt-get install jq
+  - sudo apt-get install jq
 script: play-${PLAY_VERSION}/play test
 notifications:
   email: false
