@@ -37,7 +37,7 @@ You can configure Fillable to use your own external Elasticsearch Cluster or let
 
 <a name="installation"/>
 ### Install as Standalone Service (Windows & Unix)
-1. [Download](https://github.com/MeiSign/Fillable/releases/download/v0.0.2/Fillable-0.0.2-SNAPSHOT.zip) the latest Fillable Version
+1. [Download](https://github.com/MeiSign/Fillable/releases/download/v0.0.2/Fillable-0.0.2-SNAPSHOT.zip) the latest stable Fillable Version or the latest successful [Travis compiled build](https://github.com/MeiSign/Fillable/releases/download/v99.99.99/Fillable.zip) (Current development Version)
 2. Extract the archive to your Webserver
 3. Enter the `bin` directory from terminal
 4. Start Fillable with the `./fillable` or `fillable.bat` command depending on your os
