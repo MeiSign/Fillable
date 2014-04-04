@@ -3,7 +3,7 @@
 > Under Construction
 
 # Fillable Autocompletion System
-Fillable provides a simple Autocompletion System for Websites. It makes it easy to add autocompletion to any formfield.
+Fillable provides a simple Autocompletion System for Websites. Creating the possibility to add an intelligent and learning autocompletion to any formfield on your website. 
 
 - [What is Fillable?](#features)
 - [Getting Started](#gettingStarted)
